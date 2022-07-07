@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Demo</h1>
+    <div class="list" id="list"></div>
+
+    <script>
+        const list = document.getElementById('list');
+        list.innerHTML='';
+        api_url='http://localhost:8080/store/get/1';
+        async function get(){
+            const response = await fetch(api_url);
+            const results = await response.json();
+            
+            // results.forEach(result => {
+            //     console.log(result);
+            //     const divStore =document.createElement('div');
+            //     divStore.innerHTML='<p> ${result.name}</p> <p> ${result.address}</p>';
+            //     list.appendChild(divStore);               
+            // });
+            document.getElementById('list').innerHTML=`${results.name}`;
+            console.log(results);
+        }
+        get();
+    // fetch(api_url,{ mode: 'no-cors'})
+    //  .then((response) => response.text())
+    //  .then((data) => console.log(data));
+    </script>
+</body>
+
+
+</html>

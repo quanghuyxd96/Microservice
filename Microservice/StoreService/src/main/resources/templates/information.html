@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>CHANGE INFORMATION</title>
+</head>
+<body>
+</div>
+<h2>Change information</h2>
+</div>
+
+<form th:action="@{/store/process_update}" th:object="${store}"
+      method="post" style="max-width: 600px; margin: 0 auto;">
+  <div class="m-3">
+    <div class="form-group row">
+      <label class="col-4 col-form-label">User Name</label>
+      <div class="col-8">
+        <input type="text" th:field="*{userName}" class="form-control" readonly required/>
+      </div>
+    </div>
+    <div class="m-3">
+      <div class="form-group row">
+        <label class="col-4 col-form-label">Password</label>
+        <div class="col-8">
+          <input type="password" th:field="*{password}" class="form-control"
+                 minlength="6" maxlength="10"/>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-4 col-form-label">Confirm Password</label>
+        <div class="col-8">
+          <input type="password" th:field="*{confirmPassword}" class="form-control"
+                 minlength="6" maxlength="10"/>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-4 col-form-label">Name</label>
+        <div class="col-8">
+          <input type="text" th:field="*{name}" class="form-control"
+                 minlength="2" maxlength="100"/>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-4 col-form-label">Address</label>
+        <div class="col-8">
+          <input type="text" th:field="*{address}" class="form-control"
+                 minlength="2" maxlength="100"/>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-4 col-form-label">Phone Number</label>
+        <div class="col-8">
+          <input type="text" th:field="*{phoneNumber}" class="form-control"
+                 minlength="7" maxlength="11" pattern="[0-9]{7,11}"/>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-4 col-form-label">Email</label>
+        <div class="col-8">
+          <input type="email" th:field="*{email}" class="form-control"
+                 maxlength="100"/>
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="btn btn-primary">OK</button>
+        <button type="reset" class="btn btn-primary">Reset</button>
+      </div>
+    </div>
+  </div>
+</form>
+<div>
+  <p th:text="${notify}"></p>
+</div>
+</body>
+</html>

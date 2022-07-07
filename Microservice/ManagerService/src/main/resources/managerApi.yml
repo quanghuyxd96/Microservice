@@ -1,0 +1,403 @@
+openapi: 3.0.1
+info:
+  title: defaultTitle
+  description: defaultDescription
+  version: '1.3'
+servers:
+  - url: http://localhost:8080
+paths:
+  /manager/manage-item/delete:
+    delete:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: '5'
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
+              examples:
+                '0':
+                  value: '{"status":"OK","message":"Delete Success"}'
+      servers:
+        - url: http://localhost:8080
+    servers:
+      - url: http://localhost:8080
+  /manager/manage-item/save:
+    post:
+      description: Auto generated using Swagger Inspector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id": 10,
+                      "name": "99119",
+                      "price": 450,
+                      "quantity": 3,
+                      "supplierId": 0
+                  }
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              examples:
+                '0':
+                  value: >-
+                    {"id":5,"name":"99119","price":450.0,"quantity":3,"supplierId":0}
+      servers:
+        - url: http://localhost:8080
+    servers:
+      - url: http://localhost:8080
+  /manager/manage-item/update:
+    put:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: '1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id": 1,
+                      "name": "999",
+                      "price": 450,
+                      "quantity": 3,
+                      "supplierId": 0
+                  }
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              examples:
+                '0':
+                  value: >-
+                    {"id":1,"name":"999","price":450.0,"quantity":3,"supplierId":0}
+      servers:
+        - url: http://localhost:8080
+    servers:
+      - url: http://localhost:8080
+  /manager/manage-item/items:
+    get:
+      description: Auto generated using Swagger Inspector
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+              examples:
+                '0':
+                  value: >-
+                    [{"id":2,"name":"Tiger","price":500.0,"quantity":5,"supplierId":0},{"id":4,"name":"Heneiken","price":450.0,"quantity":3,"supplierId":0},{"id":1,"name":"555","price":450.0,"quantity":3,"supplierId":0}]
+                '1':
+                  value: >-
+                    [{"id":2,"name":"Tiger","price":500.0,"quantity":5,"supplierId":0},{"id":4,"name":"Heneiken","price":450.0,"quantity":3,"supplierId":0},{"id":1,"name":"555","price":450.0,"quantity":3,"supplierId":0}]
+      servers:
+        - url: http://localhost:8080
+    servers:
+      - url: http://localhost:8080
+  /manager/manage-item/get:
+    get:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: '1'
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              examples:
+                '0':
+                  value: >-
+                    {"id":1,"name":"555","price":450.0,"quantity":3,"supplierId":0}
+      servers:
+        - url: http://localhost:8080
+    servers:
+      - url: http://localhost:8080
+  /manager:
+    get:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: password
+          in: query
+          schema:
+            type: string
+          example: '345678'
+        - name: user
+          in: query
+          schema:
+            type: string
+          example: huynq
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                '0':
+                  value: >-
+                    [{"id":1,"userName":"huynq","password":"345678","email":"quanghuy@gmail.com"}]
+      servers:
+        - url: http://localhost:8080
+    servers:
+      - url: http://localhost:8080
+  /manager/manage-supplier/suppliers:
+    get:
+      description: Auto generated using Swagger Inspector
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Supplier'
+              examples:
+                '0':
+                  value: >-
+                    [{"id":1,"name":"AA","phoneNumber":12345789,"address":"HCM"},{"id":4,"name":"DD","phoneNumber":12345789,"address":"HN"}]
+      servers:
+        - url: http://localhost:8080
+    servers:
+      - url: http://localhost:8080
+  /manager/manage-supplier/get:
+    post:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: '3'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id": 52,
+                      "name": "99119aaa",
+                      "phoneNumber": 0,
+                      "address": "aaaaaa"
+                  }
+              '1':
+                value: |-
+                  {
+                      "id": 52,
+                      "name": "99119aaa",
+                      "phoneNumber": 0,
+                      "address": "aaaaaa"
+                  }
+      responses:
+        '405':
+          description: Auto generated using Swagger Inspector
+      servers:
+        - url: http://localhost:8080
+    servers:
+      - url: http://localhost:8080
+  /manager/manage-supplier/save:
+    post:
+      description: Auto generated using Swagger Inspector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id": 5,
+                      "name": "99119",
+                      "phoneNumber": 0,
+                      "address": "aaaaaa"
+                  }
+              '1':
+                value: |-
+                  {
+                      "id": 52,
+                      "name": "99119aaa",
+                      "phoneNumber": 0,
+                      "address": "aaaaaa"
+                  }
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+              examples:
+                '0':
+                  value: '{"id":5,"name":"99119","phoneNumber":0,"address":"aaaaaa"}'
+                '1':
+                  value: >-
+                    {"id":6,"name":"99119aaa","phoneNumber":0,"address":"aaaaaa"}
+      servers:
+        - url: http://localhost:8080
+  /manager/manage-supplier/delete:
+    delete:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: '5'
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
+              examples:
+                '0':
+                  value: '{"status":"OK","message":"Delete Success"}'
+  /manager/manage-order/get:
+    get:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: '3'
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                '0':
+                  value: >-
+                    {"id":3,"totalPrice":0.0,"orderDate":"2022-06-26","managerId":0,"storeId":1}
+      servers:
+        - url: http://localhost:8080
+    servers:
+      - url: http://localhost:8080
+  /manager/manage-order/orders:
+    get:
+      description: Auto generated using Swagger Inspector
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+              examples:
+                '0':
+                  value: >-
+                    [{"id":3,"totalPrice":0.0,"orderDate":"2022-06-26","managerId":0,"storeId":1},{"id":4,"totalPrice":0.0,"orderDate":"2022-06-26","managerId":0,"storeId":1}]
+      servers:
+        - url: http://localhost:8080
+    servers:
+      - url: http://localhost:8080
+components:
+  schemas:
+    Item:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          format: int64
+        supplierId:
+          type: integer
+          format: int64
+        price:
+          type: number
+          format: double
+        name:
+          type: string
+        id:
+          type: integer
+          format: int64
+    Supplier:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+        address:
+          type: string
+        name:
+          type: string
+        id:
+          type: integer
+          format: int64
+    ResponseObject:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+    Order:
+      type: object
+      properties:
+        totalPrice:
+          type: number
+          format: double
+        id:
+          type: integer
+          format: int64
+        managerId:
+          type: integer
+          format: int64
+        storeId:
+          type: integer
+          format: int64
+        orderDate:
+          type: string
+          format: date

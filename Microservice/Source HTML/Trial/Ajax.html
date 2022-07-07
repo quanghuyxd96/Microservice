@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+          integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
+            crossorigin="anonymous"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body onload="loadHomeContent()">
+<div class="container-fluid">
+    <div class="row main">
+        <div class="col-3 tab-list p-3">
+            <h1>Dashboard</h1>
+            <hr>
+            <p class="tab" onclick="loadHomeContent()">Product Manager</p>
+            <hr>
+            <p class="tab" onclick="loadCategoryManagerContent()">Category Manager</p>
+            <hr>
+            <p class="tab" onclick="loadSizeManagerContent()">Size Manager</p>
+            <hr>
+            <p class="tab" onclick="loadColorManagerContent()">Color Manager</p>
+            <hr>
+            <p class="tab" onclick="loadBrandManagerContent()">Brand Manager</p>
+            <hr>
+        </div>
+        <div class="col-9">
+            <div class="row content" id="content">
+            </div>
+        </div>
+    </div>
+</div>
+<script src="script/index2.js"></script>
+</body>
+</html>

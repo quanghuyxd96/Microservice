@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="manager-service" />
+        <module name="item-service" />
+        <module name="spring-cloud-gateway" />
+        <module name="store-service" />
+        <module name="order-service" />
+        <module name="delivery-note" />
+        <module name="delivery-item-detail-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="delivery-item-detail-service" target="11" />
+      <module name="delivery-note" target="11" />
+      <module name="item-service" target="11" />
+      <module name="manager-service" target="11" />
+      <module name="order-detail-service" target="11" />
+      <module name="order-service" target="11" />
+      <module name="spring-cloud-gateway" target="11" />
+      <module name="store-service" target="11" />
+      <module name="supplier-service" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="delivery-item-detail-service" options="-parameters" />
+      <module name="delivery-note" options="-parameters" />
+      <module name="item-service" options="-parameters" />
+      <module name="manager-service" options="-parameters" />
+      <module name="order-detail-service" options="-parameters" />
+      <module name="order-service" options="-parameters" />
+      <module name="spring-cloud-gateway" options="-parameters" />
+      <module name="store-service" options="-parameters" />
+      <module name="supplier-service" options="-parameters" />
+    </option>
+  </component>
+</project>

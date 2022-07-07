@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/db_item'
+    username: postgres
+    password: '123456'
+    platform: postgres
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    database: POSTGRESQL
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+  rabbitmq:
+    host: localhost
+    password: guest
+    port: 15672
+    username: guest
+    exchange: user.exchange
+    queue: item.queue
+    routingkey: item.routingkey
+app:
+  message: message succesfuly sent
+server:
+  port: 8084

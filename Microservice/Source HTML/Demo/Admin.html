@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="Admin.css">
+    <link rel="script" href="/Demo/Admin.js">
+    <style>
+        div {
+            margin: 10px 10px 10px 10px;
+        }
+
+        #container-item {
+            width: 100%;
+        }
+
+        #container-order {
+            width: 100%;
+            margin-left: 20px;
+        }
+
+        h1 {
+            color: red;
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+        }
+    </style>
+    <!-- <script src="/Demo/Admin.js">
+    </script> -->
+    <title>Admin Page</title>
+</head>
+
+<body>
+    <h1>ADMIN PAGE</h1>
+    <div id="container-item">
+        <h2>ITEM MANAGE</h2>
+        <div class="button-container"><button onclick="getAllItem()">Show All Item
+            </button>
+        </div>
+        <div id="items">
+            <table>
+                <thead id="head-table">
+                </thead>
+                <tbody id="body-table">
+                </tbody>
+            </table>
+        </div>
+        <div id="save-item" class="button-container"><a href="/Demo/SaveItem.html"><button>Save item</button></a></div>
+        <div id="update-item" class="button-container"><a href="/Demo/UpdateItem.html"><button>Update item</button></a></div>
+    </div>
+
+    <div id="container-order">
+        <h2>ORDER MANAGE</h2>
+        <div class="button-container"><button onclick="getAllOrders()">Show All Orders
+            </button>
+        </div>
+        <div id="get-order">
+            <form>
+                <input type="text" id="order-id">
+                <input type="submit" onclick="getOrderById()">
+            </form>
+        </div>
+        <div id="orders">
+            <table>
+                <thead id="head-table-order">
+                </thead>
+                <tbody id="body-table-order">
+                </tbody>
+            </table>
+        </div>
+        <div id="order">
+            <table>
+                <thead id="head-table-order-id">
+                </thead>
+                <tbody id="body-table-order-id">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="container-item">
+        <h2>SUPPLIER MANAGE</h2>
+        <div class="button-container"><button onclick="getAllSupplier()">Show All Supplier
+            </button>
+        </div>
+        <div id="items">
+            <table>
+                <thead id="head-table-supplier">
+                </thead>
+                <tbody id="body-table-supplier">
+                </tbody>
+            </table>
+        </div>
+        <div id="save-supplier" class="button-container"><a href="/Demo/SaveSupplier.html"><button>Save
+                    supplier</button></a></div>
+    </div>
+
+    <!-- <input type="text">
+    <input type="submit" onclick="updateItem(id)">
+    <form>
+        <input id="id-delete" type="text" name="id" placeholder="Please input item id you want to delete"
+            style="width: 50%">
+        <button onclick="deleteItem()">OK</button>
+        <button type="submit" onclick="deleteItem()"></button>
+    </form> -->
+    <script src="/Demo/Admin.js">
+    </script>
+</body>
+
+
+</html>

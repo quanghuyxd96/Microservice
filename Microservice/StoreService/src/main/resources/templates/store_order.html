@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order</title>
+  <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        input {
+            margin: 8px 0;
+        }
+
+        label {
+            width: 100%;
+        }
+        .lable{
+            width: 4%;
+            display: inline-block;
+        }
+        h1,h2{
+            text-align:center;
+        }
+        p{
+            text-align:center;
+        }
+        a{
+            text-decoration: none;
+            color: black;
+        }
+        button.logout{
+            margin:auto;
+            display: block;
+            width: 100px;
+            height: 50px;
+        }
+
+    </style>
+</head>
+
+<body>
+<h1>ORDER INFORMATION</h1>
+<div style="max-width: 600px; margin: 0 auto;">
+  <table border="1" b>
+    <thead>
+    <tr>
+      <th>Order ID</th>
+      <th>Total Price</th>
+      <th>Order Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order : ${orders}">
+      <td th:text="${order.id}"></td>
+      <td th:text="${order.totalPrice}"></td>
+      <td th:text="${order.orderDate}"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div class>
+  <a th:href="@{/store}" style="text-decoration: none"><button type="submit" class="logout">Logout</button></a>
+  <a th:href="@{/store}" style="text-decoration: none"><button type="submit" class="logout">Logout</button></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container text-center">
+        <div>
+            <h1>User Registration - Sign Up</h1>
+        </div>
+        <form action="http://localhost:8080/store/save" method="post" style="max-width: 600px; margin: 0 auto;">
+            <div class="m-3">
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">User Name: </label>
+                    <div class="col-8">
+                        <input type="text" name="userName" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">Password: </label>
+                    <div class="col-8">
+                        <input type="password" name="password" class="form-control" required minlength="6"
+                            maxlength="10" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">Confirm Password: </label>
+                    <div class="col-8">
+                        <input type="password"  name="confirmPassword" class="form-control" required minlength="6"
+                            maxlength="10" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">Name: </label>
+                    <div class="col-8">
+                        <input type="text" name="name" class="form-control" required minlength="2"
+                            maxlength="100" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">Address: </label>
+                    <div class="col-8">
+                        <input type="text" name="address" class="form-control" required minlength="2"
+                            maxlength="100" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">Phone Number: </label>
+                    <div class="col-8">
+                        <input type="text" name="phoneNumber" class="form-control" required minlength="7"
+                            maxlength="11" pattern="[0-9]{7,11}" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">Email: </label>
+                    <div class="col-8">
+                        <input type="email" name="email" class="form-control" required maxlength="100" />
+                    </div>
+                </div>
+
+
+                <div>
+                    <a href="/register_success.html"><button type="submit" class="btn btn-primary" onclick="get()">Sign Up</button></a> 
+                    <button type="reset" class="btn btn-primary">Reset</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        function newLocation() {
+            window.location = "http://127.0.0.1:5500/register_success.html";
+        }
+        const list = document.getElementById('list');
+        list.innerHTML='';
+        api_url='http://localhost:8080/store/save';
+        async function get(){
+            const response = await fetch(api_url);
+            const results = await response.json();
+            
+            // results.forEach(result => {
+            //     console.log(result);
+            //     const divStore =document.createElement('div');
+            //     divStore.innerHTML='<p> ${result.name}</p> <p> ${result.address}</p>';
+            //     list.appendChild(divStore);               
+            // });
+           
+            console.log(results);
+        }
+        get();
+        setTimeout('Redirect()', 10000);
+        var getUserName = document.getElementsByName('userName');
+                // const store = {
+                //     userName:
+                // }
+    </script>
+</body>
+
+</html>

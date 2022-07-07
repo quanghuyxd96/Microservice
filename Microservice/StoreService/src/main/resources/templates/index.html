@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Home Page</title>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        input {
+            margin: 8px 0;
+        }
+
+        label {
+            width: 100%;
+        }
+        .lable{
+            width: 4%;
+            display: inline-block;
+        }
+        h1,h2{
+            text-align:center;
+        }
+        p{
+            text-align:center;
+        }
+        a{
+            text-decoration: none;
+            color: black;
+        }
+        button{
+            margin:auto;
+            display: block;
+            width: 100px;
+            height: 50px;
+        }
+
+        .m-3{
+            text-align:center;
+        }
+        .view-order{
+            margin: 10px auto;
+        }
+
+
+
+    </style>
+</head>
+
+<body>
+<h1>INFORMATION PAGE</h1>
+<div style="max-width: 600px; margin: 0 auto;">
+    <table b border="1">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Phone Number</th>
+            <th>Email</th>
+            <th>User</th>
+            <th>Password</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--    th:each="store : ${store}"-->
+        <tr>
+            <td th:text="${store.name}"></td>
+            <td th:text="${store.address}"></td>
+            <td th:text="${store.phoneNumber}"></td>
+            <td th:text="${store.email}"></td>
+            <td th:text="${store.userName}"></td>
+            <td>**********</td>
+        </tr>
+        </tbody>
+    </table>
+    <form method="post" style="max-width: 600px; margin: 0 auto;"
+          th:action="@{/store/update}" th:object="${store}">
+            <input class="form-control" name="userName" readonly required th:field="*{userName}" type="text" hidden/>
+            <div>
+                <button class="view-order" type="submit" style="text-align: center">Change Information</button>
+            </div>
+    </form>
+    <div>
+        <p th:text="${notify}"></p>
+    </div>
+    <form method="post" style="max-width: 600px; margin: 0 auto;"
+          th:action="@{/store/store-order}" th:object="${store}">
+        <div class="m-3">
+            <div class="form-group row" hidden>
+                <label class="col-4 col-form-label">User Name: </label>
+                <div class="col-8">
+                    <input class="form-control" name="userName" readonly required th:field="*{userName}" type="text"/>
+                </div>
+            </div>
+            <div class="form-group row" hidden>
+                <label class="col-4 col-form-label">Password: </label>
+                <div class="col-8">
+                    <input class="form-control" maxlength="10" minlength="6"
+                           name="password" readonly required th:field="*{password}" type="text" value="*{password}"/>
+                </div>
+            </div>
+            <div>
+                <button class="view-order" type="submit">View your order</button>
+            </div>
+
+        </div>
+    </form>
+    <div class="b">
+        <a style="text-decoration: none" th:href="@{/}">
+            <button class="logout" type="submit">Logout</button>
+        </a>
+    </div>
+</div>
+</body>
+</html>
