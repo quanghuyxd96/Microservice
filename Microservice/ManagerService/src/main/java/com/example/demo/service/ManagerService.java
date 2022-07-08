@@ -1,11 +1,14 @@
 package com.example.demo.service;
 
+import com.example.demo.client.OrderFeignClient;
+import com.example.demo.client.StoreFeignClient;
 import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.entity.Manager;
 import com.example.demo.repository.ManagerRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +19,15 @@ public class ManagerService {
 
     @Autowired
     private ManagerRepository managerRepository;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Autowired
+    private StoreFeignClient storeFeignClient;
+
+    @Autowired
+    private OrderFeignClient orderFeignClient;
 
 
     public List<Manager> getAllManagers() {
@@ -76,13 +88,13 @@ public class ManagerService {
 
     @RabbitListener(queues = "item.queue")
     public void receivedMessageItem(ItemDTO item) {
-        System.out.println("Item: "+item.getName());
+        System.out.println("Item: " + item.getName());
 //        return item;
     }
 
     @RabbitListener(queues = "order.queue")
     public OrderDTO receivedMessageOrder(OrderDTO order) {
-        System.out.println("Order: "+order.getTotalPrice());
+        System.out.println("Order: " + order.getTotalPrice());
         return order;
     }
 

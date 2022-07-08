@@ -27,6 +27,18 @@ spring:
     port: 15672
     username: guest
     exchange: user.exchange
+  mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: 'true'
+          auth: 'true'
+    host: smtp.gmail.com
+    username: nguyenquanghuyxd96@gmail.com
+    password: mebnqhclfmcdgktl
+    port: '587'
+
 client:
   post:
     baseUrl1: 'http://localhost:8082'

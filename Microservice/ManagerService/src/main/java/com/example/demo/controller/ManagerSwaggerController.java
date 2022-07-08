@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.EmailContent;
 import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.SupplierDTO;
@@ -10,15 +11,14 @@ import io.tej.SwaggerCodgen.model.Item;
 import io.tej.SwaggerCodgen.model.Order;
 import io.tej.SwaggerCodgen.model.ResponseObject;
 import io.tej.SwaggerCodgen.model.Supplier;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -119,17 +119,18 @@ public class ManagerSwaggerController implements ManagerApi {
         return new ResponseEntity<>(responseObject, HttpStatus.NOT_FOUND);
     }
 
-//    @GetMapping("/demo")
-//    @RabbitListener(queues = "order.queue")
-//    public ResponseEntity<ItemDTO> getItemDemo(@RequestParam("id") Long id){
-//        ItemDTO itemDTO = new ItemDTO();
-//        return new ResponseEntity<>(managerFacade.getManagerService().receivedMessageItem(itemDTO),HttpStatus.OK);
-//    }
-
-
-    @GetMapping("/demo")
-    public void receivedMessage(ItemDTO itemDTO, @RequestParam("id") Long id) {
-        System.out.println(itemDTO.toString());
+    @PostMapping("/manager/send-mail")
+    public String sendEmailToStore(@RequestBody EmailContent emailContent){
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(emailContent.getReceiver());
+        message.setSubject(emailContent.getSubject());
+        message.setText(emailContent.getTextContent());
+        managerFacade.getEmailSender().send(message);
+        return "Email Sent!";
     }
 
+//    @GetMapping("/manager/manage-order/get/date")
+//    public List<OrderDTO> getOrdersByOrderDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate){
+//        return null;
+//    }
 }

@@ -4,12 +4,15 @@ import com.example.demo.dto.ItemDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
 import com.example.demo.facade.OrderFacade;
+import com.example.demo.repository.OrderRepository;
 import com.example.demo.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -17,6 +20,9 @@ import java.util.List;
 public class OrderController {
     @Autowired
     private OrderFacade orderFacade;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     //Order
 //    @RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -47,6 +53,10 @@ public class OrderController {
         orderFacade.getOrderService().deleteOrderById(id);
     }
 
+    @GetMapping("/get-by-date")
+    public List<Order> getOrdersByOrderDate(@RequestParam("date")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate){
+        return orderRepository.findByOrderDate(localDate);
+    }
     //Order-detail
     @RequestMapping(value = "/order-detail/save", method = RequestMethod.POST)
     public OrderDetail saveOrderDetail(@RequestBody OrderDetail orderDetail) {
@@ -72,5 +82,11 @@ public class OrderController {
     public void getOrderByIdDemoRabbit(@RequestParam("id") Long id) {
 
         orderFacade.getOrderService().getOrderByIdDemorabbit(id);
+    }
+
+    //demo OK
+    @GetMapping("/demoDate")
+    public List<Order> getOrder(@RequestParam("date")  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate){
+        return orderRepository.findByOrderDate(localDate);
     }
 }

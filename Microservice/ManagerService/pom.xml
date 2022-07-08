@@ -134,6 +134,12 @@
 			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 <!--		End MQ Rabbit-->
+<!--		Start send email-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+<!--		End send email-->
 	</dependencies>
 
 	<build>

@@ -14,6 +14,7 @@ import lombok.Getter;
 import net.bytebuddy.description.type.TypeList;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -36,6 +37,9 @@ public class ManagerFacade {
 
     @Autowired
     private OrderFeignClient orderFeignClient;
+
+    @Autowired
+    public JavaMailSender emailSender;
 
     public <T,D> T convertModel(D obj, Class<T> classT){
         ModelMapper modelMapper = new ModelMapper();

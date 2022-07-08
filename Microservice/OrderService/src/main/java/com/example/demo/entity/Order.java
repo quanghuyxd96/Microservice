@@ -22,7 +22,7 @@ public class Order  implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private double totalPrice;
-//    private LocalDate orderDate;
+    private LocalDate orderDate;
     private long managerId;
     private long storeId;
 }
