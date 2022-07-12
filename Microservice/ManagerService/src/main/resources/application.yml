@@ -44,5 +44,6 @@ client:
     baseUrl1: 'http://localhost:8082'
     baseUrl2: 'http://localhost:8083'
     baseUrl3: 'http://localhost:8084'
+    baseUrl4: 'http://localhost:8085'
 server:
   port: 8081

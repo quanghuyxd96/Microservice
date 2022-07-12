@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.client.OrderFeignClient;
+import com.example.demo.dto.OrderDTO;
 import com.example.demo.entity.DeliveryNote;
 import com.example.demo.repository.DeliveryNoteRepository;
 import lombok.Getter;
@@ -24,10 +25,10 @@ public class DeliveryNoteService {
     }
 
 
-
-    public DeliveryNote save(DeliveryNote deliveryNote) {
-        return deliveryNoteRepository.save(deliveryNote);
-    }
+    //chỗ này
+//    public DeliveryNote save(OrderDTO orderDTO) {
+//        return deliveryNoteRepository.save(deliveryNote);
+//    }
 
 
     public DeliveryNote updateDeliveryNote(DeliveryNote deliveryNote, long id) {

@@ -14,9 +14,6 @@ import java.time.LocalDate;
 public class OrderDTO {
     private long id;
     private double totalPrice;
-//    @JsonDeserialize(using = LocalDateDeserializer.class)
-//    @JsonFormat(shape = JsonFormat.Shape.ANY, pattern = )
-    //khong parse qua duoc, chưa fix bug được
     private LocalDate orderDate;
     private long managerId;
     private long storeId;

@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
+import com.example.demo.client.DeliveryNoteFeignClient;
 import com.example.demo.client.OrderFeignClient;
 import com.example.demo.client.StoreFeignClient;
+import com.example.demo.dto.DeliveryNoteDTO;
 import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
@@ -10,6 +12,7 @@ import com.example.demo.repository.ManagerRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -32,6 +35,9 @@ public class ManagerService {
     private OrderFeignClient orderFeignClient;
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private DeliveryNoteFeignClient deliveryNoteFeignClient;
 
 
     public List<Manager> getAllManagers() {
@@ -72,7 +78,11 @@ public class ManagerService {
         }
         return null;
     }
-
+    @Scheduled(cron = "0 0 7 * * *")
+    public List<DeliveryNoteDTO>  saveDeliveryNote(){
+        List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-7));
+        return deliveryNoteFeignClient.saveDeliveryNote(ordersByOrderDate);
+    }
 
 //    public ItemSwagger convertAllItemToAllItemSwagger(ItemDTO itemDTO) {
 //        ItemSwagger itemSwagger = new ItemSwagger();
