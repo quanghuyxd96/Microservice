@@ -1,17 +1,21 @@
 package com.example.demo.client;
 
-import com.example.demo.dto.Order;
+import com.example.demo.dto.OrderDTO;
+import com.example.demo.dto.OrderDetailDTO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @FeignClient(name = "orderFeignClient",url = "localhost:8083")
 public interface OrderFeignClient {
     @GetMapping("/order/orders")
-    List<Order> getAllOrders();
+    List<OrderDTO> getAllOrders();
 
     @GetMapping("/order/order-by-store-id/{storeId}")
-    List<Order> getOrdersByStoreId(@PathVariable("storeId") long id);
+    List<OrderDTO> getOrdersByStoreId(@PathVariable("storeId") long id);
+
+    @PostMapping("/order/save-order")
+    ResponseEntity<OrderDTO>  saveOrder(@RequestBody List<OrderDetailDTO> orderDetails, @RequestParam("id") Long storeId);
 }

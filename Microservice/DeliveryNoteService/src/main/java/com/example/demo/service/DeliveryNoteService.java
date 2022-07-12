@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
+import com.example.demo.client.OrderFeignClient;
 import com.example.demo.entity.DeliveryNote;
 import com.example.demo.repository.DeliveryNoteRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,13 +11,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Getter
 public class DeliveryNoteService {
     @Autowired
     private DeliveryNoteRepository deliveryNoteRepository;
 
+    @Autowired
+    private OrderFeignClient orderFeignClient;
+
     public List<DeliveryNote> getAllDeliveryNote() {
         return deliveryNoteRepository.findAll();
     }
+
 
 
     public DeliveryNote save(DeliveryNote deliveryNote) {

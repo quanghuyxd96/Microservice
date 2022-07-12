@@ -13,7 +13,6 @@
         <module name="store-service" />
         <module name="order-service" />
         <module name="delivery-note" />
-        <module name="delivery-item-detail-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

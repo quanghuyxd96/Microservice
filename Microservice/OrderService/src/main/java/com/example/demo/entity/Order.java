@@ -1,29 +1,36 @@
 package com.example.demo.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.catalina.Store;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Entity
-@Data
 @Getter
 @Setter
 @Table(name = "Orders")
-public class Order  implements Serializable {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private double totalPrice;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd ")
     private LocalDate orderDate;
-    private long managerId;
     private long storeId;
+    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
+    private List<OrderDetail> orderDetails;
 }
 

@@ -17,7 +17,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/StoreSwagger'
+                  $ref: '#/components/schemas/StoreModel'
       servers:
         - url: http://localhost:8082
   /store/get-store-by-userName:
@@ -40,7 +40,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StoreSwagger'
+                $ref: '#/components/schemas/StoreModel'
         '404':
           description: Auto generated using Swagger Inspector
           content:
@@ -85,7 +85,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StoreSwagger'
+                $ref: '#/components/schemas/StoreModel'
         '404':
           description: Auto generated using Swagger Inspector
           content:
@@ -129,7 +129,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StoreSwagger'
+                $ref: '#/components/schemas/StoreModel'
         '404':
           description: Auto generated using Swagger Inspector
           content:
@@ -162,7 +162,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreSwagger'
+              $ref: '#/components/schemas/StoreModel'
             examples:
               '0':
                 value: "\r\n    {\r\n        \"id\": 1000,\r\n        \"name\": \"NguyÅn Quang Huy\",\r\n        \"address\": \"123456\",\r\n        \"phoneNumber\": \"0123456789\",\r\n        \"email\": \"huya@gmail.com\",\r\n        \"userName\": \"100002\",\r\n        \"password\": \"$2a$10$Ox4qQSu.GUSa2p9Voqf26uhT3aGLWvvDYbQyGQXjAPQJYMnf0h8Uu\",\r\n        \"confirmPassword\": null\r\n    }"
@@ -196,7 +196,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreSwagger'
+              $ref: '#/components/schemas/StoreModel'
             examples:
               '0':
                 value: "{\r\n        \"id\": 12,\r\n        \"name\": \"NguyÅn Quang Huy Updated Test\",\r\n        \"address\": \"123456\",\r\n        \"phoneNumber\": \"0123456789\",\r\n        \"email\": \"huya@gmail.com\",\r\n        \"userName\": \"huynew123\",\r\n        \"password\": \"1234567\",\r\n        \"confirmPassword\": \"1234567\"\r\n    }"
@@ -249,11 +249,38 @@ paths:
                   value: '{"status":"Faild","message":"No store to delete."}'
       servers:
         - url: http://localhost:8082
+  /store/order/save:
+    post:
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+          x-example: '1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderDetail'
+
+      responses:
+        '200':
+          description: Definition generated from Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+      servers:
+        - url: http://localhost:8082
     servers:
       - url: http://localhost:8082
 components:
   schemas:
-    StoreSwagger:
+    StoreModel:
       type: object
       properties:
         id:
@@ -280,6 +307,30 @@ components:
           type: string
         status:
           type: string
+    OrderDetail:
+      properties:
+        itemQuantity:
+          type: integer
+          format: int64
+        itemId:
+          type: integer
+          format: int64
+    Order:
+      properties:
+        id:
+          type: integer
+          format: int64
+        totalPrice:
+          type: number
+          format: double
+        orderDate:
+          type: string
+          format: date
+        storeId:
+          type: integer
+          format: int64
+        orderDetailDTOS:
+          type: object
 
 
 

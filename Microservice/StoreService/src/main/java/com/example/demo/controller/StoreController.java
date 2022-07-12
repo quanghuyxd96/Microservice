@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.client.OrderFeignClient;
-import com.example.demo.dto.Order;
+import com.example.demo.dto.OrderDTO;
 import com.example.demo.entity.Store;
 import com.example.demo.facade.StoreFacade;
 import com.example.demo.respond.ResponseObjectEntity;
@@ -41,18 +41,18 @@ public class StoreController {
 //        return "login";
 //    }
 
-    @PostMapping(value = "/save") //"application/x-www-form-urlencoded",consumes = "application/json")
-    public ResponseEntity<Object> saveStore(@RequestParam("name") String name,@RequestParam("userName") String userName, @RequestParam("password") String password, @RequestParam("confirmPassword") String confirmPassword,
-    @RequestParam("address") String address, @RequestParam("phoneNumber") String phoneNumber, @RequestParam("email") String email,@RequestHeader("first-request") String header) {
-        System.out.println(header);
-        Store store = new Store(name,address,phoneNumber,email,userName,password,confirmPassword);
-        System.out.println(store.toString());
-        Store storeCheck = storeFacade.saveStore(store);
-        if (storeCheck == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObjectEntity("False", "Username available"));
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObjectEntity("OK", "Created"));
-    }
+//    @PostMapping(value = "/save") //"application/x-www-form-urlencoded",consumes = "application/json")
+//    public ResponseEntity<Object> saveStore(@RequestParam("name") String name,@RequestParam("userName") String userName, @RequestParam("password") String password, @RequestParam("confirmPassword") String confirmPassword,
+//    @RequestParam("address") String address, @RequestParam("phoneNumber") String phoneNumber, @RequestParam("email") String email,@RequestHeader("first-request") String header) {
+//        System.out.println(header);
+//        Store store = new Store(name,address,phoneNumber,email,userName,password,confirmPassword);
+//        System.out.println(store.toString());
+//        Store storeCheck = storeFacade.saveStore(store);
+//        if (storeCheck == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObjectEntity("False", "Username available"));
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObjectEntity("OK", "Created"));
+//    }
 
 //    @PostMapping(value = "/save") //"application/x-www-form-urlencoded",consumes = "application/json")
 //    public ResponseEntity<Object> saveStore(@RequestBody Store store) {
@@ -129,8 +129,8 @@ public class StoreController {
     public ResponseEntity<Object> orders(@RequestParam("userName") String user, @RequestParam("password") String password) {
         long check = storeFacade.isValid(user, password);
         if (check != -1) {
-            List<Order> allOrders = orderFeignClient.getAllOrders();
-            List<Order> orderList = storeFacade.ordersByStoreId(check, allOrders);
+            List<OrderDTO> allOrders = orderFeignClient.getAllOrders();
+            List<OrderDTO> orderList = storeFacade.ordersByStoreId(check, allOrders);
             if (orderList == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObjectEntity("True", "Orders: none."));
             }

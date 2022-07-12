@@ -34,16 +34,20 @@ public class ItemController {
 
     @RequestMapping(value = "/get", method = RequestMethod.GET)
     public ResponseEntity<ItemDTO> getItemById(@RequestParam("id") Long id) {
-        return new ResponseEntity<>(itemFacade.convertItemToItemDTO(itemFacade.getItemService().getItemById(id)) , HttpStatus.OK);
+        Item item = itemFacade.getItemService().getItemById(id);
+        if (item == null) {
+            return null;
+        }
+        return new ResponseEntity<>(itemFacade.convertItemToItemDTO(item), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public Item updateItemById(@RequestParam("id") Long id,@RequestBody Item item){
-        return itemFacade.getItemService().updateItemById(item,id);
+    public Item updateItemById(@RequestParam("id") Long id, @RequestBody Item item) {
+        return itemFacade.getItemService().updateItemById(item, id);
     }
 
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<ResponseObjectEntity> deleteItemById(@RequestParam("id") Long id){
+    public ResponseEntity<ResponseObjectEntity> deleteItemById(@RequestParam("id") Long id) {
         boolean check = itemFacade.getItemService().deleteItemById(id);
         ResponseObjectEntity responseObject = new ResponseObjectEntity();
         if (!check) {
@@ -58,10 +62,10 @@ public class ItemController {
 
     //demo
     @PostMapping("/delete/demo")
-    public ResponseEntity<ResponseObjectEntity> delete(@RequestParam("id") Long id){
+    public ResponseEntity<ResponseObjectEntity> delete(@RequestParam("id") Long id) {
         System.out.println(id);
         ResponseObjectEntity responseObject = new ResponseObjectEntity();
-        if(itemFacade.getItemService().deleteItemById(id)){
+        if (itemFacade.getItemService().deleteItemById(id)) {
             responseObject.setStatus("OK");
             responseObject.setMessage("Delete Success");
             return ResponseEntity.status(HttpStatus.OK).body(responseObject);
@@ -115,7 +119,7 @@ public class ItemController {
     @GetMapping("/demo")
     @RabbitListener(queues = "item.queue")
     public Item getItemByIdDemoRabbit(@RequestParam("id") Long id) {
-       itemFacade.getItemService().getItemByIdDemorabbit(id);
-       return itemFacade.getItemService().getItemById(id);
+        itemFacade.getItemService().getItemByIdDemorabbit(id);
+        return itemFacade.getItemService().getItemById(id);
     }
 }

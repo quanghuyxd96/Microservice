@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.OrderDTO;
 import com.example.demo.entity.DeliveryNote;
+import com.example.demo.facade.DeliveryNoteFacade;
 import com.example.demo.service.DeliveryNoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,9 @@ import java.util.List;
 public class DeliveryNoteController {
     @Autowired
     private DeliveryNoteService deliveryNoteService;
+
+    @Autowired
+    private DeliveryNoteFacade deliveryNoteFacade;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public DeliveryNote saveDeliveryNote(@RequestBody DeliveryNote deliveryNote) {
@@ -39,5 +44,11 @@ public class DeliveryNoteController {
     @DeleteMapping("/delete/{id}")
     public void deleteDeliveryNote(@PathVariable("id") long id) {
         deliveryNoteService.deleteDeliveryNoteById(id);
+    }
+
+    @GetMapping("/order/orders")
+    public ResponseEntity<List<OrderDTO>> getAllOrder(){
+        System.out.println(deliveryNoteFacade.getDeliveryNoteService().getOrderFeignClient().getALlOrders());
+        return new ResponseEntity<>(deliveryNoteFacade.getDeliveryNoteService().getOrderFeignClient().getALlOrders(),HttpStatus.OK);
     }
 }

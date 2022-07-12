@@ -19,6 +19,12 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  rabbitmq:
+    host: localhost
+    password: guest
+    port: 15672
+    username: guest
+    exchange: user.exchange
   main:
     allow-circular-references: 'true'
 server:

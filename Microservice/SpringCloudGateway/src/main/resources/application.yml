@@ -1,8 +1,5 @@
-
 server:
   port: 8080
-
-
 spring:
   cloud:
     gateway:
@@ -27,10 +24,6 @@ spring:
           uri: http://localhost:8085/
           predicates:
             - Path=/delivery-note/**
-        - id: delivery-item-detail
-          uri: http://localhost:8086/
-          predicates:
-            - Path=/delivery-item-detail/**
   thymeleaf:
     check-template-location: true
     enabled: true

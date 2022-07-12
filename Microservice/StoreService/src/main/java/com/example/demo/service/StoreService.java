@@ -1,7 +1,11 @@
 package com.example.demo.service;
 
+import com.example.demo.client.OrderFeignClient;
+import com.example.demo.dto.OrderDTO;
+import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Store;
 import com.example.demo.repository.StoreRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,9 +13,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Getter
 public class StoreService {
     @Autowired
     private StoreRepository storeRepository;
+
+    @Autowired
+    private OrderFeignClient orderFeignClient;
 
     public List<Store> getAllStore() {
         return storeRepository.findAll();
@@ -22,13 +30,13 @@ public class StoreService {
         if (isPresentStoreUser(store.getUserName())) {
             return null;
         }
-        List<Store> storeRepositoryAll = storeRepository.findAll();
-        long idMax = 0;
-        for (Store store1 : storeRepositoryAll) {
-            idMax = Math.max(idMax, store1.getId());
-        }
-        System.out.println("Idmax: " + idMax);
-        store.setId(idMax + 1);
+//        List<Store> storeRepositoryAll = storeRepository.findAll();
+//        long idMax = 0;
+//        for (Store store1 : storeRepositoryAll) {
+//            idMax = Math.max(idMax, store1.getId());
+//        }
+//        System.out.println("Idmax: " + idMax);
+//        store.setId(idMax + 1);
         store.setPassword(endCodePassword(store.getPassword()));
         System.out.println(store);
         return storeRepository.save(store);
@@ -72,7 +80,7 @@ public class StoreService {
         if (store.getPhoneNumber().length() > 0) {
             storeRepositoryByUserName.setPhoneNumber(store.getPhoneNumber());
         }
-        if (store.getPassword().length() > 0 || store.getConfirmPassword().length()>0) {
+        if (store.getPassword().length() > 0 || store.getConfirmPassword().length() > 0) {
             if (!store.getPassword().equalsIgnoreCase(store.getConfirmPassword())) {
                 return null;
             }
@@ -93,7 +101,7 @@ public class StoreService {
 
     public boolean deleteStoreById(long id) {
         Optional<Store> storeRepositoryById = storeRepository.findById(id);
-        if(storeRepositoryById.isPresent()){
+        if (storeRepositoryById.isPresent()) {
             storeRepository.deleteById(id);
             return true;
         }
@@ -146,6 +154,14 @@ public class StoreService {
             }
         }
         return null;
+    }
+
+    public OrderDTO saveOrder(Long id, List<OrderDetailDTO> orderDetailDTOList) {
+        OrderDTO orderDTO = orderFeignClient.saveOrder(orderDetailDTOList, id).getBody();
+        if (orderDTO == null) {
+            return null;
+        }
+        return orderDTO;
     }
 
     public Store getStoreByUserName(Store store) {

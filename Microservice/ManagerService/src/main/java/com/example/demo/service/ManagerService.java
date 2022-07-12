@@ -4,6 +4,7 @@ import com.example.demo.client.OrderFeignClient;
 import com.example.demo.client.StoreFeignClient;
 import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
+import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Manager;
 import com.example.demo.repository.ManagerRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +30,8 @@ public class ManagerService {
 
     @Autowired
     private OrderFeignClient orderFeignClient;
+    @Autowired
+    private EmailService emailService;
 
 
     public List<Manager> getAllManagers() {
@@ -93,9 +97,8 @@ public class ManagerService {
     }
 
     @RabbitListener(queues = "order.queue")
-    public OrderDTO receivedMessageOrder(OrderDTO order) {
-        System.out.println("Order: " + order.getTotalPrice());
-        return order;
+    public void receivedMessageOrder(List<OrderDetailDTO> orderDetails) {
+        emailService.sendEmailToNotifyOrdered(orderDetails);
     }
 
 

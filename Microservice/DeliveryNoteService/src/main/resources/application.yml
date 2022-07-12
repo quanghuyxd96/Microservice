@@ -16,5 +16,8 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
+client:
+  post:
+    baseUrl1: 'http://localhost:8083'
 server:
   port: 8085

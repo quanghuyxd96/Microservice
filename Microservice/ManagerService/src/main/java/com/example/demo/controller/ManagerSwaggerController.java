@@ -6,6 +6,9 @@ import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.SupplierDTO;
 import com.example.demo.facade.ManagerFacade;
 import com.example.demo.response.ResponseObjectEntity;
+import com.example.demo.utils.ExcelGenerator;
+import com.example.demo.utils.PDFGenerator;
+import com.lowagie.text.DocumentException;
 import io.tej.SwaggerCodgen.api.ManagerApi;
 import io.tej.SwaggerCodgen.model.Item;
 import io.tej.SwaggerCodgen.model.Order;
@@ -18,7 +21,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -129,6 +137,40 @@ public class ManagerSwaggerController implements ManagerApi {
         return "Email Sent!";
     }
 
+    @GetMapping("/pdf/items")
+    public void generatePdf(HttpServletResponse response) throws DocumentException, IOException {
+
+        response.setContentType("application/pdf");
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD:HH:MM:SS");
+        String currentDateTime = dateFormat.format(new Date());
+        String headerkey = "Content-Disposition";
+        String headervalue = "attachment; filename=pdf_" + currentDateTime + ".pdf";
+        response.setHeader(headerkey, headervalue);
+
+        List<ItemDTO> items = managerFacade.getItemFeignClient().getAllItems();
+
+        PDFGenerator generator = new PDFGenerator();
+        generator.setItems(items);
+        generator.generate(response);
+
+    }
+
+    @GetMapping("/excel/items")
+    public void exportIntoExcel(HttpServletResponse response) throws IOException {
+        response.setContentType("application/octet-stream");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=Item_" + currentDateTime + ".xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        List<ItemDTO> items = managerFacade.getItemFeignClient().getAllItems();
+
+        ExcelGenerator generator = new ExcelGenerator(items);
+
+        generator.generate(response);
+    }
 //    @GetMapping("/manager/manage-order/get/date")
 //    public List<OrderDTO> getOrdersByOrderDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate){
 //        return null;

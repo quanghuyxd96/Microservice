@@ -1,9 +1,8 @@
 package com.example.demo.facade;
 
-import com.example.demo.dto.Order;
+import com.example.demo.dto.OrderDTO;
 import com.example.demo.entity.Store;
 import com.example.demo.service.StoreService;
-import io.tej.SwaggerCodgen.model.StoreSwagger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,9 +34,9 @@ public class StoreFacade {
         return storeService.getStoreByUserName(store);
     }
 
-    public List<Order> ordersByStoreId(long id, List<Order> orders){
-        List<Order> orderList = new ArrayList<Order>();
-        for(Order order : orders){
+    public List<OrderDTO> ordersByStoreId(long id, List<OrderDTO> orders){
+        List<OrderDTO> orderList = new ArrayList<OrderDTO>();
+        for(OrderDTO order : orders){
             if(order.getStoreId()==id){
                 orderList.add(order);
             }

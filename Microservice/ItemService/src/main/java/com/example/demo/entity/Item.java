@@ -15,6 +15,7 @@ import java.util.List;
 @Table(name = "Items")
 public class Item {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private String name;
     private double price;

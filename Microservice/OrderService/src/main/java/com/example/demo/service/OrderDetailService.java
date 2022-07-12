@@ -1,5 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.client.ItemFeignClient;
+import com.example.demo.dto.ItemDTO;
+import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
 import com.example.demo.repository.OrderDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,12 @@ public class OrderDetailService {
     @Autowired
     private OrderDetailRepository orderDetailRepository;
 
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private ItemFeignClient itemFeignClient;
+
 
     public List<OrderDetail> getAllOrderDetails() {
         return orderDetailRepository.findAll();
@@ -23,6 +32,7 @@ public class OrderDetailService {
     public OrderDetail saveOrderDetail(OrderDetail orderDetail) {
         return orderDetailRepository.save(orderDetail);
     }
+
 
 
     public OrderDetail getOrderDetailById(Long id) {
@@ -36,6 +46,9 @@ public class OrderDetailService {
 
     public void deleteOrderDetailById(long id) {
         orderDetailRepository.deleteById(id);
+    }
+    public List<OrderDetail> saveOrderDetail(List<OrderDetail> orderDetails){
+        return orderDetailRepository.saveAll(orderDetails);
     }
 
 
