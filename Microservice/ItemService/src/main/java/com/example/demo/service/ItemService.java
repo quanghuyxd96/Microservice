@@ -33,11 +33,11 @@ public class ItemService {
 
     public Item saveItem(Item item) {
         List<Item> items = itemRepository.findAll();
-        long idMax=0;
-        for(Item item1 : items){
-            idMax=Math.max(idMax,item1.getId());
+        long idMax = 0;
+        for (Item item1 : items) {
+            idMax = Math.max(idMax, item1.getId());
         }
-        item.setId(idMax+1);
+        item.setId(idMax + 1);
         System.out.println(idMax);
         System.out.println(item.toString());
         return itemRepository.save(item);
@@ -55,19 +55,31 @@ public class ItemService {
 
     public Item updateItemById(Item item, long id) {
         Optional<Item> itemRepositoryById = itemRepository.findById(id);
-        if(itemRepositoryById.isPresent()){
-            if(item.getName().length()>0){
+        if (itemRepositoryById.isPresent()) {
+            if (item.getName().length() > 0) {
                 itemRepositoryById.get().setName(item.getName());
             }
-            if(item.getPrice()!=itemRepositoryById.get().getPrice()){
+            if (item.getPrice() != itemRepositoryById.get().getPrice()) {
                 itemRepositoryById.get().setPrice(item.getPrice());
             }
-            if(item.getQuantity()!=itemRepositoryById.get().getQuantity()){
+            if (item.getQuantity() != itemRepositoryById.get().getQuantity()) {
                 itemRepositoryById.get().setQuantity(item.getQuantity());
             }
             return itemRepository.save(itemRepositoryById.get());
         }
         return null;
+    }
+
+    public List<Item> updateItemQuantity(List<Item> items) {
+        List<Item> itemList = new ArrayList<>();
+        for (Item item : items) {
+            Optional<Item> itemById = itemRepository.findById(item.getId());
+            if (itemById.isPresent()) {
+                itemById.get().setQuantity(item.getQuantity());
+                itemList.add(itemById.get());
+            }
+        }
+        return itemRepository.saveAll(itemList);
     }
 
 
@@ -80,12 +92,12 @@ public class ItemService {
         return false;
     }
 
-    public void getAllItemDemoRabbit(){
+    public void getAllItemDemoRabbit() {
         rabbitTemplate.convertAndSend(exchange, routingkey, itemRepository.findAll());
     }
 
-    public void getItemByIdDemorabbit(Long id){
+    public void getItemByIdDemorabbit(Long id) {
         System.out.println(itemRepository.findById(id).get());
-        rabbitTemplate.convertAndSend(exchange,routingkey,itemRepository.findById(id).get());
+        rabbitTemplate.convertAndSend(exchange, routingkey, itemRepository.findById(id).get());
     }
 }

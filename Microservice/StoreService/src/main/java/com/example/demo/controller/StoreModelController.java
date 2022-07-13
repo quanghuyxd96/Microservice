@@ -5,6 +5,7 @@ import com.example.demo.dto.OrderDTO;
 import com.example.demo.entity.Store;
 import com.example.demo.facade.StoreFacade;
 import com.example.demo.facade.StoreModelFacade;
+import com.example.demo.repository.StoreRepository;
 import com.example.demo.respond.ResponseObjectEntity;
 import io.tej.SwaggerCodgen.api.StoreApi;
 import io.tej.SwaggerCodgen.model.Order;
@@ -14,10 +15,7 @@ import io.tej.SwaggerCodgen.model.StoreModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,10 +26,13 @@ public class StoreModelController implements StoreApi {
     private StoreModelFacade storeModelFacade;
 
     @Autowired
-    private StoreFacade storeFacade;
+    private OrderFeignClient orderFeignClient;
 
     @Autowired
-    private OrderFeignClient orderFeignClient;
+    private StoreRepository storeRepository;
+
+    @Autowired
+    private StoreFacade storeFacade;
 
 
     @Override
@@ -110,6 +111,11 @@ public class StoreModelController implements StoreApi {
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
+    //demo
+    @GetMapping("/store/get/{userName}")
+    public ResponseEntity<Store> getStoreByUserName(@PathVariable("userName") String userName){
+        return new ResponseEntity<>(storeRepository.findByUserName(userName),HttpStatus.OK) ;
+    }
 
     //Dung de demo
 

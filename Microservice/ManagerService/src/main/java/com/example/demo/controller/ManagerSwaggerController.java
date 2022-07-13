@@ -4,7 +4,9 @@ import com.example.demo.dto.EmailContent;
 import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.SupplierDTO;
+import com.example.demo.entity.Payment;
 import com.example.demo.facade.ManagerFacade;
+import com.example.demo.repository.PaymentRepository;
 import com.example.demo.response.ResponseObjectEntity;
 import com.example.demo.utils.ExcelGenerator;
 import com.example.demo.utils.PDFGenerator;
@@ -34,6 +36,9 @@ import java.util.List;
 public class ManagerSwaggerController implements ManagerApi {
     @Autowired
     private ManagerFacade managerFacade;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Override
     public ResponseEntity<List<Item>> managerManageItemItemsGet() {
@@ -125,6 +130,16 @@ public class ManagerSwaggerController implements ManagerApi {
             return new ResponseEntity<>(responseObject, HttpStatus.OK);
         }
         return new ResponseEntity<>(responseObject, HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/manager/payment")
+    public Payment savePaymentDemo(@RequestBody Payment payment){
+        return managerFacade.getPaymentService().saveAndUpdatePaymentOfStore(payment);
+    }
+
+    @GetMapping("/manager/payment/get")
+    public ResponseEntity<Payment> getPaymentDemo(@RequestParam("storeUser") String storeUser, @RequestParam("orderId") Long orderId){
+        return new ResponseEntity<>(paymentRepository.findByStoreUserAndOrderId(storeUser,orderId),HttpStatus.OK);
     }
 
     @PostMapping("/manager/send-mail")

@@ -38,6 +38,10 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    Queue managerStore() {
+        return new Queue("manager.queue", true);
+    }
+    @Bean
     Exchange myExchange() {
         return ExchangeBuilder.directExchange(exchange).durable(true).build();
     }
@@ -50,6 +54,15 @@ public class RabbitMQConfig {
                 .bind(order())
                 .to(myExchange())
                 .with("order.routingkey")
+                .noargs();
+    }
+
+    @Bean
+    Binding bindingManagerStore() {
+        return BindingBuilder
+                .bind(order())
+                .to(myExchange())
+                .with("manager.routingkey")
                 .noargs();
     }
 

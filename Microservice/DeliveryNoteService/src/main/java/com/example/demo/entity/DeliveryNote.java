@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,4 +20,7 @@ public class DeliveryNote {
     private long id;
     private LocalDate deliveryDate;
     private long orderId;
+
+    @OneToMany(mappedBy = "deliveryNote", cascade = CascadeType.ALL)
+    private List<DeliveryItemDetail> deliveryItemDetails;
 }

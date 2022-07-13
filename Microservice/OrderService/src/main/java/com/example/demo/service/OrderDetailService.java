@@ -33,6 +33,13 @@ public class OrderDetailService {
         return orderDetailRepository.save(orderDetail);
     }
 
+    public List<OrderDetail> getAllOrderDetailsByOrderId(long id){
+        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(id);
+        if(orderDetails==null){
+            return null;
+        }
+        return orderDetails;
+    }
 
 
     public OrderDetail getOrderDetailById(Long id) {

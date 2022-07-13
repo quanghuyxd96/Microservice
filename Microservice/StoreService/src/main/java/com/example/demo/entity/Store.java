@@ -21,7 +21,7 @@ public class Store {
     private String email;
     private String userName;
     private String password;
-//    private double payment;
+    private double payment;
     @Transient
     private String confirmPassword;
 

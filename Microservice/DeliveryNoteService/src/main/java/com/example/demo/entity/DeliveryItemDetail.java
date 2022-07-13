@@ -19,7 +19,7 @@ public class DeliveryItemDetail {
     private long unDeliveriedQuantity;
     private long itemId;
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_note_id")
     private DeliveryNote deliveryNote;
 }

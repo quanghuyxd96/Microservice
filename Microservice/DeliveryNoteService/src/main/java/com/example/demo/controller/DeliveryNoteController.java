@@ -20,11 +20,11 @@ public class DeliveryNoteController {
 
     @Autowired
     private DeliveryNoteFacade deliveryNoteFacade;
-    //chỗ này nhé
-//    @RequestMapping(value = "/save", method = RequestMethod.POST)
-//    public DeliveryNote saveDeliveryNote(@RequestBody List<OrderDTO> orderDTOS) {
-//        return deliveryNoteService.save(orderDTOS);
-//    }
+
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public ResponseEntity<DeliveryNote> saveDeliveryNote(@RequestBody OrderDTO orderDTO) {
+        return new ResponseEntity<>(deliveryNoteService.saveDelivery(orderDTO),HttpStatus.OK);
+    }
 
     @GetMapping("/delivery-notes")
     public List<DeliveryNote> getAllDeliveryNotes() {

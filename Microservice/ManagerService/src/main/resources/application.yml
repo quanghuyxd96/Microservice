@@ -27,6 +27,8 @@ spring:
     port: 15672
     username: guest
     exchange: user.exchange
+    queue: manager.queue
+    routingkey: manager.routingkey
   mail:
     properties:
       mail:

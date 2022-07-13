@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Random;
 
 @Service
 public class EmailService {
@@ -53,6 +52,7 @@ public class EmailService {
             emailRepository.save(email);
         }
     }
+
 
     public void sendEmailToNotifyOrdered(List<OrderDetailDTO> orderDetailDTOS) {
         SimpleMailMessage message = new SimpleMailMessage();

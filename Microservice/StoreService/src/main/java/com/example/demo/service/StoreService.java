@@ -6,6 +6,7 @@ import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Store;
 import com.example.demo.repository.StoreRepository;
 import lombok.Getter;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,20 +28,25 @@ public class StoreService {
 
 
     public Store saveStore(Store store) {
-        if (isPresentStoreUser(store.getUserName())) {
+        store.setUserName(store.getUserName().toLowerCase());
+        Store storeRepositoryByUserName = storeRepository.findByUserName(store.getUserName());
+        if (storeRepositoryByUserName != null) {
             return null;
         }
-//        List<Store> storeRepositoryAll = storeRepository.findAll();
-//        long idMax = 0;
-//        for (Store store1 : storeRepositoryAll) {
-//            idMax = Math.max(idMax, store1.getId());
-//        }
-//        System.out.println("Idmax: " + idMax);
-//        store.setId(idMax + 1);
         store.setPassword(endCodePassword(store.getPassword()));
-        System.out.println(store);
+        store.setPayment(0);
         return storeRepository.save(store);
     }
+
+
+//    public Store updateStorePayment(long id) {
+//        Optional<Store> store = storeRepository.findById(id);
+//        if (store.isPresent()) {
+//            store.get().setPayment(paid);
+//            return storeRepository.save(store.get());
+//        }
+//        return null;
+//    }
 
 
     public Store updateStoreById(Store store, long id) {

@@ -55,4 +55,9 @@ public class ItemFacade {
         }
         return itemDTOList;
     }
+
+    public List<Item> updateItemsQuantity(List<Item> items){
+        System.out.println("facade");
+        return itemService.updateItemQuantity(items);
+    }
 }

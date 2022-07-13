@@ -7,6 +7,7 @@ import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.SupplierDTO;
 import com.example.demo.service.ManagerService;
+import com.example.demo.service.PaymentService;
 import io.tej.SwaggerCodgen.model.Item;
 import io.tej.SwaggerCodgen.model.Order;
 import io.tej.SwaggerCodgen.model.Supplier;
@@ -37,6 +38,9 @@ public class ManagerFacade {
 
     @Autowired
     private OrderFeignClient orderFeignClient;
+
+    @Autowired
+    private PaymentService paymentService;
 
     @Autowired
     public JavaMailSender emailSender;

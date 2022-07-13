@@ -46,6 +46,11 @@ public class ItemController {
         return itemFacade.getItemService().updateItemById(item, id);
     }
 
+    @PostMapping("/update-quantity")
+    public List<Item> updateItemQuantity(@RequestBody List<Item> items){
+        return itemFacade.updateItemsQuantity(items);
+    }
+
     @DeleteMapping(value = "/delete")
     public ResponseEntity<ResponseObjectEntity> deleteItemById(@RequestParam("id") Long id) {
         boolean check = itemFacade.getItemService().deleteItemById(id);

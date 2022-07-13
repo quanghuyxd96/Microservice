@@ -92,6 +92,15 @@ public class OrderController {
         return new ResponseEntity<>(orderFacade.getOrderDetailService().getOrderDetailById(id), HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/details")
+    public ResponseEntity<List<OrderDetail>> getAllOrderDetailsByOrderId(@PathVariable("id") Long id){
+        List<OrderDetail> orderDetails = orderFacade.getOrderDetailsByOrderId(id);
+        if(orderDetails==null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(orderDetails,HttpStatus.OK);
+    }
+
 
 //    @GetMapping("/demo")
 //    public List<ItemDTO> getAllItems(){

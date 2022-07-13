@@ -98,6 +98,10 @@ public class StoreModelFacade {
         return storeService.updateStoreById(store);
     }
 
+//    public Store updateStorePayment(long id, double paid){
+//        return storeService.updateStorePayment(id,paid);
+//    }
+
     public Order saveOrder(Long id, List<OrderDetail> orderDetail) {
         List<OrderDetailDTO> orderDetailDTOS = convertListModel(orderDetail, OrderDetailDTO.class);
         OrderDTO orderDTO = storeService.saveOrder(id, orderDetailDTOS);
