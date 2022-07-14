@@ -1,0 +1,390 @@
+openapi: 3.0.1
+info:
+  title: defaultTitle
+  description: defaultDescription
+  version: 1.0.0-oas3
+servers:
+  - url: http://localhost:8084
+paths:
+  /item/update:
+    put:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: 27
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemModel'
+            examples:
+              '0':
+                value: " {\r\n    \"name\": \"Đèn xe Winner X\",\r\n    \"price\": 500.0,\r\n    \"quantity\": 30\r\n}"
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemModel'
+              examples:
+                '0':
+                  value: >-
+                    {"id":27,"name":"Đèn xe Winner
+                    X","price":500.0,"quantity":30}
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/delete:
+    delete:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: 26
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
+        '404':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
+              examples:
+                '0':
+                  value: '{"status":"Faild","message":"No item to delete!!!"}'
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/get:
+    get:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: 27
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemModel'
+              examples:
+                '0':
+                  value: >-
+                    {"id":27,"name":"Đèn xe Winner
+                    X","price":9000.0,"quantity":100,"supplierId":1}
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/update-price-or-quantity:
+    put:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: supplierId
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemModel'
+            examples:
+              '0':
+                value: " {\r\n    \"name\": \"Đèn xe Winner X\",\r\n    \"price\": 9000,\r\n    \"quantity\": 100\r\n}"
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemModel'
+              examples:
+                '0':
+                  value: >-
+                    {"id":27,"name":"Đèn xe Winner
+                    X","price":9000.0,"quantity":100}
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/items:
+    get:
+      description: Auto generated using Swagger Inspector
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemModel'
+              examples:
+                '0':
+                  value: >-
+                    [{"id":27,"name":"Đèn xe Winner
+                    X","price":9000.0,"quantity":100,"supplierId":1}]
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/save:
+    post:
+      description: Auto generated using Swagger Inspector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemModel'
+            examples:
+              '0':
+                value: "    {\r\n        \"name\": \"Đèn xe SH\",\r\n        \"price\": 9000,\r\n        \"quantity\": 30,\r\n        \"supplierId\": 2\r\n    }"
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemModel'
+              examples:
+                '0':
+                  value: '{"id":29,"name":"Đèn xe SH","price":9000.0,"quantity":30}'
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/update-quantity:
+    post:
+      description: Auto generated using Swagger Inspector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ItemModel'
+            examples:
+              '0':
+                value: " [{\r\n    \"id\": 27,\r\n    \"name\": \"Đèn xe Winner X\",\r\n    \"price\": 500.0,\r\n    \"quantity\": 70\r\n}]"
+              '1':
+                value: " [{\r\n    \"id\": 26,\r\n    \"name\": \"Đèn xe Winner X\",\r\n    \"price\": 500.0,\r\n    \"quantity\": 70\r\n}]"
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemModel'
+              examples:
+                '0':
+                  value: >-
+                    [{"id":27,"name":"Đèn xe Winner
+                    X","price":500.0,"quantity":70}]
+                '1':
+                  value: '[]'
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/supplier/get:
+    get:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: 3
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierModel'
+              examples:
+                '0':
+                  value: >-
+                    {"id":3,"name":"Men","phoneNumber":"111111111","address":"HCM"}
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/supplier/save:
+    post:
+      description: Auto generated using Swagger Inspector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierModel'
+            examples:
+              '0':
+                value: |-
+                  {
+                      "id": 3,
+                      "name": "Women",
+                      "phoneNumber": "111111111",
+                      "address": "HCM"
+                  }
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierModel'
+              examples:
+                '0':
+                  value: >-
+                    {"id":5,"name":"Women","phoneNumber":"111111111","address":"HCM"}
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/supplier/delete:
+    delete:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: 5
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
+              examples:
+                '0':
+                  value: '{"status":"OK","message":"Delete Success"}'
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/supplier/update:
+    put:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: 4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierModel'
+            examples:
+              '0':
+                value: "{\r\n    \"id\": 1,\r\n    \"name\": \"MEN 5555\",\r\n    \"phoneNumber\": \"111111111\",\r\n    \"address\": \"HCM\"\r\n}"
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierModel'
+              examples:
+                '0':
+                  value: >-
+                    {"id":4,"name":"MEN
+                    5555","phoneNumber":"111111111","address":"HCM"}
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+  /item/suppliers:
+    get:
+      description: Auto generated using Swagger Inspector
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SupplierModel'
+              examples:
+                '0':
+                  value: >-
+                    [{"id":1,"name":"Bia","phoneNumber":"111111111","address":"HCM"},{"id":2,"name":"Phu
+                    tung xe
+                    may","phoneNumber":"2222222","address":"HCM"},{"id":3,"name":"Men","phoneNumber":"111111111","address":"HCM"},{"id":4,"name":"MEN
+                    X","phoneNumber":"111111111","address":"HCM"}]
+      servers:
+        - url: http://localhost:8084
+    servers:
+      - url: http://localhost:8084
+
+components:
+  schemas:
+    ItemModel:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          format: int64
+        supplierId:
+          type: integer
+          format: int64
+        price:
+          type: number
+          format: double
+        name:
+          type: string
+        id:
+          type: integer
+          format: int64
+    SupplierModel:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+        address:
+          type: string
+        name:
+          type: string
+        id:
+          type: integer
+          format: int64
+    ResponseObject:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string

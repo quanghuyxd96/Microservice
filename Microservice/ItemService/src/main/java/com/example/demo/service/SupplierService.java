@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Item;
 import com.example.demo.entity.Supplier;
 import com.example.demo.repository.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,22 +14,21 @@ public class SupplierService {
     private SupplierRepository supplierRepository;
 
 
+    public Supplier saveSupplier(Supplier supplier) {
+        Supplier supplierRepo = supplierRepository.findByName(supplier.getName());
+        if (supplierRepo == null) {
+            return supplierRepository.save(supplier);
+        }
+        return null;
+    }
 
     public List<Supplier> getAllSuppliers() {
-        return supplierRepository.findAll();
-    }
-
-
-    public Supplier saveSupplier(Supplier supplier) {
         List<Supplier> suppliers = supplierRepository.findAll();
-        long idMax =0;
-        for(Supplier supplier1 : suppliers){
-            idMax = Math.max(idMax,supplier1.getId());
+        if (suppliers == null) {
+            return null;
         }
-        supplier.setId(idMax+1);
-        return supplierRepository.save(supplier);
+        return suppliers;
     }
-
 
     public Supplier getSupplierById(long id) {
         Optional<Supplier> supplier = supplierRepository.findById(id);
@@ -40,10 +38,20 @@ public class SupplierService {
         return null;
     }
 
+    public Supplier updateSupplierById(Supplier supplier, long id) {
+        Optional<Supplier> supplierRepositoryById = supplierRepository.findById(id);
+        if(!supplierRepositoryById.isPresent()){
+            return null;
+        }
+        supplierRepositoryById.get().setName(supplier.getName());
+        supplierRepositoryById.get().setAddress(supplier.getAddress());
+        supplierRepositoryById.get().setPhoneNumber(supplier.getPhoneNumber());
+        return supplierRepository.save(supplierRepositoryById.get());
+    }
 
     public boolean deleteSupplierById(long id) {
         Optional<Supplier> orderRepositoryById = supplierRepository.findById(id);
-        if(orderRepositoryById.isPresent()){
+        if (orderRepositoryById.isPresent()) {
             supplierRepository.deleteById(id);
             return true;
         }
@@ -51,11 +59,5 @@ public class SupplierService {
     }
 
 
-    public Supplier updateSupplierById(Supplier supplier, long id) {
-        Optional<Supplier> supplierRepositoryById = supplierRepository.findById(id);
-        supplierRepositoryById.get().setName(supplier.getName());
-        supplierRepositoryById.get().setAddress(supplier.getAddress());
-        supplierRepositoryById.get().setPhoneNumber(supplier.getPhoneNumber());
-        return supplierRepository.save(supplierRepositoryById.get());
-    }
+
 }

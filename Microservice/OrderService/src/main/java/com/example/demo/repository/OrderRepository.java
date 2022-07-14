@@ -13,4 +13,5 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     List<Order> myStoreQueryByStoreId(@Param("store_id") long store_id);
 
     List<Order> findByOrderDate(LocalDate localDate);
+    List<Order> findByStoreId(long storeId);
 }

@@ -16,6 +16,11 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
+  main:
+    allow-circular-references: 'true'
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   rabbitmq:
     host: localhost
     password: guest

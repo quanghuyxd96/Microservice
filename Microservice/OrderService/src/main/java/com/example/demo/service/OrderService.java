@@ -2,8 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.client.ItemFeignClient;
 import com.example.demo.dto.ItemDTO;
-import com.example.demo.dto.OrderDetailDTO;
-import com.example.demo.dto.ResponseObjectEntity;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
 import com.example.demo.repository.OrderRepository;
@@ -55,20 +53,12 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-
-//    public Order updateOrderById(Order order, long id) {
-//
-//        orderRepository.findById(id);
-//        order.setStore(order.getStore());
-//        order.setDeliveryNotes(order.getDeliveryNotes());
-//        order.setTotalPrice(order.getTotalPrice());
-//        order.setOrderDate(order.getOrderDate());
-//        order.setOrderDetails(order.getOrderDetails());
-//        return orderRepository.save(order);
-//    }
-
     public List<Order> getAllOrder() {
-        return orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+        if (orders == null) {
+            return null;
+        }
+        return orders;
     }
 
     public List<Order> getAllOrderByStoreId(long id) {
@@ -96,7 +86,28 @@ public class OrderService {
     }
 
     public List<Order> getOrderByStoreId(long id) {
-        return orderRepository.myStoreQueryByStoreId(id);
+        List<Order> orders = orderRepository.findByStoreId(id);
+        if (orders == null) {
+            return null;
+        }
+        return orders;
+    }
+
+    public List<Order> getOrdersByDate(LocalDate localDate) {
+        List<Order> orders = orderRepository.findByOrderDate(localDate);
+        if (orders == null) {
+            return null;
+        }
+        return orders;
+    }
+
+    public boolean deleteOrderById(long id) {
+        Optional<Order> order = orderRepository.findById(id);
+        if (order.isPresent()) {
+            orderRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     public void getOrderByIdDemoRabbit(Long id) {
@@ -108,13 +119,24 @@ public class OrderService {
         rabbitTemplate.convertAndSend("user.exchange", "order.routingkey", order);
     }
 
-    public <T, D> T convertModel(D obj, Class<T> classT) {
+    //    public Order updateOrderById(Order order, long id) {
+//
+//        orderRepository.findById(id);
+//        order.setStore(order.getStore());
+//        order.setDeliveryNotes(order.getDeliveryNotes());
+//        order.setTotalPrice(order.getTotalPrice());
+//        order.setOrderDate(order.getOrderDate());
+//        order.setOrderDetails(order.getOrderDetails());
+//        return orderRepository.save(order);
+//    }
+
+    private <T, D> T convertModel(D obj, Class<T> classT) {
         ModelMapper modelMapper = new ModelMapper();
         T obj1 = modelMapper.map(obj, classT);
         return obj1;
     }
 
-    public <T, D> List<T> convertListModel(List<D> objList, Class<T> classT) {
+    private <T, D> List<T> convertListModel(List<D> objList, Class<T> classT) {
         List<T> objResults = new ArrayList<T>();
         for (D obj : objList) {
             ModelMapper modelMapper = new ModelMapper();

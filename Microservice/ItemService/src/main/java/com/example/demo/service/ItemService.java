@@ -27,20 +27,20 @@ public class ItemService {
 
 
     public List<Item> getAllItem() {
-        return itemRepository.findAll();
+        List<Item> items = itemRepository.findAll();
+        if(items==null){
+            return null;
+        }
+        return items;
     }
 
 
     public Item saveItem(Item item) {
-        List<Item> items = itemRepository.findAll();
-        long idMax = 0;
-        for (Item item1 : items) {
-            idMax = Math.max(idMax, item1.getId());
+        Optional<Item> itemRepo = itemRepository.findByNameAndSupplierId(item.getName(), item.getSupplier().getId());
+        if (!itemRepo.isPresent()) {
+            return itemRepository.save(item);
         }
-        item.setId(idMax + 1);
-        System.out.println(idMax);
-        System.out.println(item.toString());
-        return itemRepository.save(item);
+        return null;
     }
 
 
@@ -66,6 +66,20 @@ public class ItemService {
                 itemRepositoryById.get().setQuantity(item.getQuantity());
             }
             return itemRepository.save(itemRepositoryById.get());
+        }
+        return null;
+    }
+
+    public Item updateItemPriceOrItemQuantity(Item item,Long supplierId) {
+        try{
+            Optional<Item> itemRepo = itemRepository.findByNameAndSupplierId(item.getName(), supplierId);
+            if (itemRepo.isPresent()) {
+                itemRepo.get().setQuantity(item.getQuantity());
+                itemRepo.get().setPrice(item.getPrice());
+                return itemRepository.save(itemRepo.get());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return null;
     }

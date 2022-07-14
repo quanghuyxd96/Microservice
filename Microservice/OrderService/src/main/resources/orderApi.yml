@@ -1,0 +1,208 @@
+openapi: 3.0.1
+info:
+  title: defaultTitle
+  description: defaultDescription
+  version: '3.1'
+servers:
+  - url: http://localhost:8083
+paths:
+  /order/orders:
+    get:
+      description: Auto generated using Swagger Inspector
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderModel'
+      servers:
+        - url: http://localhost:8083
+    servers:
+      - url: http://localhost:8083
+  /order/get:
+    get:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: '1'
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderModel'
+              examples:
+                '0':
+                  value: >-
+                    {"id":1,"totalPrice":2.6,"orderDate":"2022-04-13
+                    ","storeId":1,"orderDetails":[{"id":3,"itemQuantity":10,"itemId":23}]}
+      servers:
+        - url: http://localhost:8083
+    servers:
+      - url: http://localhost:8083
+  /order/save-order:
+    post:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: '1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderDetailModel'
+            examples:
+              '0':
+                value: |2-
+                          [{
+                              "itemQuantity": 10,
+                              "itemId": 27
+                          },
+                          {
+                              "itemQuantity": 10,
+                              "itemId": 28
+                          }
+                          ]
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderModel'
+              examples:
+                '0':
+                  value: >-
+                    {"id":129,"totalPrice":85975.0,"orderDate":"2022-07-14
+                    ","storeId":1,"orderDetails":[{"id":74,"itemQuantity":10,"itemId":27},{"id":75,"itemQuantity":10,"itemId":28}]}
+      servers:
+        - url: http://localhost:8083
+    servers:
+      - url: http://localhost:8083
+  /order/delete:
+    delete:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: '128'
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
+              examples:
+                '0':
+                  value: '{"status":"OK","message":"Deleted!!!"}'
+      servers:
+        - url: http://localhost:8083
+    servers:
+      - url: http://localhost:8083
+  /order/get-by-date:
+    get:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+          example: '2022-07-14'
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderModel'
+              examples:
+                '0':
+                  value: >-
+                    [{"id":129,"totalPrice":85975.0,"orderDate":"2022-07-14
+                    ","storeId":1,"orderDetails":[{"id":74,"itemQuantity":10,"itemId":27},{"id":75,"itemQuantity":10,"itemId":28}]}]
+      servers:
+        - url: http://localhost:8083
+    servers:
+      - url: http://localhost:8083
+  /order/store:
+    get:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: 2
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderModel'
+      servers:
+        - url: http://localhost:8083
+    servers:
+      - url: http://localhost:8083
+components:
+  schemas:
+    OrderDetailModel:
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        itemQuantity:
+          type: integer
+          format: int64
+        id:
+          type: integer
+          format: int64
+        order:
+          $ref: '#/components/schemas/OrderModel'
+    OrderModel:
+      type: object
+      properties:
+        totalPrice:
+          type: number
+          format: double
+        id:
+          type: integer
+          format: int64
+        storeId:
+          type: integer
+          format: int64
+        orderDate:
+          type: string
+          format: date
+    ResponseObject:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
