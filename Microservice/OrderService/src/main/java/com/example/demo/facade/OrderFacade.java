@@ -32,21 +32,12 @@ public class OrderFacade {
     private ItemFeignClient itemFeignClient;
 
     public OrderModel saveOrder(List<OrderDetailModel> orderDetailModels, Long storeId) {
-        if (orderDetailModels == null || storeId == null) {
+        if (orderDetailModels == null || storeId < 1) {
             return null;
         }
         Order order = orderService.saveOrder(convertListModel(orderDetailModels, OrderDetail.class), storeId);
         return convertModel(order, OrderModel.class);
     }
-
-    public List<OrderDetail> getOrderDetailsByOrderId(long id) {
-        List<OrderDetail> orderDetails = orderDetailService.getAllOrderDetailsByOrderId(id);
-        if (orderDetails == null) {
-            return null;
-        }
-        return orderDetails;
-    }
-
 
     public List<OrderModel> getAllOrders() {
         List<Order> orders = orderService.getAllOrder();
@@ -73,15 +64,15 @@ public class OrderFacade {
     }
 
 
-    public OrderModel getOrderById(long id){
+    public OrderModel getOrderById(long id) {
         Order order = orderService.getOrderById(id);
-        if(order ==null){
+        if (order == null) {
             return null;
         }
-        return convertModel(order,OrderModel.class);
+        return convertModel(order, OrderModel.class);
     }
 
-    public ResponseEntity<ResponseObject> deleteOrderById(long id){
+    public ResponseEntity<ResponseObject> deleteOrderById(long id) {
         boolean check = orderService.deleteOrderById(id);
         ResponseObject responseObject = new ResponseObject();
         if (!check) {
@@ -94,6 +85,32 @@ public class OrderFacade {
         return new ResponseEntity<>(responseObject, HttpStatus.OK);
 
     }
+
+    //Order details
+    public List<OrderDetailModel> getAllOrderDetails() {
+        List<OrderDetail> orderDetails = orderDetailService.getAllOrderDetails();
+        if (orderDetails == null) {
+            return null;
+        }
+        return convertListModel(orderDetails, OrderDetailModel.class);
+    }
+
+    public List<OrderDetailModel> getOrderDetailsByOrderId(long id) {
+        List<OrderDetail> orderDetails = orderDetailService.getAllOrderDetailsByOrderId(id);
+        if (orderDetails == null) {
+            return null;
+        }
+        return convertListModel(orderDetails, OrderDetailModel.class);
+    }
+
+    public OrderDetailModel getOrderDetaisById(long id) {
+        OrderDetail orderDetail = orderDetailService.getOrderDetailById(id);
+        if (orderDetail == null) {
+            return null;
+        }
+        return convertModel(orderDetail, OrderDetailModel.class);
+    }
+
 
     private <T, D> T convertModel(D obj, Class<T> classT) {
         ModelMapper modelMapper = new ModelMapper();

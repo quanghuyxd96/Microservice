@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.client.ItemFeignClient;
 import com.example.demo.dto.ItemDTO;
+import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
 import com.example.demo.repository.OrderRepository;
@@ -50,6 +51,10 @@ public class OrderService {
         }
         order.setTotalPrice(totalPrice);
         order.setOrderDetails(orderDetails);
+        List<OrderDetailDTO> orderDetailDTOList = convertListModel(orderDetails, OrderDetailDTO.class);
+        System.out.println(orderDetailDTOList.get(0).getOrderId());
+        rabbitTemplate.convertAndSend("user.exchange", "order.routingkey", orderDetailDTOList);
+        rabbitTemplate.convertAndSend("user.exchange", "order.delivery.routingKey", orderDetailDTOList);
         return orderRepository.save(order);
     }
 

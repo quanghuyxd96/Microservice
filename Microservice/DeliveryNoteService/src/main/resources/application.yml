@@ -16,6 +16,19 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  main:
+    allow-circular-references: 'true'
+  rabbitmq:
+    host: localhost
+    password: guest
+    port: 15672
+    username: guest
+    exchange: user.exchange
+    queue: delivery.queue
+    routingkey: delivery.routingkey
 client:
   post:
     baseUrl1: 'http://localhost:8083'

@@ -21,28 +21,29 @@ public class DeliveryNoteController {
     @Autowired
     private DeliveryNoteFacade deliveryNoteFacade;
 
+
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ResponseEntity<DeliveryNote> saveDeliveryNote(@RequestBody OrderDTO orderDTO) {
         return new ResponseEntity<>(deliveryNoteService.saveDelivery(orderDTO),HttpStatus.OK);
     }
 
     @GetMapping("/delivery-notes")
-    public List<DeliveryNote> getAllDeliveryNotes() {
-        return deliveryNoteService.getAllDeliveryNote();
+    public ResponseEntity<List<DeliveryNote>> getAllDeliveryNotes() {
+        return new ResponseEntity<>(deliveryNoteService.getAllDeliveryNote(),HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<DeliveryNote> getDeliveryNote(@PathVariable("id") Long id) {
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
+    public ResponseEntity<DeliveryNote> getDeliveryNote(@RequestParam("id") Long id) {
         return new ResponseEntity<>(deliveryNoteService.getDeliveryNoteById(id), HttpStatus.OK);
     }
 
-    @PutMapping("/update/{id}")
-    public DeliveryNote updateDeliveryNoteById(@PathVariable("id") Long id, @RequestBody DeliveryNote deliveryNote) {
-        return deliveryNoteService.updateDeliveryNote(deliveryNote, id);
+    @PutMapping("/update")
+    public ResponseEntity<DeliveryNote> updateDeliveryNoteById(@RequestParam("id") Long id, @RequestBody DeliveryNote deliveryNote) {
+        return new ResponseEntity<>(deliveryNoteService.updateDeliveryNote(deliveryNote, id),HttpStatus.OK) ;
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteDeliveryNote(@PathVariable("id") long id) {
+    @DeleteMapping("/delete")
+    public void deleteDeliveryNote(@RequestParam("id") long id) {
         deliveryNoteService.deleteDeliveryNoteById(id);
     }
 

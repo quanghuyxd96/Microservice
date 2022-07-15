@@ -166,6 +166,73 @@ paths:
                   $ref: '#/components/schemas/OrderModel'
       servers:
         - url: http://localhost:8083
+  /order/order-details-by-order:
+    get:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: 65
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderDetailModel'
+              examples:
+                '0':
+                  value: >-
+                    [{"id":32,"itemQuantity":10,"itemId":1},{"id":33,"itemQuantity":15,"itemId":5}]
+      servers:
+        - url: http://localhost:8083
+  /order/order-details:
+    get:
+      description: Auto generated using Swagger Inspector
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderDetailModel'
+              examples:
+                '0':
+                  value: >-
+                    [{"id":2,"itemQuantity":10,"itemId":23},{"id":3,"itemQuantity":10,"itemId":23},{"id":7,"itemQuantity":3,"itemId":1},{"id":8,"itemQuantity":10,"itemId":4},{"id":9,"itemQuantity":3,"itemId":5},{"id":10,"itemQuantity":10,"itemId":7},{"id":11,"itemQuantity":10,"itemId":4},{"id":50,"itemQuantity":10,"itemId":1},{"id":51,"itemQuantity":15,"itemId":5},{"id":52,"itemQuantity":10,"itemId":1},{"id":53,"itemQuantity":15,"itemId":5},{"id":54,"itemQuantity":10,"itemId":1},{"id":55,"itemQuantity":15,"itemId":5},{"id":56,"itemQuantity":10,"itemId":1},{"id":12,"itemQuantity":10,"itemId":7},{"id":13,"itemQuantity":10,"itemId":4},{"id":14,"itemQuantity":10,"itemId":7},{"id":15,"itemQuantity":10,"itemId":4},{"id":16,"itemQuantity":10,"itemId":1},{"id":17,"itemQuantity":10,"itemId":5},{"id":18,"itemQuantity":10,"itemId":1},{"id":19,"itemQuantity":10,"itemId":5},{"id":20,"itemQuantity":10,"itemId":1},{"id":21,"itemQuantity":10,"itemId":5},{"id":22,"itemQuantity":10,"itemId":1},{"id":23,"itemQuantity":10,"itemId":5},{"id":24,"itemQuantity":10,"itemId":1},{"id":25,"itemQuantity":10,"itemId":5},{"id":26,"itemQuantity":10,"itemId":1},{"id":27,"itemQuantity":10,"itemId":5},{"id":28,"itemQuantity":10,"itemId":1},{"id":29,"itemQuantity":15,"itemId":5},{"id":30,"itemQuantity":10,"itemId":1},{"id":31,"itemQuantity":15,"itemId":5},{"id":32,"itemQuantity":10,"itemId":1},{"id":33,"itemQuantity":15,"itemId":5},{"id":34,"itemQuantity":10,"itemId":1},{"id":35,"itemQuantity":15,"itemId":5},{"id":36,"itemQuantity":10,"itemId":1},{"id":37,"itemQuantity":15,"itemId":5},{"id":38,"itemQuantity":10,"itemId":1},{"id":39,"itemQuantity":15,"itemId":5},{"id":40,"itemQuantity":10,"itemId":1},{"id":41,"itemQuantity":15,"itemId":5},{"id":42,"itemQuantity":10,"itemId":1},{"id":43,"itemQuantity":15,"itemId":5},{"id":44,"itemQuantity":10,"itemId":1},{"id":45,"itemQuantity":15,"itemId":5},{"id":46,"itemQuantity":10,"itemId":1},{"id":47,"itemQuantity":15,"itemId":5},{"id":48,"itemQuantity":10,"itemId":1},{"id":49,"itemQuantity":15,"itemId":5},{"id":57,"itemQuantity":15,"itemId":5},{"id":58,"itemQuantity":10,"itemId":1},{"id":59,"itemQuantity":15,"itemId":5},{"id":60,"itemQuantity":10,"itemId":1},{"id":61,"itemQuantity":15,"itemId":5},{"id":62,"itemQuantity":10,"itemId":1},{"id":63,"itemQuantity":15,"itemId":5},{"id":64,"itemQuantity":10,"itemId":1},{"id":65,"itemQuantity":15,"itemId":5},{"id":66,"itemQuantity":10,"itemId":1},{"id":67,"itemQuantity":15,"itemId":5},{"id":68,"itemQuantity":10,"itemId":1},{"id":69,"itemQuantity":15,"itemId":5},{"id":70,"itemQuantity":10,"itemId":4},{"id":71,"itemQuantity":10,"itemId":4},{"id":74,"itemQuantity":10,"itemId":27},{"id":75,"itemQuantity":10,"itemId":28},{"id":76,"itemQuantity":15,"itemId":27},{"id":77,"itemQuantity":14,"itemId":28},{"id":78,"itemQuantity":15,"itemId":27},{"id":79,"itemQuantity":14,"itemId":28},{"id":80,"itemQuantity":15,"itemId":27},{"id":81,"itemQuantity":14,"itemId":28},{"id":82,"itemQuantity":15,"itemId":27},{"id":83,"itemQuantity":14,"itemId":28},{"id":84,"itemQuantity":15,"itemId":27},{"id":85,"itemQuantity":14,"itemId":28},{"id":86,"itemQuantity":15,"itemId":27},{"id":1,"itemQuantity":10,"itemId":1},{"id":4,"itemQuantity":15,"itemId":4},{"id":5,"itemQuantity":15,"itemId":5},{"id":87,"itemQuantity":14,"itemId":28},{"id":88,"itemQuantity":15,"itemId":27},{"id":89,"itemQuantity":14,"itemId":28},{"id":90,"itemQuantity":15,"itemId":27},{"id":91,"itemQuantity":14,"itemId":28},{"id":92,"itemQuantity":15,"itemId":27},{"id":93,"itemQuantity":14,"itemId":28},{"id":94,"itemQuantity":15,"itemId":27},{"id":95,"itemQuantity":14,"itemId":28},{"id":96,"itemQuantity":20,"itemId":27},{"id":97,"itemQuantity":14,"itemId":28},{"id":98,"itemQuantity":20,"itemId":29},{"id":99,"itemQuantity":14,"itemId":28},{"id":100,"itemQuantity":20,"itemId":27},{"id":101,"itemQuantity":14,"itemId":28},{"id":102,"itemQuantity":20,"itemId":27},{"id":103,"itemQuantity":100,"itemId":28},{"id":104,"itemQuantity":20,"itemId":27},{"id":105,"itemQuantity":200,"itemId":28}]
+      servers:
+        - url: http://localhost:8083
+    servers:
+      - url: http://localhost:8083
+  /order/order-detail/get:
+    get:
+      description: Auto generated using Swagger Inspector
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          example: '7'
+      responses:
+        '200':
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetailModel'
+              examples:
+                '0':
+                  value: '{"id":7,"itemQuantity":3,"itemId":1}'
+      servers:
+        - url: http://localhost:8083
     servers:
       - url: http://localhost:8083
 components:

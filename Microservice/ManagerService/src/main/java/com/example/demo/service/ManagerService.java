@@ -78,8 +78,9 @@ public class ManagerService {
         }
         return null;
     }
+
     @Scheduled(cron = "0 0 7 * * *")
-    public List<DeliveryNoteDTO>  saveDeliveryNote(){
+    public List<DeliveryNoteDTO> saveDeliveryNote() {
         List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-7));
         return deliveryNoteFeignClient.saveDeliveryNote(ordersByOrderDate);
     }
@@ -110,7 +111,6 @@ public class ManagerService {
     public void receivedMessageOrder(List<OrderDetailDTO> orderDetails) {
         emailService.sendEmailToNotifyOrdered(orderDetails);
     }
-
 
 
 }

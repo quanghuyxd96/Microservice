@@ -9,6 +9,7 @@ import com.example.demo.entity.DeliveryItemDetail;
 import com.example.demo.entity.DeliveryNote;
 import com.example.demo.repository.DeliveryNoteRepository;
 import lombok.Getter;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +29,8 @@ public class DeliveryNoteService {
     @Autowired
     private ItemFeignClient itemFeignClient;
 
-    public List<DeliveryNote> getAllDeliveryNote() {
-        return deliveryNoteRepository.findAll();
-    }
-
-    //chờ xí
     public DeliveryNote saveDelivery(OrderDTO orderDTO) {
         DeliveryNote deliveryNote = new DeliveryNote();
-
         System.out.println("Ban đầu: "+deliveryNoteRepository.save(deliveryNote).getId());
         List<DeliveryItemDetail> deliveryItemDetails = new ArrayList<>();
         List<OrderDetailDTO> orderDetails = orderFeignClient.getAllOrderDetailsByOrderId(orderDTO.getId());
@@ -65,17 +60,16 @@ public class DeliveryNoteService {
         DeliveryNote deliveryNoteSave = deliveryNoteRepository.save(deliveryNote);
         System.out.println("Lúc sau"+deliveryNoteSave.getId());
         itemFeignClient.updateItemQuantity(items);
-
         return deliveryNoteSave;
     }
 
-    public DeliveryNote updateDeliveryNote(DeliveryNote deliveryNote, long id) {
-        Optional<DeliveryNote> deliveryNoteRepositoryById = deliveryNoteRepository.findById(id);
-        deliveryNoteRepositoryById.get().setOrderId(deliveryNote.getOrderId());
-        deliveryNoteRepositoryById.get().setDeliveryDate(deliveryNote.getDeliveryDate());
-        return deliveryNoteRepository.save(deliveryNoteRepositoryById.get());
+    public List<DeliveryNote> getAllDeliveryNote() {
+        List<DeliveryNote> deliveryNotes = deliveryNoteRepository.findAll();
+        if(deliveryNotes==null){
+            return null;
+        }
+        return deliveryNotes;
     }
-
 
     public DeliveryNote getDeliveryNoteById(long id) {
         Optional<DeliveryNote> deliveryNote = deliveryNoteRepository.findById(id);
@@ -85,9 +79,29 @@ public class DeliveryNoteService {
         return null;
     }
 
+    public DeliveryNote updateDeliveryNote(DeliveryNote deliveryNote, long id) {
+        Optional<DeliveryNote> deliveryNoteRepositoryById = deliveryNoteRepository.findById(id);
+        if(!deliveryNoteRepositoryById.isPresent()){
+            return null;
+        }
+        deliveryNoteRepositoryById.get().setOrderId(deliveryNote.getOrderId());
+        deliveryNoteRepositoryById.get().setDeliveryDate(deliveryNote.getDeliveryDate());
+        return deliveryNoteRepository.save(deliveryNoteRepositoryById.get());
+    }
 
-    public void deleteDeliveryNoteById(long id) {
+    public boolean deleteDeliveryNoteById(long id) {
+        Optional<DeliveryNote> deliveryNoteRepositoryById = deliveryNoteRepository.findById(id);
+        if(!deliveryNoteRepositoryById.isPresent()){
+            return false;
+        }
         deliveryNoteRepository.deleteById(id);
+        return true;
+    }
+
+    //đang demo
+    @RabbitListener(queues = "order.queue")
+    public void receivedMessageOrder(List<OrderDetailDTO> orderDetailDTOList) {
+        System.out.println(orderDetailDTOList);
     }
 
 }
