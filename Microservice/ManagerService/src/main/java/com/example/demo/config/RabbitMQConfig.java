@@ -31,10 +31,10 @@ public class RabbitMQConfig {
     @Value("${spring.rabbitmq.host}")
     private String host;
 
-    @Bean
-    Queue item() {
-        return new Queue("item.queue", true);
-    }
+//    @Bean
+//    Queue item() {
+//        return new Queue("item.queue", true);
+//    }
 
     @Bean
     Queue order() {
@@ -46,21 +46,21 @@ public class RabbitMQConfig {
         return ExchangeBuilder.directExchange(exchange).durable(true).build();
     }
 
-    @Bean
-    Binding bindingItem() {
-        return BindingBuilder
-                .bind(item())
-                .to(myExchange())
-                .with("item.routingkey")
-                .noargs();
-    }
+//    @Bean
+//    Binding bindingItem() {
+//        return BindingBuilder
+//                .bind(item())
+//                .to(myExchange())
+//                .with("item.routingkey")
+//                .noargs();
+//    }
 
     @Bean
     Binding bindingOrder() {
         return BindingBuilder
                 .bind(order())
                 .to(myExchange())
-                .with("order.routingkey")
+                .with("order.routingKey")
                 .noargs();
     }
 

@@ -1,6 +1,7 @@
 package com.example.demo.facade;
 
 import com.example.demo.client.ItemFeignClient;
+import com.example.demo.dto.OrderDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
 import com.example.demo.service.OrderDetailService;
@@ -10,6 +11,8 @@ import io.tej.SwaggerCodgen.model.OrderModel;
 import io.tej.SwaggerCodgen.model.ResponseObject;
 import lombok.Getter;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +33,9 @@ public class OrderFacade {
 
     @Autowired
     private ItemFeignClient itemFeignClient;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     public OrderModel saveOrder(List<OrderDetailModel> orderDetailModels, Long storeId) {
         if (orderDetailModels == null || storeId < 1) {

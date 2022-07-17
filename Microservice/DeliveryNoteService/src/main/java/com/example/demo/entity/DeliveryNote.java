@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Data
 @Setter
 @Getter
 @Table(name = "DeliveryNotes")
@@ -21,6 +20,6 @@ public class DeliveryNote {
     private LocalDate deliveryDate;
     private long orderId;
 
-    @OneToMany(mappedBy = "deliveryNote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "deliveryNote", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<DeliveryItemDetail> deliveryItemDetails;
 }

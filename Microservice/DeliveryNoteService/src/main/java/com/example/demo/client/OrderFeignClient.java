@@ -3,6 +3,7 @@ package com.example.demo.client;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,9 @@ public interface OrderFeignClient {
     @GetMapping("/order/orders")
     List<OrderDTO> getALlOrders();
 
-    @GetMapping("/order/{id}/details")
-    List<OrderDetailDTO> getAllOrderDetailsByOrderId(@PathVariable("id") Long id);
+    @GetMapping("/order/order-details-by-order")
+    List<OrderDetailDTO> getAllOrderDetailsByOrderId(@RequestParam("id") Long id);
+
+    @GetMapping("/order/get")
+    ResponseEntity<OrderDTO> getOrderById(@RequestParam("id") Long id);
 }

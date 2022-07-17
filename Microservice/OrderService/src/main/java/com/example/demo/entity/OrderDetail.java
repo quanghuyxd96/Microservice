@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Setter
 public class OrderDetail {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long itemQuantity;
     private long itemId;

@@ -85,6 +85,7 @@ public class ManagerService {
         return deliveryNoteFeignClient.saveDeliveryNote(ordersByOrderDate);
     }
 
+
 //    public ItemSwagger convertAllItemToAllItemSwagger(ItemDTO itemDTO) {
 //        ItemSwagger itemSwagger = new ItemSwagger();
 //        itemSwagger.setId(itemDTO.getId());
@@ -101,14 +102,17 @@ public class ManagerService {
 //    System.out.println(itemDTOList);
 //}
 
-    @RabbitListener(queues = "item.queue")
-    public void receivedMessageItem(ItemDTO item) {
-        System.out.println("Item: " + item.getName());
-//        return item;
-    }
+//    @RabbitListener(queues = "item.queue")
+//    public void receivedMessageItem(ItemDTO item) {
+//        System.out.println("Item: " + item.getName());
+////        return item;
+//    }
 
     @RabbitListener(queues = "order.queue")
     public void receivedMessageOrder(List<OrderDetailDTO> orderDetails) {
+        for(OrderDetailDTO orderDetailDTO : orderDetails){
+            System.out.println(orderDetails.toString());
+        }
         emailService.sendEmailToNotifyOrdered(orderDetails);
     }
 

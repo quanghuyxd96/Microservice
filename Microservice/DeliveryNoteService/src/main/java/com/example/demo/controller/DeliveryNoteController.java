@@ -22,10 +22,10 @@ public class DeliveryNoteController {
     private DeliveryNoteFacade deliveryNoteFacade;
 
 
-    @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public ResponseEntity<DeliveryNote> saveDeliveryNote(@RequestBody OrderDTO orderDTO) {
-        return new ResponseEntity<>(deliveryNoteService.saveDelivery(orderDTO),HttpStatus.OK);
-    }
+//    @RequestMapping(value = "/save", method = RequestMethod.POST)
+//    public ResponseEntity<DeliveryNote> saveDeliveryNote(@RequestBody OrderDTO orderDTO) {
+//        return new ResponseEntity<>(deliveryNoteService.saveDelivery(orderDTO),HttpStatus.OK);
+//    }
 
     @GetMapping("/delivery-notes")
     public ResponseEntity<List<DeliveryNote>> getAllDeliveryNotes() {

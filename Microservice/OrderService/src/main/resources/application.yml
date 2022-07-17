@@ -28,7 +28,7 @@ spring:
     username: guest
     exchange: user.exchange
     queue: order.queue
-    routingkey: order.routingkey
+
 client:
   post:
     baseUrl: 'http://localhost:8084'

@@ -2,13 +2,16 @@ package com.example.demo.service;
 
 import com.example.demo.client.ItemFeignClient;
 import com.example.demo.dto.ItemDTO;
+import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
 import com.example.demo.repository.OrderRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -38,8 +41,11 @@ public class OrderService {
         for (int i = 0; i < orderDetails.size(); i++) {
             OrderDetail orderDetail = orderDetails.get(i);
             orderDetail.setId(0);
-            ItemDTO item = itemFeignClient.getItemById(orderDetail.getItemId()).getBody();
-            if (item == null) {
+            ItemDTO item = new ItemDTO();
+            try{
+                item = itemFeignClient.getItemById(orderDetail.getItemId()).getBody();
+            }catch (Exception e){
+                e.printStackTrace();
                 orderDetails.remove(i--);
                 continue;
             }
@@ -51,11 +57,12 @@ public class OrderService {
         }
         order.setTotalPrice(totalPrice);
         order.setOrderDetails(orderDetails);
+        orderRepository.save(order);
         List<OrderDetailDTO> orderDetailDTOList = convertListModel(orderDetails, OrderDetailDTO.class);
-        System.out.println(orderDetailDTOList.get(0).getOrderId());
-        rabbitTemplate.convertAndSend("user.exchange", "order.routingkey", orderDetailDTOList);
+        rabbitTemplate.convertAndSend("user.exchange", "order.routingKey", orderDetailDTOList);
         rabbitTemplate.convertAndSend("user.exchange", "order.delivery.routingKey", orderDetailDTOList);
-        return orderRepository.save(order);
+        System.out.println(order.getId());
+        return order;
     }
 
     public List<Order> getAllOrder() {
@@ -116,9 +123,7 @@ public class OrderService {
     }
 
     public void getOrderByIdDemoRabbit(Long id) {
-//        System.out.println(orderRepository.findById(id).get());
         Order order = orderRepository.findById(id).get();
-//        System.out.println(order.getOrderDate());
         LocalDate orderDate = order.getOrderDate();
         System.out.println(orderDate);
         rabbitTemplate.convertAndSend("user.exchange", "order.routingkey", order);

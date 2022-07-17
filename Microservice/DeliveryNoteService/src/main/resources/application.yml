@@ -26,9 +26,9 @@ spring:
     password: guest
     port: 15672
     username: guest
-    exchange: user.exchange
+    exchange: order-delivery.exchange
     queue: delivery.queue
-    routingkey: delivery.routingkey
+#    routingkey: delivery.routingkey
 client:
   post:
     baseUrl1: 'http://localhost:8083'
