@@ -199,7 +199,10 @@ public class ManagerSwaggerController implements ManagerApi {
     }
 
         @PostMapping("/manager/login")
-    public String loginDemo(@RequestBody Manager manager){
+    public String loginDemo(@RequestParam("username") String userName, @RequestParam("password") String password){
+        Manager manager = new Manager();
+        manager.setUserName(userName);
+        manager.setPassword(password);
         Manager checkManager = managerService.checkManager(manager);
         if(checkManager==null){
             return "Sai rồi";
@@ -210,22 +213,23 @@ public class ManagerSwaggerController implements ManagerApi {
 
 
     AuthenticationManager authenticationManager;
-    @PostMapping("/manager/login")
-    public String loginDemo(@RequestParam("userName") String userName, @RequestParam("password") String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    userName,password
-                )
-        );
-
-        // Nếu không xảy ra exception tức là thông tin hợp lệ
-        // Set thông tin authentication vào Security Context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // Trả về jwt cho người dùng.
-        String jwt = jwtUtil.generateToken((Manager) authentication.getPrincipal());
-        return jwt;
-    }
+//    @PostMapping("/manager/login")
+//    public String loginDemo(@RequestParam("username") String userName, @RequestParam("password") String password) {
+//        System.out.println(userName);
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                    userName,password
+//                )
+//        );
+//
+//        // Nếu không xảy ra exception tức là thông tin hợp lệ
+//        // Set thông tin authentication vào Security Context
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        // Trả về jwt cho người dùng.
+//        String jwt = jwtUtil.generateToken((Manager) authentication.getPrincipal());
+//        return jwt;
+//    }
 
     @PostMapping("/manager/check")
     public String getManagerByToken(@RequestHeader("token") String token) {
