@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -39,5 +40,25 @@ public class RabbitMQConfig {
         final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(jsonMessageConverter());
         return rabbitTemplate;
+    }
+
+    @Bean
+    Queue order() {
+        return new Queue("order-delivery.queue", true);
+    }
+
+    @Bean
+    Exchange myExchange() {
+        return ExchangeBuilder.directExchange("order-delivery.exchange").durable(true).build();
+    }
+
+
+    @Bean
+    Binding bindingOrder() {
+        return BindingBuilder
+                .bind(order())
+                .to(myExchange())
+                .with("order.delivery.routingKey")
+                .noargs();
     }
 }

@@ -4,7 +4,6 @@ import com.example.demo.client.DeliveryNoteFeignClient;
 import com.example.demo.client.OrderFeignClient;
 import com.example.demo.client.StoreFeignClient;
 import com.example.demo.dto.DeliveryNoteDTO;
-import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Manager;
@@ -64,6 +63,14 @@ public class ManagerService {
         return null;
     }
 
+    public Manager getManagerByUserName(String userName) {
+        Manager manager = managerRepository.findByUserName(userName);
+        if (manager == null) {
+            return null;
+        }
+        return manager;
+    }
+
 
     public void deleteManagerById(long id) {
         managerRepository.deleteById(id);
@@ -85,6 +92,16 @@ public class ManagerService {
         return deliveryNoteFeignClient.saveDeliveryNote(ordersByOrderDate);
     }
 
+    public Manager checkManager(Manager manager){
+        List<Manager> managers = managerRepository.findAll();
+        for(Manager manager1: managers){
+            if(manager.getUserName().equalsIgnoreCase(manager1.getUserName())&&manager
+                    .getPassword().equalsIgnoreCase(manager1.getPassword())){
+                return manager1;
+            }
+        }
+        return null;
+    }
 
 //    public ItemSwagger convertAllItemToAllItemSwagger(ItemDTO itemDTO) {
 //        ItemSwagger itemSwagger = new ItemSwagger();
@@ -110,7 +127,7 @@ public class ManagerService {
 
     @RabbitListener(queues = "order.queue")
     public void receivedMessageOrder(List<OrderDetailDTO> orderDetails) {
-        for(OrderDetailDTO orderDetailDTO : orderDetails){
+        for (OrderDetailDTO orderDetailDTO : orderDetails) {
             System.out.println(orderDetails.toString());
         }
         emailService.sendEmailToNotifyOrdered(orderDetails);

@@ -142,8 +142,7 @@ public class DeliveryNoteService {
         return true;
     }
 
-    //đang demo
-    @RabbitListener(queues = "order.queue")
+    @RabbitListener(queues = "order-delivery.queue")
     public void receivedMessageOrder(List<OrderDetailDTO> orderDetailDTOS) {
         saveDelivery(orderDetailDTOS);
     }

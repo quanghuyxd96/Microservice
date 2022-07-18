@@ -4,11 +4,14 @@ import com.example.demo.dto.EmailContent;
 import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.SupplierDTO;
+import com.example.demo.entity.Manager;
 import com.example.demo.entity.Payment;
 import com.example.demo.facade.ManagerFacade;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.response.ResponseObjectEntity;
+import com.example.demo.service.ManagerService;
 import com.example.demo.utils.ExcelGenerator;
+import com.example.demo.utils.JwtUtil;
 import com.example.demo.utils.PDFGenerator;
 import com.lowagie.text.DocumentException;
 import io.tej.SwaggerCodgen.api.ManagerApi;
@@ -17,17 +20,19 @@ import io.tej.SwaggerCodgen.model.Order;
 import io.tej.SwaggerCodgen.model.ResponseObject;
 import io.tej.SwaggerCodgen.model.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -40,13 +45,19 @@ public class ManagerSwaggerController implements ManagerApi {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    private ManagerService managerService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @Override
     public ResponseEntity<List<Item>> managerManageItemItemsGet() {
         List<ItemDTO> itemDTOList = managerFacade.getItemFeignClient().getAllItems();
-        if(itemDTOList==null){
+        if (itemDTOList == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<Item> items = managerFacade.convertListModel(itemDTOList,Item.class);
+        List<Item> items = managerFacade.convertListModel(itemDTOList, Item.class);
         return new ResponseEntity<>(items, HttpStatus.OK);
     }
 
@@ -83,20 +94,20 @@ public class ManagerSwaggerController implements ManagerApi {
     @Override
     public ResponseEntity<List<Order>> managerManageOrderOrdersGet() {
         List<OrderDTO> orderDTOList = managerFacade.getOrderFeignClient().getAllOrders();
-        if(orderDTOList==null){
+        if (orderDTOList == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<Order> orders = managerFacade.convertListModel(orderDTOList,Order.class);
-        return new ResponseEntity<>(orders,HttpStatus.OK);
+        List<Order> orders = managerFacade.convertListModel(orderDTOList, Order.class);
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Order> managerManageOrderGetGet(Long id) {
         ResponseEntity<OrderDTO> orderDTO = managerFacade.getOrderFeignClient().getOrderById(id);
-        if(orderDTO.getBody()==null){
+        if (orderDTO.getBody() == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Order order = managerFacade.convertModel(orderDTO.getBody(),Order.class);
+        Order order = managerFacade.convertModel(orderDTO.getBody(), Order.class);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
@@ -104,19 +115,19 @@ public class ManagerSwaggerController implements ManagerApi {
     @Override
     public ResponseEntity<List<Supplier>> managerManageSupplierSuppliersGet() {
         List<SupplierDTO> supplierDtos = managerFacade.getItemFeignClient().getAllSupplier();
-        if(supplierDtos==null){
+        if (supplierDtos == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<Supplier> suppliers = managerFacade.convertListModel(supplierDtos,Supplier.class);
+        List<Supplier> suppliers = managerFacade.convertListModel(supplierDtos, Supplier.class);
         return new ResponseEntity<>(suppliers, HttpStatus.OK);
     }
 
 
     @Override
     public ResponseEntity<Supplier> managerManageSupplierSavePost(Supplier supplier) {
-        SupplierDTO supplierDTO = managerFacade.getItemFeignClient().saveSupplier(managerFacade.convertModel(supplier,SupplierDTO.class));
+        SupplierDTO supplierDTO = managerFacade.getItemFeignClient().saveSupplier(managerFacade.convertModel(supplier, SupplierDTO.class));
         if (supplierDTO != null) {
-            Supplier supplier1 = managerFacade.convertModel(supplierDTO,Supplier.class);
+            Supplier supplier1 = managerFacade.convertModel(supplierDTO, Supplier.class);
             return new ResponseEntity<>(supplier1, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -125,7 +136,7 @@ public class ManagerSwaggerController implements ManagerApi {
     @Override
     public ResponseEntity<ResponseObject> managerManageSupplierDeleteDelete(Long id) {
         ResponseEntity<ResponseObjectEntity> responseObjectEntity = managerFacade.getItemFeignClient().deleteSupplierById(id);
-        ResponseObject responseObject = managerFacade.convertModel(responseObjectEntity.getBody(),ResponseObject.class);
+        ResponseObject responseObject = managerFacade.convertModel(responseObjectEntity.getBody(), ResponseObject.class);
         if (responseObjectEntity.getBody().getStatus().equalsIgnoreCase("OK")) {
             return new ResponseEntity<>(responseObject, HttpStatus.OK);
         }
@@ -133,17 +144,17 @@ public class ManagerSwaggerController implements ManagerApi {
     }
 
     @PostMapping("/manager/payment")
-    public Payment savePaymentDemo(@RequestBody Payment payment){
+    public Payment savePaymentDemo(@RequestBody Payment payment) {
         return managerFacade.getPaymentService().saveAndUpdatePaymentOfStore(payment);
     }
 
     @GetMapping("/manager/payment/get")
-    public ResponseEntity<Payment> getPaymentDemo(@RequestParam("storeUser") String storeUser, @RequestParam("orderId") Long orderId){
-        return new ResponseEntity<>(paymentRepository.findByStoreUserAndOrderId(storeUser,orderId),HttpStatus.OK);
+    public ResponseEntity<Payment> getPaymentDemo(@RequestParam("storeUser") String storeUser, @RequestParam("orderId") Long orderId) {
+        return new ResponseEntity<>(paymentRepository.findByStoreUserAndOrderId(storeUser, orderId), HttpStatus.OK);
     }
 
     @PostMapping("/manager/send-mail")
-    public String sendEmailToStore(@RequestBody EmailContent emailContent){
+    public String sendEmailToStore(@RequestBody EmailContent emailContent) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(emailContent.getReceiver());
         message.setSubject(emailContent.getSubject());
@@ -185,6 +196,49 @@ public class ManagerSwaggerController implements ManagerApi {
         ExcelGenerator generator = new ExcelGenerator(items);
 
         generator.generate(response);
+    }
+
+        @PostMapping("/manager/login")
+    public String loginDemo(@RequestBody Manager manager){
+        Manager checkManager = managerService.checkManager(manager);
+        if(checkManager==null){
+            return "Sai rồi";
+        }
+        return jwtUtil.generateToken(manager);
+
+    }
+
+
+    AuthenticationManager authenticationManager;
+    @PostMapping("/manager/login")
+    public String loginDemo(@RequestParam("userName") String userName, @RequestParam("password") String password) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    userName,password
+                )
+        );
+
+        // Nếu không xảy ra exception tức là thông tin hợp lệ
+        // Set thông tin authentication vào Security Context
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Trả về jwt cho người dùng.
+        String jwt = jwtUtil.generateToken((Manager) authentication.getPrincipal());
+        return jwt;
+    }
+
+    @PostMapping("/manager/check")
+    public String getManagerByToken(@RequestHeader("token") String token) {
+        return jwtUtil.getUserNameFromJWT(token);
+    }
+
+    @GetMapping("/manager/get-items")
+    public List<ItemDTO> getItems(@RequestHeader("token") String token) {
+        boolean checkToken = jwtUtil.validateToken(token);
+        if (checkToken) {
+            return managerFacade.getItemFeignClient().getAllItems();
+        }
+        return null;
     }
 //    @GetMapping("/manager/manage-order/get/date")
 //    public List<OrderDTO> getOrdersByOrderDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate){

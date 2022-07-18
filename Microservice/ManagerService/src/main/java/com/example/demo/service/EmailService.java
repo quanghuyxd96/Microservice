@@ -66,13 +66,17 @@ public class EmailService {
             textContent += orderDetailDTO.getItemId() + "\t" + orderDetailDTO.getItemQuantity() + "\n";
         }
         message.setText(message.getText() + "\n" + textContent);
-        javaMailSender.send(message);
-        Email email = new Email();
-        email = convertToEmail(message, orderDTO);
-        email.setSentTo(store.getBody().getEmail());
-        email.setManager(manager);
-        email.setTextContent(message.getText());
-        emailRepository.save(email);
+        try{
+            javaMailSender.send(message);
+            Email email = new Email();
+            email = convertToEmail(message, orderDTO);
+            email.setSentTo(store.getBody().getEmail());
+            email.setManager(manager);
+            email.setTextContent(message.getText());
+            emailRepository.save(email);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private Email convertToEmail(SimpleMailMessage simpleMailMessage, OrderDTO orderDTO) {

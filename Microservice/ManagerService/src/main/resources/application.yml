@@ -40,7 +40,6 @@ spring:
     username: nguyenquanghuyxd96@gmail.com
     password: mebnqhclfmcdgktl
     port: '587'
-
 client:
   post:
     baseUrl1: 'http://localhost:8082'

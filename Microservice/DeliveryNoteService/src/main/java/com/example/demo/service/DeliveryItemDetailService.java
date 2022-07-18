@@ -87,6 +87,10 @@ public class DeliveryItemDetailService {
         System.out.println("end");
     }
 
+    public void demoAOP(){
+        System.out.println("demo");
+    }
+
 
     public void deleteDeliveryItemDetailById(long id) {
         deliveryItemDetailRepository.deleteById(id);

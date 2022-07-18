@@ -14,14 +14,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-//    @Value("${spring.rabbitmq.queue}")
-//    private String queue;
 
     @Value("${spring.rabbitmq.exchange}")
     private String exchange;
 
-//    @Value("${spring.rabbitmq.routingkey}")
-//    private String routingKey;
 
     @Value("${spring.rabbitmq.username}")
     private String username;
@@ -34,7 +30,7 @@ public class RabbitMQConfig {
 
     @Bean
     Queue order() {
-        return new Queue("order.queue", true);
+        return new Queue("order-delivery.queue", true);
     }
 
     @Bean

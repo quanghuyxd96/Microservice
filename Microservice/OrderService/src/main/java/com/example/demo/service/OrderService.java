@@ -59,8 +59,8 @@ public class OrderService {
         order.setOrderDetails(orderDetails);
         orderRepository.save(order);
         List<OrderDetailDTO> orderDetailDTOList = convertListModel(orderDetails, OrderDetailDTO.class);
+        rabbitTemplate.convertAndSend("order-delivery.exchange", "order.delivery.routingKey", orderDetailDTOList);
         rabbitTemplate.convertAndSend("user.exchange", "order.routingKey", orderDetailDTOList);
-        rabbitTemplate.convertAndSend("user.exchange", "order.delivery.routingKey", orderDetailDTOList);
         System.out.println(order.getId());
         return order;
     }
