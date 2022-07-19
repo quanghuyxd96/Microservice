@@ -12,6 +12,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -39,6 +40,8 @@ public class ManagerService {
     private DeliveryNoteFeignClient deliveryNoteFeignClient;
 
 
+
+
     public List<Manager> getAllManagers() {
         return managerRepository.findAll();
     }
@@ -51,8 +54,16 @@ public class ManagerService {
                 return null;
             }
         }
+        manager.setPassword(endCodePassword(manager.getPassword()));
         return managerRepository.save(manager);
     }
+
+    private String endCodePassword(String password){
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        password = passwordEncoder.encode(password);
+        return password;
+    }
+
 
 
     public Manager getManagerById(Long id) {

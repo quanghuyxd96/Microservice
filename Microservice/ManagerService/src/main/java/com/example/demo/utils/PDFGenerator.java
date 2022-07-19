@@ -93,6 +93,5 @@ public class PDFGenerator {
 
         // Closing the document
         document.close();
-
     }
 }

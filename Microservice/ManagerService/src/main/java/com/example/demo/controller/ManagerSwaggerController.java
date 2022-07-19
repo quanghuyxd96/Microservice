@@ -11,7 +11,6 @@ import com.example.demo.repository.PaymentRepository;
 import com.example.demo.response.ResponseObjectEntity;
 import com.example.demo.service.ManagerService;
 import com.example.demo.utils.ExcelGenerator;
-import com.example.demo.utils.JwtUtil;
 import com.example.demo.utils.PDFGenerator;
 import com.lowagie.text.DocumentException;
 import io.tej.SwaggerCodgen.api.ManagerApi;
@@ -48,8 +47,8 @@ public class ManagerSwaggerController implements ManagerApi {
     @Autowired
     private ManagerService managerService;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+
+
 
     @Override
     public ResponseEntity<List<Item>> managerManageItemItemsGet() {
@@ -198,48 +197,50 @@ public class ManagerSwaggerController implements ManagerApi {
         generator.generate(response);
     }
 
-        @PostMapping("/manager/login")
-    public String loginDemo(@RequestBody Manager manager){
-        Manager checkManager = managerService.checkManager(manager);
-        if(checkManager==null){
-            return "Sai rồi";
-        }
-        return jwtUtil.generateToken(manager);
-
-    }
+//    @PostMapping("/manager/login")
+//    public String loginDemo(@RequestBody Manager manager) {
+//        Manager checkManager = managerService.checkManager(manager);
+//        if (checkManager == null) {
+//            return "Sai rồi";
+//        }
+//        return jwtUtil.generateToken(manager);
+//    }
 
 
     AuthenticationManager authenticationManager;
-    @PostMapping("/manager/login")
-    public String loginDemo(@RequestParam("userName") String userName, @RequestParam("password") String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    userName,password
-                )
-        );
 
-        // Nếu không xảy ra exception tức là thông tin hợp lệ
-        // Set thông tin authentication vào Security Context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+//    @PostMapping("/manager/login")
+//    public String loginDemo(@RequestParam("userName") String userName, @RequestParam("password") String password) {
+//        System.out.println(userName);
+//        System.out.println(password);
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        userName, password
+//                )
+//        );
+//
+//        // Nếu không xảy ra exception tức là thông tin hợp lệ
+//        // Set thông tin authentication vào Security Context
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        // Trả về jwt cho người dùng.
+//        String jwt = jwtUtil.generateToken((Manager) authentication.getPrincipal());
+//        return jwt;
+//    }
 
-        // Trả về jwt cho người dùng.
-        String jwt = jwtUtil.generateToken((Manager) authentication.getPrincipal());
-        return jwt;
-    }
-
-    @PostMapping("/manager/check")
-    public String getManagerByToken(@RequestHeader("token") String token) {
-        return jwtUtil.getUserNameFromJWT(token);
-    }
-
-    @GetMapping("/manager/get-items")
-    public List<ItemDTO> getItems(@RequestHeader("token") String token) {
-        boolean checkToken = jwtUtil.validateToken(token);
-        if (checkToken) {
-            return managerFacade.getItemFeignClient().getAllItems();
-        }
-        return null;
-    }
+//    @PostMapping("/manager/check")
+//    public String getManagerByToken(@RequestHeader("token") String token) {
+//        return jwtUtil.getUserNameFromJWT(token);
+//    }
+//
+//    @GetMapping("/manager/get-items")
+//    public List<ItemDTO> getItems(@RequestHeader("token") String token) {
+//        boolean checkToken = jwtUtil.validateToken(token);
+//        if (checkToken) {
+//            return managerFacade.getItemFeignClient().getAllItems();
+//        }
+//        return null;
+//    }
 //    @GetMapping("/manager/manage-order/get/date")
 //    public List<OrderDTO> getOrdersByOrderDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate){
 //        return null;

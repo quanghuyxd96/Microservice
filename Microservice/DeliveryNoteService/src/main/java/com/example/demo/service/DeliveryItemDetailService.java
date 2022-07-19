@@ -45,6 +45,10 @@ public class DeliveryItemDetailService {
     @Scheduled(cron = "0 */1 * * * *")
     public void checkDeliveryItemUndelivery() {
         List<DeliveryItemDetail> deliveryItemDetails = deliveryItemDetailRepository.getItemUndeliveried();
+//        List<DeliveryItemDetail> itemDetails = new ArrayList<>();
+//        for(DeliveryItemDetail items : deliveryItemDetails){
+//
+//        }
         List<ItemDTO> items = new ArrayList<>();
         List<DeliveryItemDetail> deliveryItemDetailsToUpdate = new ArrayList<>();
         for (DeliveryItemDetail deliveryItemDetail : deliveryItemDetails) {
