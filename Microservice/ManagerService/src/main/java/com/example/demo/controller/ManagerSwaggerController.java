@@ -197,37 +197,6 @@ public class ManagerSwaggerController implements ManagerApi {
         generator.generate(response);
     }
 
-//    @PostMapping("/manager/login")
-//    public String loginDemo(@RequestBody Manager manager) {
-//        Manager checkManager = managerService.checkManager(manager);
-//        if (checkManager == null) {
-//            return "Sai rồi";
-//        }
-//        return jwtUtil.generateToken(manager);
-//    }
-
-
-    AuthenticationManager authenticationManager;
-
-//    @PostMapping("/manager/login")
-//    public String loginDemo(@RequestParam("userName") String userName, @RequestParam("password") String password) {
-//        System.out.println(userName);
-//        System.out.println(password);
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        userName, password
-//                )
-//        );
-//
-//        // Nếu không xảy ra exception tức là thông tin hợp lệ
-//        // Set thông tin authentication vào Security Context
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        // Trả về jwt cho người dùng.
-//        String jwt = jwtUtil.generateToken((Manager) authentication.getPrincipal());
-//        return jwt;
-//    }
-
 //    @PostMapping("/manager/check")
 //    public String getManagerByToken(@RequestHeader("token") String token) {
 //        return jwtUtil.getUserNameFromJWT(token);
@@ -239,10 +208,6 @@ public class ManagerSwaggerController implements ManagerApi {
 //        if (checkToken) {
 //            return managerFacade.getItemFeignClient().getAllItems();
 //        }
-//        return null;
-//    }
-//    @GetMapping("/manager/manage-order/get/date")
-//    public List<OrderDTO> getOrdersByOrderDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate){
 //        return null;
 //    }
 }
