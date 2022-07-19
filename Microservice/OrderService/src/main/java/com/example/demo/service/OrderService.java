@@ -41,11 +41,9 @@ public class OrderService {
         for (int i = 0; i < orderDetails.size(); i++) {
             OrderDetail orderDetail = orderDetails.get(i);
             orderDetail.setId(0);
-            ItemDTO item = new ItemDTO();
-            try{
-                item = itemFeignClient.getItemById(orderDetail.getItemId()).getBody();
-            }catch (Exception e){
-                e.printStackTrace();
+            ItemDTO item = itemFeignClient.getItemById(orderDetail.getItemId()).getBody();
+            System.out.println(item.getPrice());
+            if(item==null){
                 orderDetails.remove(i--);
                 continue;
             }

@@ -45,9 +45,19 @@ public class DeliveryItemDetailService {
     @Scheduled(cron = "0 */1 * * * *")
     public void checkDeliveryItemUndelivery() {
         List<DeliveryItemDetail> deliveryItemDetails = deliveryItemDetailRepository.getItemUndeliveried();
+
+        //đang sửa chỗ này
 //        List<DeliveryItemDetail> itemDetails = new ArrayList<>();
-//        for(DeliveryItemDetail items : deliveryItemDetails){
-//
+//        for (int i = 0; i < deliveryItemDetails.size(); i++) {
+//            long undeliveriedQuantity = deliveryItemDetails.get(i).getUndeliveriedQuantity();
+//            for (int j = i + 1; j < deliveryItemDetails.size(); j++) {
+//                if (deliveryItemDetails.get(i).equals(deliveryItemDetails.get(j))) {
+//                    undeliveriedQuantity = Math.min(undeliveriedQuantity,deliveryItemDetails.get(j).getUndeliveriedQuantity());
+//                    deliveryItemDetails.remove(deliveryItemDetails.get(j--));
+//                }
+//            }
+//            deliveryItemDetails.get(i).setUndeliveriedQuantity(undeliveriedQuantity);
+//            itemDetails.add(deliveryItemDetails.get(i));
 //        }
         List<ItemDTO> items = new ArrayList<>();
         List<DeliveryItemDetail> deliveryItemDetailsToUpdate = new ArrayList<>();
@@ -80,7 +90,8 @@ public class DeliveryItemDetailService {
             List<DeliveryItemDetail> itemDetails = new ArrayList<>();
             itemDetails.add(deliveryItemDetails.get(i));
             for (int j = i + 1; j < deliveryItemDetailsToUpdate.size(); j++) {
-                if (deliveryItemDetailsToUpdate.get(i).getDeliveryNote().getId() == deliveryItemDetailsToUpdate.get(j).getDeliveryNote().getId()) {
+                if (deliveryItemDetailsToUpdate.get(i).getDeliveryNote().getId() == deliveryItemDetailsToUpdate.get(j)
+                        .getDeliveryNote().getId()) {
                     itemDetails.add(deliveryItemDetailsToUpdate.get(j));
                     deliveryItemDetailsToUpdate.remove(deliveryItemDetailsToUpdate.get(j--));
                 }
@@ -91,10 +102,21 @@ public class DeliveryItemDetailService {
         System.out.println("end");
     }
 
-    public void demoAOP(){
+    public void demoAOP() {
         System.out.println("demo");
     }
 
+//    @Scheduled(cron = "*/30 * * * * *")
+
+    public void removeDeliveryItemDetail(long itemId, long orderId, List<DeliveryItemDetail> deliveryItemDetails) {
+        for (int i = 0; i < deliveryItemDetails.size(); i++) {
+            if (deliveryItemDetails.get(i).getItemId() == itemId &&
+                    deliveryItemDetails.get(i).getOrderId() == orderId
+            ) {
+                deliveryItemDetails.remove(deliveryItemDetails);
+            }
+        }
+    }
 
     public void deleteDeliveryItemDetailById(long id) {
         deliveryItemDetailRepository.deleteById(id);

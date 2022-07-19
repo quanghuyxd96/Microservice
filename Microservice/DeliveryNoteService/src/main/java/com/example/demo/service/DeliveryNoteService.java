@@ -45,6 +45,7 @@ public class DeliveryNoteService {
             deliveryItemDetail.setItemId(orderDetailDTO.getItemId());
             ItemDTO item = itemFeignClient.getItemById(orderDetailDTO.getItemId());
             deliveryItemDetail.setTotalDeliveriedQuantity(orderDetailDTO.getItemQuantity());
+            deliveryItemDetail.setOrderId(orderDTO.getId());
             long itemQuantityInStorage = item.getQuantity();
             if (orderDetailDTO.getItemQuantity() <= itemQuantityInStorage) {
                 deliveryItemDetail.setDeliveriedQuantity(orderDetailDTO.getItemQuantity());
