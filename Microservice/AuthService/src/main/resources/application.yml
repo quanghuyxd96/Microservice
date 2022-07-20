@@ -1,0 +1,6 @@
+jwt:
+  secret: secretkey
+  token:
+    validity: '180000'
+server:
+  port: 8086

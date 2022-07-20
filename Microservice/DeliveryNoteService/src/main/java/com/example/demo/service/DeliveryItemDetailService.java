@@ -42,26 +42,86 @@ public class DeliveryItemDetailService {
         return null;
     }
 
-    @Scheduled(cron = "0 */1 * * * *")
-    public void checkDeliveryItemUndelivery() {
-        List<DeliveryItemDetail> deliveryItemDetails = deliveryItemDetailRepository.getItemUndeliveried();
-
-        //đang sửa chỗ này
+//    @Scheduled(cron = "0 */1 * * * *")
+//    public void checkDeliveryItemUndelivery() {
+//        List<DeliveryItemDetail> deliveryItemDetails = deliveryItemDetailRepository.getItemUndeliveried();
 //        List<DeliveryItemDetail> itemDetails = new ArrayList<>();
 //        for (int i = 0; i < deliveryItemDetails.size(); i++) {
 //            long undeliveriedQuantity = deliveryItemDetails.get(i).getUndeliveriedQuantity();
 //            for (int j = i + 1; j < deliveryItemDetails.size(); j++) {
 //                if (deliveryItemDetails.get(i).equals(deliveryItemDetails.get(j))) {
-//                    undeliveriedQuantity = Math.min(undeliveriedQuantity,deliveryItemDetails.get(j).getUndeliveriedQuantity());
+//                    undeliveriedQuantity = Math.min(undeliveriedQuantity, deliveryItemDetails.get(j).getUndeliveriedQuantity());
 //                    deliveryItemDetails.remove(deliveryItemDetails.get(j--));
 //                }
 //            }
 //            deliveryItemDetails.get(i).setUndeliveriedQuantity(undeliveriedQuantity);
+//            deliveryItemDetails.get(i).setAccumulationQuantity(deliveryItemDetails.get(i).getTotalDeliveriedQuantity()
+//                    - deliveryItemDetails.get(i).getUndeliveriedQuantity());
 //            itemDetails.add(deliveryItemDetails.get(i));
 //        }
+//        List<ItemDTO> items = new ArrayList<>();
+//        List<DeliveryItemDetail> deliveryItemDetailsToUpdate = new ArrayList<>();
+//        for (DeliveryItemDetail deliveryItemDetail : deliveryItemDetails) {
+//            ItemDTO item = itemFeignClient.getItemById(deliveryItemDetail.getItemId());
+//            if (item.getQuantity() == 0) {
+//                continue;
+//            } else {
+//                if (item.getQuantity() >= deliveryItemDetail.getUndeliveriedQuantity()) {
+//                    deliveryItemDetail.setDeliveriedQuantity(deliveryItemDetail.getUndeliveriedQuantity());
+//                    deliveryItemDetail.setAccumulationQuantity(deliveryItemDetail.getTotalDeliveriedQuantity());
+//                    System.out.println("Đã giao đủ: " + deliveryItemDetail.getDeliveriedQuantity());
+//                    deliveryItemDetail.setUndeliveriedQuantity(0);
+//                    item.setQuantity(item.getQuantity() - deliveryItemDetail.getDeliveriedQuantity());
+//                    System.out.println("Chưa giao đủ: " + deliveryItemDetail.getUndeliveriedQuantity());
+//                    items.add(item);
+//                } else {
+//                    deliveryItemDetail.setDeliveriedQuantity(item.getQuantity());
+//                    deliveryItemDetail.setAccumulationQuantity(deliveryItemDetail.getAccumulationQuantity() + deliveryItemDetail.getDeliveriedQuantity());
+//                    deliveryItemDetail.setUndeliveriedQuantity(deliveryItemDetail.getTotalDeliveriedQuantity() - deliveryItemDetail.getAccumulationQuantity());
+//                    item.setQuantity(0);
+//                    System.out.println("Đã giao thiếu: " + deliveryItemDetail.getDeliveriedQuantity());
+//                    System.out.println("Chưa giao thiếu: " + deliveryItemDetail.getUndeliveriedQuantity());
+//                    items.add(item);
+//                }
+//                deliveryItemDetailsToUpdate.add(deliveryItemDetail);
+//            }
+//        }
+//        for (int i = 0; i < deliveryItemDetailsToUpdate.size(); i++) {
+//            List<DeliveryItemDetail> itemDetails1 = new ArrayList<>();
+//            itemDetails1.add(deliveryItemDetails.get(i));
+//            for (int j = i + 1; j < deliveryItemDetailsToUpdate.size(); j++) {
+//                if (deliveryItemDetailsToUpdate.get(i).getDeliveryNote().getId() == deliveryItemDetailsToUpdate.get(j)
+//                        .getDeliveryNote().getId()) {
+//                    itemDetails1.add(deliveryItemDetailsToUpdate.get(j));
+//                    deliveryItemDetailsToUpdate.remove(deliveryItemDetailsToUpdate.get(j--));
+//                }
+//            }
+//            deliveryNoteService.updateOrSaveDeliveryNote(itemDetails1);
+//        }
+//        itemFeignClient.updateItemQuantity(items);
+//        System.out.println("end");
+//    }
+
+    @Scheduled(cron = "0 */1 * * * *")
+    public void checkDeliveryItemUndelivery() {
+        List<DeliveryItemDetail> deliveryItemDetails = deliveryItemDetailRepository.getItemUndeliveried();
+        List<DeliveryItemDetail> itemDetails = new ArrayList<>();
+        for (int i = 0; i < deliveryItemDetails.size(); i++) {
+            long undeliveriedQuantity = deliveryItemDetails.get(i).getUndeliveriedQuantity();
+            for (int j = i + 1; j < deliveryItemDetails.size(); j++) {
+                if (deliveryItemDetails.get(i).equals(deliveryItemDetails.get(j))) {
+                    undeliveriedQuantity = Math.min(undeliveriedQuantity, deliveryItemDetails.get(j).getUndeliveriedQuantity());
+                    deliveryItemDetails.remove(deliveryItemDetails.get(j--));
+                }
+            }
+            deliveryItemDetails.get(i).setUndeliveriedQuantity(undeliveriedQuantity);
+            deliveryItemDetails.get(i).setAccumulationQuantity(deliveryItemDetails.get(i).getTotalDeliveriedQuantity()
+                    - deliveryItemDetails.get(i).getUndeliveriedQuantity());
+            itemDetails.add(deliveryItemDetails.get(i));
+        }
         List<ItemDTO> items = new ArrayList<>();
         List<DeliveryItemDetail> deliveryItemDetailsToUpdate = new ArrayList<>();
-        for (DeliveryItemDetail deliveryItemDetail : deliveryItemDetails) {
+        for (DeliveryItemDetail deliveryItemDetail : itemDetails) {
             ItemDTO item = itemFeignClient.getItemById(deliveryItemDetail.getItemId());
             if (item.getQuantity() == 0) {
                 continue;
@@ -87,16 +147,16 @@ public class DeliveryItemDetailService {
             }
         }
         for (int i = 0; i < deliveryItemDetailsToUpdate.size(); i++) {
-            List<DeliveryItemDetail> itemDetails = new ArrayList<>();
-            itemDetails.add(deliveryItemDetails.get(i));
+            List<DeliveryItemDetail> itemDetails1 = new ArrayList<>();
+            itemDetails1.add(itemDetails.get(i));
             for (int j = i + 1; j < deliveryItemDetailsToUpdate.size(); j++) {
                 if (deliveryItemDetailsToUpdate.get(i).getDeliveryNote().getId() == deliveryItemDetailsToUpdate.get(j)
                         .getDeliveryNote().getId()) {
-                    itemDetails.add(deliveryItemDetailsToUpdate.get(j));
+                    itemDetails1.add(deliveryItemDetailsToUpdate.get(j));
                     deliveryItemDetailsToUpdate.remove(deliveryItemDetailsToUpdate.get(j--));
                 }
             }
-            deliveryNoteService.updateOrSaveDeliveryNote(itemDetails);
+            deliveryNoteService.updateOrSaveDeliveryNote(itemDetails1);
         }
         itemFeignClient.updateItemQuantity(items);
         System.out.println("end");

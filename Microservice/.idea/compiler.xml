@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="manager-service" />
+        <module name="AuthService" />
         <module name="item-service" />
         <module name="spring-cloud-gateway" />
         <module name="store-service" />
@@ -16,6 +17,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="AuthService" target="11" />
       <module name="delivery-item-detail-service" target="11" />
       <module name="delivery-note" target="11" />
       <module name="item-service" target="11" />
@@ -29,6 +31,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="AuthService" options="-parameters" />
       <module name="delivery-item-detail-service" options="-parameters" />
       <module name="delivery-note" options="-parameters" />
       <module name="item-service" options="-parameters" />

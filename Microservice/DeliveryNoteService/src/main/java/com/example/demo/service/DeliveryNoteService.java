@@ -119,6 +119,7 @@ public class DeliveryNoteService {
 
     public void updateOrSaveDeliveryNote(List<DeliveryItemDetail> deliveryItemDetails) {
         Optional<DeliveryNote> deliveryNote = deliveryNoteRepository.findById(deliveryItemDetails.get(0).getDeliveryNote().getId());
+        System.out.println(deliveryItemDetails.get(0).getDeliveryNote().getId());
         if (deliveryNote.get().getDeliveryDate().isAfter(LocalDate.now())) {
             deliveryItemDetailService.saveDeliveryItemDetail(deliveryItemDetails);
         } else {

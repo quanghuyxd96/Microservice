@@ -11,6 +11,7 @@
         <option value="$PROJECT_DIR$/OrderDetailService/pom.xml" />
         <option value="$PROJECT_DIR$/SpringCloudGateway/pom.xml" />
         <option value="$PROJECT_DIR$/DeliveryNoteService/pom.xml" />
+        <option value="$PROJECT_DIR$/AuthService/pom.xml" />
       </list>
     </option>
   </component>
