@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package com.example.demo.utils.jwt;
 
 import com.example.demo.service.JwtUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -29,8 +29,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
 
-		final String requestTokenHeader = request.getHeader("Authorization");
-
+		String requestTokenHeader = request.getHeader("Authorization");
+//		requestTokenHeader = "Bearer "+requestTokenHeader;
 		String username = null;
 		String jwtToken = null;
 		// JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
@@ -39,6 +39,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			try {
 				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
 			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
 				System.out.println("Unable to get JWT Token");
 			} catch (ExpiredJwtException e) {
 				System.out.println("JWT Token has expired");

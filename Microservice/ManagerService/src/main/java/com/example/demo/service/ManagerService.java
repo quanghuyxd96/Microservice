@@ -144,5 +144,17 @@ public class ManagerService {
         emailService.sendEmailToNotifyOrdered(orderDetails);
     }
 
+    public Manager checkManager(String userName, String password) {
+        Manager manager = managerRepository.findByUserName(userName);
+        System.out.println(manager.getPassword());
+        System.out.println(endCodePassword(password));
+        if (manager == null) {
+            return null;
+        }
+        if(manager.getPassword().equals(endCodePassword(password))){
+            return manager;
+        }
+        return null;
+    }
 
 }

@@ -6,6 +6,7 @@ import com.example.demo.client.StoreFeignClient;
 import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.SupplierDTO;
+import com.example.demo.entity.Manager;
 import com.example.demo.service.ManagerService;
 import com.example.demo.service.PaymentService;
 import io.tej.SwaggerCodgen.model.Item;
@@ -59,5 +60,12 @@ public class ManagerFacade {
             objResults.add(objResult);
         }
         return objResults;
+    }
+    public String getUserName(String userName, String password){
+        Manager manager = managerService.checkManager(userName, password);
+        if(manager == null){
+            return null;
+        }
+        return manager.getUserName();
     }
 }

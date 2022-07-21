@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.config.JwtTokenUtil;
+import com.example.demo.utils.jwt.JwtTokenUtil;
 import com.example.demo.dto.EmailContent;
 import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
@@ -11,8 +11,8 @@ import com.example.demo.facade.ManagerFacade;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.response.ResponseObjectEntity;
 import com.example.demo.service.ManagerService;
-import com.example.demo.utils.ExcelGenerator;
-import com.example.demo.utils.PDFGenerator;
+import com.example.demo.utils.report.ExcelGenerator;
+import com.example.demo.utils.report.PDFGenerator;
 import com.lowagie.text.DocumentException;
 import io.tej.SwaggerCodgen.api.ManagerApi;
 import io.tej.SwaggerCodgen.model.Item;
@@ -20,7 +20,6 @@ import io.tej.SwaggerCodgen.model.Order;
 import io.tej.SwaggerCodgen.model.ResponseObject;
 import io.tej.SwaggerCodgen.model.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -162,6 +161,7 @@ public class ManagerController implements ManagerApi {
         return managerFacade.getPaymentService().saveAndUpdatePaymentOfStore(payment);
     }
 
+
     @GetMapping("/manager/payment/get")
     public ResponseEntity<Payment> getPaymentDemo(@RequestParam("storeUser") String storeUser, @RequestParam("orderId") Long orderId) {
         return new ResponseEntity<>(paymentRepository.findByStoreUserAndOrderId(storeUser, orderId), HttpStatus.OK);
@@ -213,16 +213,16 @@ public class ManagerController implements ManagerApi {
     }
 
     @RequestMapping(value = "/manager/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody Manager manager)
+    public ResponseEntity<?> createAuthenticationToken(@RequestParam("userName") String userName,
+                                                       @RequestParam("password") String password)
             throws Exception {
 
-        authenticate(manager.getUserName(), manager.getPassword());
+        authenticate(userName, password);
 
         final UserDetails userDetails = jwtInMemoryUserDetailsService
-                .loadUserByUsername(manager.getUserName());
+                .loadUserByUsername(userName);
 
-        final String token = jwtTokenUtil.generateToken(userDetails);
-        return new ResponseEntity<>(token, HttpStatus.OK);
+        return new ResponseEntity<>(userName, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -248,7 +248,7 @@ public class ManagerController implements ManagerApi {
         }
     }
 
-    @RequestMapping( "/hello" )
+    @RequestMapping( "/manager/hello" )
     public String hello() {
         return "Làm được rồi đó";
     }
@@ -266,4 +266,15 @@ public class ManagerController implements ManagerApi {
 //        }
 //        return null;
 //    }
+
+    @PostMapping("/manager/get")
+    public String getManagerUserName(@RequestParam("userName") String userName, @RequestParam("password") String password){
+        System.out.println(userName);
+        String userNameCheck = managerFacade.getUserName(userName,password);
+        System.out.println(userNameCheck);
+        if(userNameCheck == null){
+            return null;
+        }
+        return userNameCheck;
+    }
 }

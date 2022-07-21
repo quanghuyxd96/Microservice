@@ -9,7 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-
+	@Value("jsghdsajdsahdskaljkdjskldjsakdsaudjksanbmksadnjasdiiudsdsydtjlioidsjabdsnqjumssdjhdsjadjahdjhdsdjsadhjdshjd" +
+			"dshdajdhjsadhjhdjhsadjhdksadusadhadjdjadhjadhjdhjsakdhjkasdysaudausdhdasndadsndnijiodasjidsajdsakldjskasjdj" +
+			"djksahsdjahdjsahduasdydjndmnmnjdshjdhuydsnasbdnsbndsabdhiuhdusaidpqopsakjdsakmdsaddskakjdksadjasdjkldjdasldj" +
+			"dsdsjadsaioqiopidslakldsdjiadjdskldskmsdkalduiuqnmnmsasda")
 	private String jwtSecret;
 
 	public Claims getClaims(final String token) {

@@ -4,3 +4,10 @@ jwt:
     validity: '180000'
 server:
   port: 8086
+client:
+  post:
+    baseUrl1: 'http://localhost:8081'
+    baseUrl2: 'http://localhost:8082'
+spring:
+  main:
+    allow-bean-definition-overriding: true

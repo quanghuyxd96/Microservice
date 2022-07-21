@@ -10,17 +10,24 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GatewayConfig {
 
-	@Autowired
-	private JwtAuthenticationFilter filter;
+    @Autowired
+    private JwtAuthenticationFilter filter;
 
-	@Bean
-	public RouteLocator routes(RouteLocatorBuilder builder) {
-		return builder.routes().route("auth", r -> r.path("/auth/**").filters(f -> f.filter(filter)).uri("http://localhost:8086/"))
-				.route("manager", r -> r.path("/manager/**").filters(f -> f.filter(filter)).uri("http://localhost:8081/"))
-				.route("order", r -> r.path("/order/**").filters(f -> f.filter(filter)).uri("http://localhost:8083/"))
-				.route("demo", r -> r.path("/demo/**").filters(f -> f.filter(filter)).uri("http://localhost:8090/")).build();
-//				.route("echo", r -> r.path("/echo/**").filters(f -> f.filter(filter)).uri("lb://echo"))
-//				.route("hello", r -> r.path("/hello/**").filters(f -> f.filter(filter)).uri("lb://hello")).build();
-	}
+    @Bean
+    public RouteLocator routes(RouteLocatorBuilder builder) {
+        return builder.routes().route("auth", r -> r.path("/auth/**").filters(f -> f.filter(filter))
+                        .uri("http://localhost:8086/"))
+                .route("manager", r -> r.path("/manager/**").filters(f -> f.filter(filter))
+                        .uri("http://localhost:8081/"))
+                .route("store", r -> r.path("/store/**").filters(f -> f.filter(filter))
+                        .uri("http://localhost:8082/"))
+                .route("order", r -> r.path("/order/**").filters(f -> f.filter(filter))
+                        .uri("http://localhost:8083/"))
+                .route("item", r -> r.path("/order/**").filters(f -> f.filter(filter))
+                        .uri("http://localhost:8084/"))
+                .route("delivery-note", r -> r.path("/delivery-note/**").filters(f -> f.filter(filter))
+                        .uri("http://localhost:8085/")).build();
+
+    }
 
 }

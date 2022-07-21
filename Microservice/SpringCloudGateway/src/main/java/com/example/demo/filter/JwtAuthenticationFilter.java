@@ -20,44 +20,47 @@ import java.util.function.Predicate;
 @Component
 public class JwtAuthenticationFilter implements GatewayFilter {
 
-	@Autowired
-	private JwtUtil jwtUtil;
+    @Autowired
+    private JwtUtil jwtUtil;
 
-	@Override
-	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-		ServerHttpRequest request = (ServerHttpRequest) exchange.getRequest();
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        ServerHttpRequest request = (ServerHttpRequest) exchange.getRequest();
 
-		final List<String> apiEndpoints = List.of("/register", "/login","/manager/login");
+        final List<String> apiEndpoints = List.of("/register","/login");
 
-		Predicate<ServerHttpRequest> isApiSecured = r -> apiEndpoints.stream()
-				.noneMatch(uri -> r.getURI().getPath().contains(uri));
+        Predicate<ServerHttpRequest> isApiSecured = r -> apiEndpoints.stream()
+                .noneMatch(uri -> r.getURI().getPath().contains(uri));
 
-		if (isApiSecured.test(request)) {
-			if (!request.getHeaders().containsKey("Authorization")) {
-				ServerHttpResponse response = exchange.getResponse();
-				response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        if (isApiSecured.test(request)) {
+            if (!request.getHeaders().containsKey("Authorization")) {
+                ServerHttpResponse response = exchange.getResponse();
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
 
-				return response.setComplete();
-			}
+                return response.setComplete();
+            }
 
-			final String token = request.getHeaders().getOrEmpty("Authorization").get(0);
+            final String token = request.getHeaders().getOrEmpty("Authorization").get(0);
+            String jwtToken = null;
+            if (token != null && token.startsWith("Bearer ")) {
+                jwtToken = token.substring(7);
+                try {
+                    jwtUtil.validateToken(jwtToken);
+                } catch (JwtTokenMalformedException | JwtTokenMissingException e) {
+                    // e.printStackTrace();
 
-			try {
-				jwtUtil.validateToken(token);
-			} catch (JwtTokenMalformedException | JwtTokenMissingException e) {
-				// e.printStackTrace();
+                    ServerHttpResponse response = exchange.getResponse();
+                    response.setStatusCode(HttpStatus.BAD_REQUEST);
 
-				ServerHttpResponse response = exchange.getResponse();
-				response.setStatusCode(HttpStatus.BAD_REQUEST);
+                    return response.setComplete();
+                }
 
-				return response.setComplete();
-			}
+                Claims claims = jwtUtil.getClaims(jwtToken);
+                exchange.getRequest().mutate().header("id", String.valueOf(claims.get("id"))).build();
+            }
 
-			Claims claims = jwtUtil.getClaims(token);
-			exchange.getRequest().mutate().header("id", String.valueOf(claims.get("id"))).build();
-		}
-
-		return chain.filter(exchange);
-	}
+        }
+        return chain.filter(exchange);
+    }
 
 }
