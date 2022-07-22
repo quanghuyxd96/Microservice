@@ -1,7 +1,6 @@
 package com.example.demo.config;
 
-import com.example.demo.utils.jwt.JwtAuthenticationEntryPoint;
-import com.example.demo.utils.jwt.JwtRequestFilter;
+import com.example.demo.utils.JwtAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +27,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService jwtUserDetailsService;
 
-	@Autowired
-	private JwtRequestFilter jwtRequestFilter;
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -57,7 +54,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		httpSecurity.csrf().disable()
 				// dont authenticate this particular request
-				.authorizeRequests().antMatchers("/manager/authenticate").permitAll()
+				.authorizeRequests().antMatchers("/order/orders").permitAll()
+//				.antMatchers("/order/orders").hasRole("ADMIN")
 				// all other requests need to be authenticated
 				.anyRequest().authenticated(). and().
 				// make sure we use stateless session; session won't be used to
@@ -66,6 +64,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		// Add a filter to validate the tokens with every request
-		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 }

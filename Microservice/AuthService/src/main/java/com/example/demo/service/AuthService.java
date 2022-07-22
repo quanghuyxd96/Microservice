@@ -19,8 +19,8 @@ public class AuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    public String generateTokenByUserName(@RequestParam("userName") String userName, @RequestParam("password") String password) {
-        if (userName.equals("admin")) {
+    public String generateTokenByUserName(String userName, String password) {
+        if (userName.startsWith("admin")) {
             String managerUserName = managerFeignClient.getManagerUserName(userName, password);
             if (managerUserName == null) {
                 return null;

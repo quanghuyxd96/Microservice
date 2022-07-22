@@ -1,30 +1,23 @@
-package com.example.demo.service;
+package com.example.demo.utils;
 
-import com.example.demo.entity.Manager;
 import com.example.demo.user.UserSecurity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
-    @Autowired
-    private ManagerService managerService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        List<Manager> managers = managerService.getAllManagers();
-        for (Manager manager : managers) {
-            if (manager.getUserName().equalsIgnoreCase(username)) {
-                return new UserSecurity(new Manager(manager.getUserName(), manager.getPassword()));
+        UserSecurity userSecurity = new UserSecurity();
+        if(userSecurity.getUsername().equals(username)){
+                return new UserSecurity(username, null);
             }
-        }
         throw new UsernameNotFoundException("User not found with username: " + username);
     }
 

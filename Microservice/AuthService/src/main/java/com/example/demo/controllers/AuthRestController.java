@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.response.Token;
 import com.example.demo.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,12 +33,12 @@ public class AuthRestController {
     private AuthService authService;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<String> login(@RequestParam("userName") String userName, @RequestParam("password") String password) {
+    public ResponseEntity<Token> login(@RequestParam("userName") String userName, @RequestParam("password") String password) {
         String tokenByUserName = authService.generateTokenByUserName(userName, password);
         if (tokenByUserName == null) {
             return null;
         }
-        return new ResponseEntity<String>(tokenByUserName, HttpStatus.OK);
+        return new ResponseEntity<Token>(new Token(tokenByUserName), HttpStatus.OK);
     }
 
     @PostMapping("/auth/register")

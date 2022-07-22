@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,6 +29,11 @@ public class OrderController implements OrderApi {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    private HttpServletRequest request;
+
+//    @Autowired
+//    private HttpServletRequest request;
     @Override
     public ResponseEntity<OrderModel> orderSaveOrderPost(Long id, List<OrderDetailModel> orderDetailModels) {
         OrderModel orderModel = orderFacade.saveOrder(orderDetailModels, id);
@@ -38,6 +45,8 @@ public class OrderController implements OrderApi {
 
     @Override
     public ResponseEntity<List<OrderModel>> orderOrdersGet() {
+        System.out.println(request.getHeaders("Authorization").toString());
+        System.out.println(request.getUserPrincipal());
         List<OrderModel> orders = orderFacade.getAllOrders();
         if (orders == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

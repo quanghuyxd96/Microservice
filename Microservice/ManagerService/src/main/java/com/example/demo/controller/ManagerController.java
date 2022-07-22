@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.utils.jwt.JwtTokenUtil;
 import com.example.demo.dto.EmailContent;
 import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
@@ -10,7 +9,9 @@ import com.example.demo.entity.Payment;
 import com.example.demo.facade.ManagerFacade;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.response.ResponseObjectEntity;
+import com.example.demo.service.JwtUserDetailsService;
 import com.example.demo.service.ManagerService;
+import com.example.demo.utils.jwt.JwtTokenUtil;
 import com.example.demo.utils.report.ExcelGenerator;
 import com.example.demo.utils.report.PDFGenerator;
 import com.lowagie.text.DocumentException;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -31,6 +33,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -58,10 +61,10 @@ public class ManagerController implements ManagerApi {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private UserDetailsService jwtInMemoryUserDetailsService;
+    private JwtUserDetailsService jwtInMemoryUserDetailsService;
 
-
-
+    @Autowired
+    private HttpServletRequest request;
 
 
     @Override
@@ -104,8 +107,11 @@ public class ManagerController implements ManagerApi {
         return new ResponseEntity<>(responseObject, HttpStatus.NOT_FOUND);
     }
 
+
     @Override
     public ResponseEntity<List<Order>> managerManageOrderOrdersGet() {
+        System.out.println(request.isUserInRole("ADMIN"));
+        System.out.println(request.getUserPrincipal());
         List<OrderDTO> orderDTOList = managerFacade.getOrderFeignClient().getAllOrders();
         if (orderDTOList == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -216,12 +222,9 @@ public class ManagerController implements ManagerApi {
     public ResponseEntity<?> createAuthenticationToken(@RequestParam("userName") String userName,
                                                        @RequestParam("password") String password)
             throws Exception {
-
         authenticate(userName, password);
-
-        final UserDetails userDetails = jwtInMemoryUserDetailsService
-                .loadUserByUsername(userName);
-
+//        final UserDetails userDetails = jwtInMemoryUserDetailsService
+//                .loadUserByUsername(userName); không cần xài
         return new ResponseEntity<>(userName, HttpStatus.OK);
     }
 
@@ -231,14 +234,12 @@ public class ManagerController implements ManagerApi {
 
 
 //        return ResponseEntity.ok(new JwtResponse(token));
-        return new ResponseEntity<>(managerService.saveManager(manager),HttpStatus.OK);
+        return new ResponseEntity<>(managerService.saveManager(manager), HttpStatus.OK);
     }
+
     private void authenticate(String username, String password) throws Exception {
-        System.out.println(username);
-        System.out.println(password);
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
-
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
@@ -248,7 +249,8 @@ public class ManagerController implements ManagerApi {
         }
     }
 
-    @RequestMapping( "/manager/hello" )
+    @PreAuthorize("hasRole('ABC')")
+    @RequestMapping("/manager/hello")
     public String hello() {
         return "Làm được rồi đó";
     }
@@ -268,11 +270,11 @@ public class ManagerController implements ManagerApi {
 //    }
 
     @PostMapping("/manager/get")
-    public String getManagerUserName(@RequestParam("userName") String userName, @RequestParam("password") String password){
+    public String getManagerUserName(@RequestParam("userName") String userName, @RequestParam("password") String password) {
         System.out.println(userName);
-        String userNameCheck = managerFacade.getUserName(userName,password);
+        String userNameCheck = managerFacade.getUserName(userName, password);
         System.out.println(userNameCheck);
-        if(userNameCheck == null){
+        if (userNameCheck == null) {
             return null;
         }
         return userNameCheck;
