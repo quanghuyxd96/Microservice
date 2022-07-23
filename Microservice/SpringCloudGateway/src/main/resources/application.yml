@@ -43,3 +43,6 @@ eureka:
   instance:
     hostname: localhost
     prefer-ip-address: 'true'
+spring:
+  main:
+    allow-bean-definition-overriding: true

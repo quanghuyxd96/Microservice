@@ -8,8 +8,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="manager-service" />
-        <module name="store-service" />
         <module name="item-service" />
+        <module name="store-service" />
         <module name="spring-cloud-gateway" />
         <module name="delivery-note" />
         <module name="order-service" />

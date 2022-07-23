@@ -1,27 +1,27 @@
-package com.example.demo.user;
+package com.example.demo.utils;
 
-import com.example.demo.entity.Manager;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.management.relation.Role;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserSecurity implements UserDetails {
-    private Manager manager;
-    private SimpleGrantedAuthority role;
-
-
-    public UserSecurity(Manager manager) {
-        this.manager = manager;
-    }
+    private String userName;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        if(getUsername().startsWith("admin")){
+        if (getUsername().startsWith("admin")) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
             return authorities;
         }
@@ -31,12 +31,12 @@ public class UserSecurity implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.manager.getPassword();
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return this.manager.getUserName();
+        return this.userName;
     }
 
     @Override

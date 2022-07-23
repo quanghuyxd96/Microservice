@@ -1,4 +1,4 @@
-package com.example.demo.controllers;
+package com.example.demo.controller;
 
 import com.example.demo.response.Token;
 import com.example.demo.service.AuthService;
@@ -11,24 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AuthRestController {
-    //
-//	@Autowired
-//	private JwtUtil jwtUtil;
-//
-//	@PostMapping("/auth/login")
-//	public ResponseEntity<String> login(@RequestParam String userName) {
-//		String token = jwtUtil.generateToken(userName);
-//
-//		return new ResponseEntity<String>(token, HttpStatus.OK);
-//	}
-//
-//	@PostMapping("/auth/register")
-//	public ResponseEntity<String> register(@RequestParam String userName) {
-//		// Persist user to some persistent storage
-//		System.out.println("Info saved...");
-//
-//		return new ResponseEntity<String>("Registered", HttpStatus.OK);
-//	}
     @Autowired
     private AuthService authService;
 
@@ -41,12 +23,5 @@ public class AuthRestController {
         return new ResponseEntity<Token>(new Token(tokenByUserName), HttpStatus.OK);
     }
 
-    @PostMapping("/auth/register")
-    public ResponseEntity<String> register(@RequestParam String userName) {
-        // Persist user to some persistent storage
-        System.out.println("Info saved...");
-
-        return new ResponseEntity<String>("Registered", HttpStatus.OK);
-    }
 
 }

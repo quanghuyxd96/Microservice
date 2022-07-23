@@ -9,7 +9,7 @@ import com.example.demo.entity.Payment;
 import com.example.demo.facade.ManagerFacade;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.response.ResponseObjectEntity;
-import com.example.demo.service.JwtUserDetailsService;
+import com.example.demo.utils.jwt.JwtUserDetailsService;
 import com.example.demo.service.ManagerService;
 import com.example.demo.utils.jwt.JwtTokenUtil;
 import com.example.demo.utils.report.ExcelGenerator;
@@ -30,7 +30,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -249,6 +248,12 @@ public class ManagerController implements ManagerApi {
         }
     }
 
+    @Autowired
+    private JwtUserDetailsService getJwtInMemoryUserDetailsService;
+    @GetMapping("/manager/security")
+    UserDetails get(@RequestParam("userName") String userName){
+        return getJwtInMemoryUserDetailsService.loadUserByUsername(userName);
+    }
     @PreAuthorize("hasRole('ABC')")
     @RequestMapping("/manager/hello")
     public String hello() {

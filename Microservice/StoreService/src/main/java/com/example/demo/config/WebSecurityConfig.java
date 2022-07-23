@@ -1,7 +1,7 @@
 package com.example.demo.config;
 
-import com.example.demo.utils.jwt.JwtAuthenticationEntryPoint;
-import com.example.demo.utils.jwt.JwtRequestFilter;
+import com.example.demo.utils.JwtAuthenticationEntryPoint;
+import com.example.demo.utils.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,11 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		// configure AuthenticationManager so that it knows from where to load
-		// user for matching credentials
-		// Use BCryptPasswordEncoder
 		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
-
 	}
 
 	@Bean
@@ -53,8 +49,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		// We don't need CSRF for this example
-
 		httpSecurity.csrf().disable()
 				// dont authenticate this particular request
 				.authorizeRequests().antMatchers("/manager/authenticate","/manager/security").permitAll()

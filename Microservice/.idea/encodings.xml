@@ -7,6 +7,7 @@
     <file url="file://$PROJECT_DIR$/DeliveryNoteService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/DeliveryNoteService/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ItemService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ItemService/target/generated-sources/openapi/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ManagerService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ManagerService/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ManagerService/target/generated-sources/openapi/src/main/java" charset="UTF-8" />
@@ -19,6 +20,7 @@
     <file url="file://$PROJECT_DIR$/SpringCloudGateway/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/StoreService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/StoreService/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/StoreService/target/generated-sources/openapi/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SupplierService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/SupplierService/src/main/resources" charset="UTF-8" />
   </component>
