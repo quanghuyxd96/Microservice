@@ -26,9 +26,9 @@ spring:
     password: guest
     port: 15672
     username: guest
-    exchange: user.exchange
-    queue: item.queue
-    routingkey: item.routingkey
+#    exchange: user.exchange
+#    queue: item.queue
+#    routingkey: item.routingkey
 app:
   message: message succesfuly sent
 server:

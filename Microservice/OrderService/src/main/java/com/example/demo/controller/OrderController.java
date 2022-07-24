@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.OrderDetailDTO;
+import com.example.demo.entity.Order;
+import com.example.demo.entity.OrderDetail;
 import com.example.demo.facade.OrderFacade;
 import com.example.demo.repository.OrderRepository;
 import io.tej.SwaggerCodgen.api.OrderApi;
@@ -10,8 +13,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +34,7 @@ public class OrderController implements OrderApi {
     @Autowired
     private HttpServletRequest request;
 
-//    @Autowired
+    //    @Autowired
 //    private HttpServletRequest request;
     @Override
     public ResponseEntity<OrderModel> orderSaveOrderPost(Long id, List<OrderDetailModel> orderDetailModels) {
@@ -86,7 +88,7 @@ public class OrderController implements OrderApi {
         return orderFacade.deleteOrderById(id);
     }
 
-    //    @PostMapping("/save-order")
+//    @PostMapping("/save-order")
 //    public ResponseEntity<Order> saveOrder(@RequestBody List<OrderDetail> orderDetails, @RequestParam("id") Long storeId) {
 //        if (orderDetails == null || storeId == null) {
 //            return new ResponseEntity<>(HttpStatus.NOT_FOUND);

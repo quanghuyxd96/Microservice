@@ -26,12 +26,18 @@ spring:
     password: guest
     port: 15672
     username: guest
-    exchange: user.exchange
-    queue: order.queue
-
+  cloud:
+    stream:
+      default:
+        contentType: application/json
+      bindings:
+        ordersChannel:
+          destination: order
+          group: manager
 client:
   post:
     baseUrl: 'http://localhost:8084'
     baseUrl2: 'http://localhost:8081'
 server:
   port: 8083
+

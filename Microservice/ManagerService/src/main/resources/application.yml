@@ -24,11 +24,11 @@ spring:
   rabbitmq:
     host: localhost
     password: guest
-    port: 15672
-    username: guest
-    exchange: user.exchange
-    queue: manager.queue
-    routingkey: manager.routingkey
+    port: 5672
+#    username: guest
+#    exchange: user.exchange
+#    queue: manager.queue
+#    routingkey: manager.routingkey
   mail:
     properties:
       mail:
@@ -44,6 +44,12 @@ spring:
     user:
       name: huynq
       password: 123456
+  cloud:
+    stream:
+      bindings:
+        ordersChannel:
+          destination: order
+          group: manager
 client:
   post:
     baseUrl1: 'http://localhost:8082'

@@ -124,7 +124,7 @@ public class OrderFacade {
         return obj1;
     }
 
-    private <T, D> List<T> convertListModel(List<D> objList, Class<T> classT) {
+    public <T, D> List<T> convertListModel(List<D> objList, Class<T> classT) {
         List<T> objResults = new ArrayList<T>();
         for (D obj : objList) {
             ModelMapper modelMapper = new ModelMapper();

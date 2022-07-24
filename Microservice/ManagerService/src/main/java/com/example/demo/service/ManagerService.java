@@ -7,9 +7,12 @@ import com.example.demo.dto.DeliveryNoteDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Manager;
+import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.ManagerRepository;
+import org.apache.commons.math3.geometry.partitioning.BSPTreeVisitor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -136,13 +139,13 @@ public class ManagerService {
 ////        return item;
 //    }
 
-    @RabbitListener(queues = "order.queue")
-    public void receivedMessageOrder(List<OrderDetailDTO> orderDetails) {
-        for (OrderDetailDTO orderDetailDTO : orderDetails) {
-            System.out.println(orderDetails.toString());
-        }
-        emailService.sendEmailToNotifyOrdered(orderDetails);
-    }
+//    @RabbitListener(queues = "order.queue")
+//    public void receivedMessageOrder(List<OrderDetailDTO> orderDetails) {
+//        for (OrderDetailDTO orderDetailDTO : orderDetails) {
+//            System.out.println(orderDetails.toString());
+//        }
+//        emailService.sendEmailToNotifyOrdered(orderDetails);
+//    }
 
     public Manager checkManager(String userName, String password) {
         Manager manager = managerRepository.findByUserName(userName);
@@ -155,6 +158,11 @@ public class ManagerService {
             return manager;
         }
         return null;
+    }
+
+    @StreamListener(target = OrderSource.ORDER_CHANEL)
+    public void processHelloChannelGreeting(List<OrderDetailDTO> orderDetails) {
+        emailService.sendEmailToNotifyOrdered(orderDetails);
     }
 
 }

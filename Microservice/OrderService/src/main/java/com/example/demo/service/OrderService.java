@@ -6,12 +6,14 @@ import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
+import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.OrderRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.integration.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,6 +30,8 @@ public class OrderService {
     private OrderDetailService orderDetailService;
     @Autowired
     private ItemFeignClient itemFeignClient;
+    @Autowired
+    private OrderSource orderSource;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -57,8 +61,9 @@ public class OrderService {
         order.setOrderDetails(orderDetails);
         orderRepository.save(order);
         List<OrderDetailDTO> orderDetailDTOList = convertListModel(orderDetails, OrderDetailDTO.class);
-        rabbitTemplate.convertAndSend("order-delivery.exchange", "order.delivery.routingKey", orderDetailDTOList);
-        rabbitTemplate.convertAndSend("user.exchange", "order.routingKey", orderDetailDTOList);
+//        rabbitTemplate.convertAndSend("order-delivery.exchange", "order.delivery.routingKey", orderDetailDTOList);
+//        rabbitTemplate.convertAndSend("user.exchange", "order.routingKey", orderDetailDTOList);
+        orderSource.order().send(MessageBuilder.withPayload(orderDetailDTOList).build());
         System.out.println(order.getId());
         return order;
     }
