@@ -57,7 +57,9 @@ public class ManagerController implements ManagerApi {
     public ResponseEntity<?> createAuthenticationToken(@RequestParam("userName") String userName,
                                                        @RequestParam("password") String password)
             throws Exception {
-        managerFacade.getManagerService().authenticate(userName, password);
+        if(!managerFacade.getManagerService().authenticate(userName, password)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return new ResponseEntity<>(userName, HttpStatus.OK);
     }
 

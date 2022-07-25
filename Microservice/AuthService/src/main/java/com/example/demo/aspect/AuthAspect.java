@@ -1,6 +1,7 @@
 package com.example.demo.aspect;
 
 import com.example.demo.response.Token;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
@@ -19,11 +20,13 @@ import java.util.stream.Collectors;
 
 @Aspect
 @Component
-public class LoggingAspect {
-    private static final Logger LOGGER = LogManager.getLogger(LoggingAspect.class);
+@Log4j2
+public class AuthAspect {
+    private static final Logger LOGGER = LogManager.getLogger(AuthAspect.class);
 
     @Around("execution(* com.example.demo.controller.AuthRestController.login(..)) and args(userName,password)")
     public ResponseEntity<Token> profileAllMethods(ProceedingJoinPoint proceedingJoinPoint, String userName, String password) throws Throwable {
+        log.trace("Start AuthAspect");
         MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
         List<String> strings = Arrays.stream(methodSignature.getParameterNames()).collect(Collectors.toList());
         //demo chặn đầu
@@ -36,13 +39,12 @@ public class LoggingAspect {
         stopWatch.start();
         ResponseEntity<Token> token = (ResponseEntity<Token>) proceedingJoinPoint.proceed();
         stopWatch.stop();
-        System.out.println(token.getBody().getToken());
         //demo chặn đuôi
 //        if(token.getBody().getToken().length()>0){
 //            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //        }
-        //Log method execution time
         LOGGER.info("Execution time of " + className + "." + methodName + " : " + stopWatch.getTotalTimeMillis() + " ms");
+        log.trace("End AuthAspect");
         return token;
     }
 

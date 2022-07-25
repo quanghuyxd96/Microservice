@@ -1,5 +1,6 @@
 package com.example.demo.utils;
 
+import com.example.demo.dto.ManagerDTO;
 import com.example.demo.entity.Store;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,11 +10,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class UserSecurity implements UserDetails {
-    private Store store;
+//    private Store store;
+//    private ManagerDTO managerDTO;
+    private String userName;
+    private String password;
 
 
-    public UserSecurity(Store store) {
-        this.store = store;
+    public UserSecurity(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
     }
 
     @Override
@@ -29,12 +34,12 @@ public class UserSecurity implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.store.getPassword();
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return this.store.getUserName();
+        return this.userName;
     }
 
     @Override

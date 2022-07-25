@@ -30,8 +30,6 @@ public class StoreModelController implements StoreApi {
     @Autowired
     private StoreRepository storeRepository;
 
-    @Autowired
-    private StoreFacade storeFacade;
 
     @Autowired
     private HttpServletRequest request;
@@ -39,7 +37,11 @@ public class StoreModelController implements StoreApi {
 
     @Override
     public ResponseEntity<List<StoreModel>> storeAllStoreGet() {
-        return new ResponseEntity<>(storeModelFacade.getAllStoreModel(), HttpStatus.OK);
+        List<StoreModel> stores = storeModelFacade.getAllStoreModel();
+        if(stores==null){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(stores, HttpStatus.OK);
     }
 
 //    @Override

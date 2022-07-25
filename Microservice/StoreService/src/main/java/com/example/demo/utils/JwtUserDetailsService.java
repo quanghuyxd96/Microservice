@@ -17,11 +17,13 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println(username);
+        if(username.startsWith("admin")){
+            return new UserSecurity(username,null);
+        }
         Store store = storeService.getStoreByUserName(username);
         if (store == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
-        return new UserSecurity(new Store(store.getUserName(), store.getPassword()));
+        return new UserSecurity(username,store.getPassword());
     }
 }

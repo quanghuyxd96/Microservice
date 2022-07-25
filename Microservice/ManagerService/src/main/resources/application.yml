@@ -1,4 +1,7 @@
 spring:
+  output:
+    ansi:
+      enabled: ALWAYS
   datasource:
     url: 'jdbc:postgresql://localhost:5432/db_manager'
     username: postgres
@@ -58,3 +61,18 @@ client:
     baseUrl4: 'http://localhost:8085'
 server:
   port: 8081
+#logging:
+#  level:
+#    root: DEBUG
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: TRACE
+      zalando:
+        logbook: TRACE
+
+

@@ -4,10 +4,7 @@ import com.example.demo.client.DeliveryNoteFeignClient;
 import com.example.demo.client.ItemFeignClient;
 import com.example.demo.client.OrderFeignClient;
 import com.example.demo.client.StoreFeignClient;
-import com.example.demo.dto.DeliveryNoteDTO;
-import com.example.demo.dto.ItemDTO;
-import com.example.demo.dto.OrderDTO;
-import com.example.demo.dto.OrderDetailDTO;
+import com.example.demo.dto.*;
 import com.example.demo.entity.Manager;
 import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.ManagerRepository;
@@ -15,6 +12,7 @@ import com.example.demo.utils.jwt.JwtTokenUtil;
 import com.example.demo.utils.report.ExcelGenerator;
 import com.example.demo.utils.report.PDFGenerator;
 import com.lowagie.text.DocumentException;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -148,16 +146,18 @@ public class ManagerService {
         return null;
     }
 
-    public void authenticate(String username, String password) throws Exception {
+    public boolean authenticate(String username, String password) throws Exception {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
-        } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            e.printStackTrace();
+            return false;
+//        } catch (BadCredentialsException e) {
+//            throw new Exception("INVALID_CREDENTIALS", e);
         }
+        return true;
     }
 
     public String generateToken() {
@@ -192,7 +192,7 @@ public class ManagerService {
     }
 
     @StreamListener(target = OrderSource.ORDER_CHANEL)
-    public void processHelloChannelGreeting(List<OrderDetailDTO> orderDetails) {
+    public void processHelloChannelGreeting(List<OrderDetailToken> orderDetails) {
         emailService.sendEmailToNotifyOrdered(orderDetails);
     }
 

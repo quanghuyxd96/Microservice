@@ -23,8 +23,11 @@ public class AuthService {
 
     public String generateTokenByUserName(String userName, String password) {
         if (userName.startsWith("admin")) {
-            String managerUserName = managerFeignClient.getManagerUserName(userName, password);
-            if (managerUserName == null) {
+            String managerUserName = null;
+            try {
+                managerUserName = managerFeignClient.getManagerUserName(userName, password);
+            } catch (Exception e) {
+                e.printStackTrace();
                 return null;
             }
             return jwtUtil.generateToken(userName);

@@ -18,9 +18,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.demo.utils.Constant.AUTHOR;
 
 @Component
 @Getter
@@ -36,6 +39,9 @@ public class OrderFacade {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private HttpServletRequest request;
 
     public OrderModel saveOrder(List<OrderDetailModel> orderDetailModels) {
         if (orderDetailModels == null) {

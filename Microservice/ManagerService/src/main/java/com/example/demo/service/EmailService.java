@@ -4,6 +4,7 @@ import com.example.demo.client.OrderFeignClient;
 import com.example.demo.client.StoreFeignClient;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
+import com.example.demo.dto.OrderDetailToken;
 import com.example.demo.dto.StoreDTO;
 import com.example.demo.entity.Email;
 import com.example.demo.entity.Manager;
@@ -59,11 +60,10 @@ public class EmailService {
     }
 
 
-    public void sendEmailToNotifyOrdered(List<OrderDetailDTO> orderDetailDTOS) {
-        String token = managerService.generateToken();
+    public void sendEmailToNotifyOrdered(List<OrderDetailToken> orderDetailDTOS) {
         SimpleMailMessage message = new SimpleMailMessage();
-        OrderDTO orderDTO = orderFeignClient.getOrderById(orderDetailDTOS.get(0).getOrderId(),token).getBody();
-        ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId(),token);
+        OrderDTO orderDTO = orderFeignClient.getOrderById(orderDetailDTOS.get(0).getOrderId(),orderDetailDTOS.get(0).getToken()).getBody();
+        ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId(),orderDetailDTOS.get(0).getToken());
         message.setTo(store.getBody().getEmail());
         message.setSubject("Order " + orderDTO.getId() + " status");
         message.setText("The order has been placed with detail: ");

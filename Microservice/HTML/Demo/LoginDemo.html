@@ -41,20 +41,24 @@
                 // Convert formData object to URL-encoded string:
                 const payload = new URLSearchParams(formData);
                 // Post the payload using Fetch:
-                fetch('http://localhost:8080/store/get-store-by-userName', {
+                fetch('http://localhost:8080/auth/login', {
                     method: 'POST',
                     body: payload,
                 }).then(res => res.json()).then(data =>{
-                    if(`${data.status}`=='True'){
-                        window.location="/Demo/Demo.html";
-                    }else{
+                    
+                    if(`${data.token}`==null){
+                        console.log(`${data.token}`);
                         alert('Wrong user or password');
+                        
+                    }else{
+                        window.location="/Demo/Demo.html";
                     }
                 })
 
             })
             
         }
+
     </script>
 </body>
 

@@ -43,7 +43,11 @@ public class StoreService {
     private static final Logger logger = LogManager.getLogger(StoreService.class);
 
     public List<Store> getAllStore() {
-        return storeRepository.findAll();
+        List<Store> stores = storeRepository.findAll();
+        if(stores == null){
+            return null;
+        }
+        return stores;
     }
 
 

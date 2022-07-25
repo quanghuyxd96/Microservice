@@ -22,9 +22,11 @@ public class StoreModelFacade {
     private StoreService storeService;
 
 
-
     public List<StoreModel> getAllStoreModel() {
         List<Store> stores = storeService.getAllStore();
+        if (stores == null) {
+            return null;
+        }
         List<StoreModel> storeModels = convertListModel(stores, StoreModel.class);
         return storeModels;
     }
@@ -48,7 +50,6 @@ public class StoreModelFacade {
         StoreModel storeModel = convertModel(storeByUserName, StoreModel.class);
         return storeModel;
     }
-
 
 
     public Store saveStore(StoreModel storeModel) {
@@ -75,18 +76,17 @@ public class StoreModelFacade {
         return convertModel(orderDTO, Order.class);
     }
 
-    public StoreModel getStoreByToken(String token){
+    public StoreModel getStoreByToken(String token) {
         Store store = storeService.getStoreByToken(token);
-        if(store == null){
+        if (store == null) {
             return null;
         }
-        return convertModel(store,StoreModel.class);
+        return convertModel(store, StoreModel.class);
     }
 
     public boolean deleteStore(Long id) {
         return storeService.deleteStoreById(id);
     }
-
 
 
     private <T, D> T convertModel(D obj, Class<T> classT) {
