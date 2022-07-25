@@ -95,4 +95,10 @@ public class JwtTokenUtil implements Serializable {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
+    public String generateToken(String userName) {
+        Map<String, Object> claims = new HashMap<>();
+        return doGenerateToken(claims, userName);
+    }
+
 }

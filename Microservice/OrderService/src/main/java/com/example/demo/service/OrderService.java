@@ -1,25 +1,24 @@
 package com.example.demo.service;
 
 import com.example.demo.client.ItemFeignClient;
+import com.example.demo.client.StoreFeignClient;
 import com.example.demo.dto.ItemDTO;
-import com.example.demo.dto.OrderDTO;
-import com.example.demo.dto.OrderDetailDTO;
+import com.example.demo.dto.StoreDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
-import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.OrderRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.integration.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.example.demo.utils.Constant.AUTHOR;
 
 @Service
 public class OrderService {
@@ -30,24 +29,29 @@ public class OrderService {
     private OrderDetailService orderDetailService;
     @Autowired
     private ItemFeignClient itemFeignClient;
+
     @Autowired
-    private OrderSource orderSource;
+    private StoreFeignClient storeFeignClient;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public Order saveOrder(List<OrderDetail> orderDetails, Long storeId) {
+    @Autowired
+    private HttpServletRequest request;
+
+    public Order saveOrder(List<OrderDetail> orderDetails) {
         Order order = new Order();
         orderRepository.save(order);
         order.setOrderDate(LocalDate.now());
-        order.setStoreId(storeId);
+        StoreDTO store = storeFeignClient.getStoreByToken(request.getHeader(AUTHOR));
+        order.setStoreId(store.getId());
         double totalPrice = 0;
         for (int i = 0; i < orderDetails.size(); i++) {
             OrderDetail orderDetail = orderDetails.get(i);
             orderDetail.setId(0);
             ItemDTO item = itemFeignClient.getItemById(orderDetail.getItemId()).getBody();
             System.out.println(item.getPrice());
-            if(item==null){
+            if (item == null) {
                 orderDetails.remove(i--);
                 continue;
             }
@@ -59,13 +63,7 @@ public class OrderService {
         }
         order.setTotalPrice(totalPrice);
         order.setOrderDetails(orderDetails);
-        orderRepository.save(order);
-        List<OrderDetailDTO> orderDetailDTOList = convertListModel(orderDetails, OrderDetailDTO.class);
-//        rabbitTemplate.convertAndSend("order-delivery.exchange", "order.delivery.routingKey", orderDetailDTOList);
-//        rabbitTemplate.convertAndSend("user.exchange", "order.routingKey", orderDetailDTOList);
-        orderSource.order().send(MessageBuilder.withPayload(orderDetailDTOList).build());
-        System.out.println(order.getId());
-        return order;
+        return orderRepository.save(order);
     }
 
     public List<Order> getAllOrder() {
@@ -125,12 +123,12 @@ public class OrderService {
         return false;
     }
 
-    public void getOrderByIdDemoRabbit(Long id) {
-        Order order = orderRepository.findById(id).get();
-        LocalDate orderDate = order.getOrderDate();
-        System.out.println(orderDate);
-        rabbitTemplate.convertAndSend("user.exchange", "order.routingkey", order);
-    }
+//    public void getOrderByIdDemoRabbit(Long id) {
+//        Order order = orderRepository.findById(id).get();
+//        LocalDate orderDate = order.getOrderDate();
+//        System.out.println(orderDate);
+//        rabbitTemplate.convertAndSend("user.exchange", "order.routingkey", order);
+//    }
 
     //    public Order updateOrderById(Order order, long id) {
 //

@@ -19,11 +19,11 @@ public class ItemService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    @Value("${spring.rabbitmq.exchange}")
-    private String exchange;
-
-    @Value("${spring.rabbitmq.routingkey}")
-    private String routingkey;
+//    @Value("${spring.rabbitmq.exchange}")
+//    private String exchange;
+//
+//    @Value("${spring.rabbitmq.routingkey}")
+//    private String routingkey;
 
 
     public List<Item> getAllItem() {
@@ -106,12 +106,12 @@ public class ItemService {
         return false;
     }
 
-    public void getAllItemDemoRabbit() {
-        rabbitTemplate.convertAndSend(exchange, routingkey, itemRepository.findAll());
-    }
-
-    public void getItemByIdDemorabbit(Long id) {
-        System.out.println(itemRepository.findById(id).get());
-        rabbitTemplate.convertAndSend(exchange, routingkey, itemRepository.findById(id).get());
-    }
+//    public void getAllItemDemoRabbit() {
+//        rabbitTemplate.convertAndSend(exchange, routingkey, itemRepository.findAll());
+//    }
+//
+//    public void getItemByIdDemorabbit(Long id) {
+//        System.out.println(itemRepository.findById(id).get());
+//        rabbitTemplate.convertAndSend(exchange, routingkey, itemRepository.findById(id).get());
+//    }
 }

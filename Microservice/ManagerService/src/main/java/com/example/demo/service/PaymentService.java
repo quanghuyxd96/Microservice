@@ -21,14 +21,18 @@ public class PaymentService {
     private PaymentRepository paymentRepository;
 
     @Autowired
+    private ManagerService managerService;
+
+    @Autowired
     private RabbitTemplate rabbitTemplate;
 
     public Payment saveAndUpdatePaymentOfStore(Payment payment) {
-        OrderDTO orderDTO = orderFeignClient.getOrderById(payment.getOrderId()).getBody();
+        String token = managerService.generateToken();
+        OrderDTO orderDTO = orderFeignClient.getOrderById(payment.getOrderId(),token).getBody();
         if (orderDTO == null) {
             return null;
         } else {
-            StoreDTO storeDTO = storeFeignClient.getStoreById(orderDTO.getStoreId()).getBody();
+            StoreDTO storeDTO = storeFeignClient.getStoreById(orderDTO.getStoreId(),token).getBody();
             Payment paymentRepo = paymentRepository.findByOrderId(orderDTO.getId());
             if (paymentRepo == null) {
                 payment.setMoneyUnpaid(orderDTO.getTotalPrice() - payment.getMoneyPaid());

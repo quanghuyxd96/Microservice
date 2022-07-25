@@ -51,13 +51,6 @@ paths:
   /order/save-order:
     post:
       description: Auto generated using Swagger Inspector
-      parameters:
-        - name: id
-          in: query
-          schema:
-            type: integer
-            format: int64
-          example: '1'
       requestBody:
         content:
           application/json:

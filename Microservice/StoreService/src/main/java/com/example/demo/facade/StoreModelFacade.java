@@ -21,23 +21,22 @@ public class StoreModelFacade {
     @Autowired
     private StoreService storeService;
 
+
+
     public List<StoreModel> getAllStoreModel() {
         List<Store> stores = storeService.getAllStore();
-        List<StoreModel> StoreModels = new ArrayList<StoreModel>();
-        for (Store store : stores) {
-            StoreModel StoreModel = new StoreModel();
-            StoreModel = convertStoreToStoreModel(store);
-            StoreModels.add(StoreModel);
-        }
-        return StoreModels;
+        List<StoreModel> storeModels = convertListModel(stores, StoreModel.class);
+        return storeModels;
     }
 
 
     public StoreModel getStoreModelById(Long id) {
         Store store = storeService.getStoreById(id);
-        StoreModel StoreModel = new StoreModel();
-        StoreModel = convertStoreToStoreModel(store);
-        return StoreModel;
+        if (store == null) {
+            return null;
+        }
+        StoreModel storeModel = convertModel(store, StoreModel.class);
+        return storeModel;
     }
 
     public long isValid(String userName, String password) {
@@ -46,55 +45,20 @@ public class StoreModelFacade {
 
     public StoreModel getStoreByUserName(String userName, String password) {
         Store storeByUserName = storeService.getStoreByUserName(userName, password);
-        StoreModel StoreModel = new StoreModel();
-        StoreModel = convertStoreToStoreModel(storeByUserName);
-        return StoreModel;
+        StoreModel storeModel = convertModel(storeByUserName, StoreModel.class);
+        return storeModel;
     }
 
-    public StoreModel convertStoreToStoreModel(Store store) {
-        StoreModel StoreModel = new StoreModel();
-        StoreModel.setUserName(store.getUserName());
-        StoreModel.setPassword(store.getPassword());
-        StoreModel.setName(store.getName());
-        StoreModel.setEmail(store.getEmail());
-        StoreModel.setAddress(store.getAddress());
-        StoreModel.setId(store.getId());
-        StoreModel.setPhoneNumber(store.getPhoneNumber());
-        return StoreModel;
-    }
 
-    public Store convertStoreModelToStore(StoreModel StoreModel) {
+
+    public Store saveStore(StoreModel storeModel) {
         Store store = new Store();
-        store.setUserName(StoreModel.getUserName());
-        store.setPassword(StoreModel.getPassword());
-        store.setName(StoreModel.getName());
-        store.setEmail(StoreModel.getEmail());
-        store.setAddress(StoreModel.getAddress());
-        store.setPhoneNumber(StoreModel.getPhoneNumber());
-        return store;
-    }
-
-    public Store convertStoreModelToStore(StoreModel StoreModel, boolean check) {
-        Store store = new Store();
-        store.setUserName(StoreModel.getUserName());
-        store.setPassword(StoreModel.getPassword());
-        store.setName(StoreModel.getName());
-        store.setEmail(StoreModel.getEmail());
-        store.setAddress(StoreModel.getAddress());
-        store.setPhoneNumber(StoreModel.getPhoneNumber());
-        store.setConfirmPassword(StoreModel.getConfirmPassword());
-        return store;
-    }
-
-    public Store saveStore(StoreModel StoreModel) {
-        Store store = new Store();
-        store = convertStoreModelToStore(StoreModel);
+        store = convertModel(storeModel, Store.class);
         return storeService.saveStore(store);
     }
 
-    public Store updateStore(StoreModel StoreModel) {
-        Store store = new Store();
-        store = convertStoreModelToStore(StoreModel, true);
+    public Store updateStore(StoreModel storeModel) {
+        Store store = convertModel(storeModel, Store.class);
         return storeService.updateStoreById(store);
     }
 
@@ -111,9 +75,19 @@ public class StoreModelFacade {
         return convertModel(orderDTO, Order.class);
     }
 
+    public StoreModel getStoreByToken(String token){
+        Store store = storeService.getStoreByToken(token);
+        if(store == null){
+            return null;
+        }
+        return convertModel(store,StoreModel.class);
+    }
+
     public boolean deleteStore(Long id) {
         return storeService.deleteStoreById(id);
     }
+
+
 
     private <T, D> T convertModel(D obj, Class<T> classT) {
         ModelMapper modelMapper = new ModelMapper();
@@ -130,4 +104,40 @@ public class StoreModelFacade {
         }
         return objResults;
     }
+
+    //    public StoreModel convertStoreToStoreModel(Store store) {
+//        StoreModel StoreModel = new StoreModel();
+//        StoreModel.setUserName(store.getUserName());
+//        StoreModel.setPassword(store.getPassword());
+//        StoreModel.setName(store.getName());
+//        StoreModel.setEmail(store.getEmail());
+//        StoreModel.setAddress(store.getAddress());
+//        StoreModel.setId(store.getId());
+//        StoreModel.setPhoneNumber(store.getPhoneNumber());
+//        return StoreModel;
+//    }
+//
+//    public Store convertStoreModelToStore(StoreModel StoreModel) {
+//        Store store = new Store();
+//        store.setUserName(StoreModel.getUserName());
+//        store.setPassword(StoreModel.getPassword());
+//        store.setName(StoreModel.getName());
+//        store.setEmail(StoreModel.getEmail());
+//        store.setAddress(StoreModel.getAddress());
+//        store.setPhoneNumber(StoreModel.getPhoneNumber());
+//        return store;
+//    }
+//
+//    public Store convertStoreModelToStore(StoreModel StoreModel, boolean check) {
+//        Store store = new Store();
+//        store.setUserName(StoreModel.getUserName());
+//        store.setPassword(StoreModel.getPassword());
+//        store.setName(StoreModel.getName());
+//        store.setEmail(StoreModel.getEmail());
+//        store.setAddress(StoreModel.getAddress());
+//        store.setPhoneNumber(StoreModel.getPhoneNumber());
+//        store.setConfirmPassword(StoreModel.getConfirmPassword());
+//        return store;
+//    }
 }
+

@@ -6,11 +6,14 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
+
+import static com.example.demo.utils.Constant.AUTHOR;
 
 @FeignClient(name = "deliveryNoteFeignClient", url = "${client.post.baseUrl4}")
 public interface DeliveryNoteFeignClient {
     @PostMapping("/delivery-note/")
-    List<DeliveryNoteDTO> saveDeliveryNote(@RequestBody List<OrderDTO> orderDTOS);
+    List<DeliveryNoteDTO> saveDeliveryNote(@RequestBody List<OrderDTO> orderDTOS, @RequestHeader(AUTHOR) String token);
 }

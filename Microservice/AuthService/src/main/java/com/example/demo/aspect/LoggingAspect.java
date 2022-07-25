@@ -1,4 +1,4 @@
-package com.example.demo.aop;
+package com.example.demo.aspect;
 
 import com.example.demo.response.Token;
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +9,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
@@ -20,37 +19,30 @@ import java.util.stream.Collectors;
 
 @Aspect
 @Component
-public class LoggingAspect
-{
+public class LoggingAspect {
     private static final Logger LOGGER = LogManager.getLogger(LoggingAspect.class);
-    private org.slf4j.Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
-    //AOP expression for which methods shall be intercepted
+
     @Around("execution(* com.example.demo.controller.AuthRestController.login(..)) and args(userName,password)")
-    public ResponseEntity<Token> profileAllMethods(ProceedingJoinPoint proceedingJoinPoint, String userName, String password) throws Throwable
-    {
+    public ResponseEntity<Token> profileAllMethods(ProceedingJoinPoint proceedingJoinPoint, String userName, String password) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
         List<String> strings = Arrays.stream(methodSignature.getParameterNames()).collect(Collectors.toList());
-
-        System.out.println(strings.get(0));
-        System.out.println(userName);
-        System.out.println("CHữ kí: " +methodSignature);
-
-        //Get intercepted method details
+        //demo chặn đầu
+//        if(userName.equals("admin")){
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
         String className = methodSignature.getDeclaringType().getSimpleName();
         String methodName = methodSignature.getName();
-
         final StopWatch stopWatch = new StopWatch();
-
-        //Measure method execution time
         stopWatch.start();
-//        Object result = proceedingJoinPoint.proceed();
         ResponseEntity<Token> token = (ResponseEntity<Token>) proceedingJoinPoint.proceed();
         stopWatch.stop();
         System.out.println(token.getBody().getToken());
-
+        //demo chặn đuôi
+//        if(token.getBody().getToken().length()>0){
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
         //Log method execution time
         LOGGER.info("Execution time of " + className + "." + methodName + " : " + stopWatch.getTotalTimeMillis() + " ms");
-
         return token;
     }
 

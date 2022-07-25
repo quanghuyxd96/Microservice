@@ -1,7 +1,6 @@
 package com.example.demo.mq;
 
 import com.example.demo.utils.Constant;
-import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.messaging.SubscribableChannel;
 

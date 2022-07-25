@@ -37,6 +37,7 @@ spring:
 client:
   post:
     baseUrl: 'http://localhost:8084'
+    baseUrl1: 'http://localhost:8082'
     baseUrl2: 'http://localhost:8081'
 server:
   port: 8083

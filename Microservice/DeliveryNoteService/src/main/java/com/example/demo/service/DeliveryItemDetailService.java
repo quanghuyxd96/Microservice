@@ -4,6 +4,7 @@ import com.example.demo.client.ItemFeignClient;
 import com.example.demo.dto.ItemDTO;
 import com.example.demo.entity.DeliveryItemDetail;
 import com.example.demo.repository.DeliveryItemDetailRepository;
+import com.example.demo.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ public class DeliveryItemDetailService {
     private DeliveryNoteService deliveryNoteService;
     @Autowired
     private ItemFeignClient itemFeignClient;
+
+
 
     public List<DeliveryItemDetail> getAllDeliveryItemDetails() {
         return deliveryItemDetailRepository.findAll();
@@ -104,6 +107,7 @@ public class DeliveryItemDetailService {
 
     @Scheduled(cron = "0 */1 * * * *")
     public void checkDeliveryItemUndelivery() {
+        String token = deliveryNoteService.generateToken();
         List<DeliveryItemDetail> deliveryItemDetails = deliveryItemDetailRepository.getItemUndeliveried();
         List<DeliveryItemDetail> itemDetails = new ArrayList<>();
         for (int i = 0; i < deliveryItemDetails.size(); i++) {
@@ -158,7 +162,7 @@ public class DeliveryItemDetailService {
             }
             deliveryNoteService.updateOrSaveDeliveryNote(itemDetails1);
         }
-        itemFeignClient.updateItemQuantity(items);
+        itemFeignClient.updateItemQuantity(items,token);
         System.out.println("end");
     }
 

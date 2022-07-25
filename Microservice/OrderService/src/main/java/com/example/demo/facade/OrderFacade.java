@@ -37,11 +37,11 @@ public class OrderFacade {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public OrderModel saveOrder(List<OrderDetailModel> orderDetailModels, Long storeId) {
-        if (orderDetailModels == null || storeId < 1) {
+    public OrderModel saveOrder(List<OrderDetailModel> orderDetailModels) {
+        if (orderDetailModels == null) {
             return null;
         }
-        Order order = orderService.saveOrder(convertListModel(orderDetailModels, OrderDetail.class), storeId);
+        Order order = orderService.saveOrder(convertListModel(orderDetailModels, OrderDetail.class));
         return convertModel(order, OrderModel.class);
     }
 

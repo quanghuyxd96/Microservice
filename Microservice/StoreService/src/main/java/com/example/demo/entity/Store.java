@@ -25,4 +25,8 @@ public class Store {
     @Transient
     private String confirmPassword;
 
+    public Store(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
 }

@@ -33,14 +33,19 @@ public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
+    @Autowired
+    private ManagerService managerService;
+
     private static Manager manager = new Manager();
 
     @Scheduled(cron = "0 0 7 * * *")  //check và kiểm tra vào lúc 7h sáng hằng ngày
     public void sendEmailToNotifyDelivery() {
         SimpleMailMessage message = new SimpleMailMessage();
-        List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-6));
+        String token = managerService.generateToken();
+        List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-6),
+                token);
         for (OrderDTO orderDTO : ordersByOrderDate) {
-            ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId());
+            ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId(),token);
             message.setTo(store.getBody().getEmail());
             message.setText("Your order with code " + orderDTO.getId() + " will be shipped on tomorrow");
             message.setSubject("Order " + orderDTO.getId() + " status");
@@ -55,9 +60,10 @@ public class EmailService {
 
 
     public void sendEmailToNotifyOrdered(List<OrderDetailDTO> orderDetailDTOS) {
+        String token = managerService.generateToken();
         SimpleMailMessage message = new SimpleMailMessage();
-        OrderDTO orderDTO = orderFeignClient.getOrderById(orderDetailDTOS.get(0).getOrderId()).getBody();
-        ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId());
+        OrderDTO orderDTO = orderFeignClient.getOrderById(orderDetailDTOS.get(0).getOrderId(),token).getBody();
+        ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId(),token);
         message.setTo(store.getBody().getEmail());
         message.setSubject("Order " + orderDTO.getId() + " status");
         message.setText("The order has been placed with detail: ");
@@ -66,7 +72,7 @@ public class EmailService {
             textContent += orderDetailDTO.getItemId() + "\t" + orderDetailDTO.getItemQuantity() + "\n";
         }
         message.setText(message.getText() + "\n" + textContent);
-        try{
+        try {
             javaMailSender.send(message);
             Email email = new Email();
             email = convertToEmail(message, orderDTO);
@@ -74,7 +80,7 @@ public class EmailService {
             email.setManager(manager);
             email.setTextContent(message.getText());
             emailRepository.save(email);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

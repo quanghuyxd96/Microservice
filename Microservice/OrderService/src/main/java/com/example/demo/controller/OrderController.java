@@ -1,8 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.OrderDetailDTO;
-import com.example.demo.entity.Order;
-import com.example.demo.entity.OrderDetail;
 import com.example.demo.facade.OrderFacade;
 import com.example.demo.repository.OrderRepository;
 import io.tej.SwaggerCodgen.api.OrderApi;
@@ -11,14 +8,19 @@ import io.tej.SwaggerCodgen.model.OrderModel;
 import io.tej.SwaggerCodgen.model.ResponseObject;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.List;
+
+import static com.example.demo.utils.Constant.AUTHOR;
 
 @RestController
 public class OrderController implements OrderApi {
@@ -37,8 +39,9 @@ public class OrderController implements OrderApi {
     //    @Autowired
 //    private HttpServletRequest request;
     @Override
-    public ResponseEntity<OrderModel> orderSaveOrderPost(Long id, List<OrderDetailModel> orderDetailModels) {
-        OrderModel orderModel = orderFacade.saveOrder(orderDetailModels, id);
+    public ResponseEntity<OrderModel> orderSaveOrderPost(List<OrderDetailModel> orderDetailModels) {
+        System.out.println(request.getUserPrincipal());
+        OrderModel orderModel = orderFacade.saveOrder(orderDetailModels);
         if (orderModel == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -56,8 +59,18 @@ public class OrderController implements OrderApi {
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<OrderModel> orderGetGet(Long id) {
+//    @Override
+//    public ResponseEntity<OrderModel> orderGetGet(Long id) {
+//        OrderModel orderModel = orderFacade.getOrderById(id);
+//        if (orderModel == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//        return new ResponseEntity<>(orderModel, HttpStatus.OK);
+//    }
+
+
+    @GetMapping("/order/get")
+    public ResponseEntity<OrderModel> getOrderById(@RequestParam("id") Long id, @RequestHeader(AUTHOR) String token) {
         OrderModel orderModel = orderFacade.getOrderById(id);
         if (orderModel == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -74,9 +87,18 @@ public class OrderController implements OrderApi {
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<List<OrderModel>> orderGetByDateGet(LocalDate date) {
-        List<OrderModel> orders = orderFacade.getOrdersByDate(date);
+    //    @Override
+//    public ResponseEntity<List<OrderModel>> orderGetByDateGet(LocalDate date) {
+//        List<OrderModel> orders = orderFacade.getOrdersByDate(date);
+//        if (orders == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//        return new ResponseEntity<>(orders, HttpStatus.OK);
+//    }
+    @GetMapping("/order/get-by-date")
+    public ResponseEntity<List<OrderModel>> getOrderByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate,
+                                                           @RequestHeader(AUTHOR) String token) {
+        List<OrderModel> orders = orderFacade.getOrdersByDate(localDate);
         if (orders == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -128,6 +150,11 @@ public class OrderController implements OrderApi {
         return new ResponseEntity<>(orderDetailModel, HttpStatus.OK);
     }
 
+    @GetMapping("/order/demo")
+    public int demo(@RequestHeader("Authorization") String a) {
+        System.out.println(request.getUserPrincipal());
+        return 1;
+    }
 
 //    @GetMapping("/demo")
 //    public void getOrderByIdDemoRabbit(@RequestParam("id") Long id) {

@@ -1,15 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.client.OrderFeignClient;
-import com.example.demo.dto.OrderDTO;
 import com.example.demo.entity.Store;
 import com.example.demo.facade.StoreFacade;
 import com.example.demo.facade.StoreModelFacade;
 import com.example.demo.repository.StoreRepository;
-import com.example.demo.respond.ResponseObjectEntity;
 import io.tej.SwaggerCodgen.api.StoreApi;
-import io.tej.SwaggerCodgen.model.Order;
-import io.tej.SwaggerCodgen.model.OrderDetail;
 import io.tej.SwaggerCodgen.model.ResponseObject;
 import io.tej.SwaggerCodgen.model.StoreModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static com.example.demo.utils.Constant.AUTHOR;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -34,19 +33,41 @@ public class StoreModelController implements StoreApi {
     @Autowired
     private StoreFacade storeFacade;
 
+    @Autowired
+    private HttpServletRequest request;
+
 
     @Override
     public ResponseEntity<List<StoreModel>> storeAllStoreGet() {
         return new ResponseEntity<>(storeModelFacade.getAllStoreModel(), HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<StoreModel> storeGetStoreByIdGet(Long id) {
+//    @Override
+//    public ResponseEntity<StoreModel> storeGetStoreByIdGet(Long id) {
+//        StoreModel StoreModelById = storeModelFacade.getStoreModelById(id);
+//        if (StoreModelById == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//        return new ResponseEntity<>(StoreModelById, HttpStatus.OK);
+//    }
+
+    @GetMapping("/store/get-store-by-id")
+    public ResponseEntity<StoreModel> getStoreById(@RequestParam("id") Long id, @RequestHeader(AUTHOR) String token) {
+        System.out.println(request.getUserPrincipal());
         StoreModel StoreModelById = storeModelFacade.getStoreModelById(id);
         if (StoreModelById == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(StoreModelById, HttpStatus.OK);
+    }
+
+    @GetMapping("/store/get")
+    public StoreModel getStoreByToken(@RequestHeader("Authorization") String token) {
+        StoreModel store = storeModelFacade.getStoreByToken(token);
+        if (store == null) {
+            return null;
+        }
+        return store;
     }
 
     @Override
@@ -58,10 +79,12 @@ public class StoreModelController implements StoreApi {
         return storeGetStoreByIdGet(valid);
     }
 
+
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @Override
-    public ResponseEntity<ResponseObject> storeSavePost(StoreModel StoreModel) {
-        Store storeCheck = storeModelFacade.saveStore(StoreModel);
+    public ResponseEntity<ResponseObject> storeSavePost(StoreModel storeModel) {
+        System.out.println(storeModel.getConfirmPassword());
+        Store storeCheck = storeModelFacade.saveStore(storeModel);
         ResponseObject responseObject = new ResponseObject();
         if (storeCheck == null) {
             responseObject.setStatus("False");
@@ -102,24 +125,31 @@ public class StoreModelController implements StoreApi {
         return ResponseEntity.status(HttpStatus.OK).body(responseObject);
     }
 
-    @Override
-    public ResponseEntity<Order> storeOrderSavePost(Long id, List<OrderDetail> orderDetail)  {
-        Order order = storeModelFacade.saveOrder(id, orderDetail);
-        if (order == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(order, HttpStatus.OK);
-    }
-
-    //demo
-    @GetMapping("/store/get/{userName}")
-    public ResponseEntity<Store> getStoreByUserName(@PathVariable("userName") String userName){
-        return new ResponseEntity<>(storeRepository.findByUserName(userName),HttpStatus.OK) ;
+    @RequestMapping(value = "/store/authenticate", method = RequestMethod.POST)
+    public ResponseEntity<?> createAuthenticationToken(@RequestParam("userName") String userName,
+                                                       @RequestParam("password") String password)
+            throws Exception {
+        storeModelFacade.getStoreService().authenticate(userName, password);
+        return new ResponseEntity<>(userName, HttpStatus.OK);
     }
 
     //Dung de demo
 
-    //@PostMapping(value = "/save") //"application/x-www-form-urlencoded",consumes = "application/json")
+//    @Override
+//    public ResponseEntity<Order> storeOrderSavePost(Long id, List<OrderDetail> orderDetail) {
+//        Order order = storeModelFacade.saveOrder(id, orderDetail);
+//        if (order == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//        return new ResponseEntity<>(order, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/store/get/{userName}")
+//    public ResponseEntity<Store> getStoreByUserName(@PathVariable("userName") String userName) {
+//        return new ResponseEntity<>(storeRepository.findByUserName(userName), HttpStatus.OK);
+//    }
+//
+//    @PostMapping(value = "/save") //"application/x-www-form-urlencoded",consumes = "application/json")
 //    public ResponseEntity<Object> saveStore(@RequestBody Store store) {
 //        System.out.println(store.toString());
 //        Store storeCheck = storeFacade.saveStore(store);
@@ -128,6 +158,7 @@ public class StoreModelController implements StoreApi {
 //        }
 //        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Created"));
 //    }
+//
 //    @DeleteMapping("/delete")
 //    public ResponseEntity<ResponseObjectEntity> deleteStore(@RequestParam("id") int id) {
 //        boolean check = storeService.deleteStoreById(id);
@@ -136,29 +167,32 @@ public class StoreModelController implements StoreApi {
 //        }
 //        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObjectEntity("OK", "Delete Success"));
 //    }
-
-    //    @PutMapping("/update")
+//
+//    @PutMapping("/update")
 //    public Store updateStoreById(@RequestBody Store store) {
 //        return storeService.updateStoreById(store);
 //    }
+//
+//
+//    @PostMapping("/all-order")       //2nd way
+//    public ResponseEntity<Object> orders(@RequestParam("userName") String user, @RequestParam("password") String password) {
+//        long check = storeFacade.isValid(user, password);
+//        if (check != -1) {
+//            List<OrderDTO> allOrders = orderFeignClient.getAllOrders();
+//            List<OrderDTO> orderList = storeFacade.ordersByStoreId(check, allOrders);
+//            if (orderList == null) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObjectEntity("True", "Orders: none."));
+//            }
+//            return new ResponseEntity<>(storeFacade.ordersByStoreId(check, allOrders), HttpStatus.OK);
+//        }
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObjectEntity("False", "Wrong user or password"));
+//    }
 
 
-    @PostMapping("/all-order")       //2nd way
-    public ResponseEntity<Object> orders(@RequestParam("userName") String user, @RequestParam("password") String password) {
-        long check = storeFacade.isValid(user, password);
-        if (check != -1) {
-            List<OrderDTO> allOrders = orderFeignClient.getAllOrders();
-            List<OrderDTO> orderList = storeFacade.ordersByStoreId(check, allOrders);
-            if (orderList == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseObjectEntity("True", "Orders: none."));
-            }
-            return new ResponseEntity<>(storeFacade.ordersByStoreId(check, allOrders), HttpStatus.OK);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseObjectEntity("False", "Wrong user or password"));
-    }
-
-
-
-
-
+    //demo truyền header
+//    @GetMapping("/store/demo-trial")
+//    public int demo() {
+//        System.out.println(request.getHeader("Authorization"));
+//        return orderFeignClient.demo(request.getHeader("Authorization"));
+//    }
 }

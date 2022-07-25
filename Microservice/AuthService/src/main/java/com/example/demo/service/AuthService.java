@@ -2,9 +2,11 @@ package com.example.demo.service;
 
 import com.example.demo.client.ManagerFeignClient;
 import com.example.demo.client.StoreFeignClient;
+import com.example.demo.dto.ResponseObjectEntity;
 import com.example.demo.dto.StoreDTO;
 import com.example.demo.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,10 +29,19 @@ public class AuthService {
             }
             return jwtUtil.generateToken(userName);
         }
-        ResponseEntity<StoreDTO> store = storeFeignClient.getStoreByUserName(userName, password);
+        String store = storeFeignClient.getStoreUserName(userName, password);
         if (store == null) {
             return null;
         }
         return jwtUtil.generateToken(userName);
+    }
+
+    public ResponseEntity<ResponseObjectEntity> saveStore(StoreDTO storeDTO){
+        if(storeDTO.getUserName().startsWith("admin")){
+            return new ResponseEntity<>(new ResponseObjectEntity("False","The account is not valid"),HttpStatus.BAD_REQUEST);
+        }
+
+        System.out.println(storeDTO.getConfirmPassword());
+        return storeFeignClient.saveStore(storeDTO);
     }
 }

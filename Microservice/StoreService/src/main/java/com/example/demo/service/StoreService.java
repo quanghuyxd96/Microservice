@@ -5,12 +5,21 @@ import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Store;
 import com.example.demo.repository.StoreRepository;
+import com.example.demo.utils.JwtTokenUtil;
 import lombok.Getter;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -22,18 +31,37 @@ public class StoreService {
     @Autowired
     private OrderFeignClient orderFeignClient;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    private static final Logger logger = LogManager.getLogger(StoreService.class);
+
     public List<Store> getAllStore() {
         return storeRepository.findAll();
     }
 
 
     public Store saveStore(Store store) {
+        System.out.println(store.toString());
+        if (store.getUserName().startsWith("admin")) {
+            return null;
+        }
+        if (!store.getPassword().equals(store.getConfirmPassword())) {
+            return null;
+        }
         store.setUserName(store.getUserName().toLowerCase());
-        Store storeRepositoryByUserName = storeRepository.findByUserName(store.getUserName());
+        Store storeRepositoryByUserName = storeRepository.findByUserNameQuery(store.getUserName());
         if (storeRepositoryByUserName != null) {
             return null;
         }
         store.setPassword(endCodePassword(store.getPassword()));
+        System.out.println(store.getPassword());
         store.setPayment(0);
         return storeRepository.save(store);
     }
@@ -61,18 +89,18 @@ public class StoreService {
 
 
     //Hien tai chua dung toi
-    public Store updateStoreByUserName(Store store) {
-        Store storeRepositoryByUserName = storeRepository.findByUserName(store.getUserName());
-        storeRepositoryByUserName.setName(store.getName());
-        storeRepositoryByUserName.setEmail(store.getEmail());
-        storeRepositoryByUserName.setAddress(store.getAddress());
-        storeRepositoryByUserName.setPhoneNumber(store.getPhoneNumber());
-        storeRepositoryByUserName.setPassword(store.getPassword());
-        return storeRepository.save(storeRepositoryByUserName);
-    }
+//    public Store updateStoreByUserName(Store store) {
+//        Store storeRepositoryByUserName = storeRepository.findByUserName(store.getUserName());
+//        storeRepositoryByUserName.setName(store.getName());
+//        storeRepositoryByUserName.setEmail(store.getEmail());
+//        storeRepositoryByUserName.setAddress(store.getAddress());
+//        storeRepositoryByUserName.setPhoneNumber(store.getPhoneNumber());
+//        storeRepositoryByUserName.setPassword(store.getPassword());
+//        return storeRepository.save(storeRepositoryByUserName);
+//    }
 
     public Store updateStoreById(Store store) {
-        Store storeRepositoryByUserName = storeRepository.findByUserName(store.getUserName());
+        Store storeRepositoryByUserName = storeRepository.findByUserNameQuery(store.getUserName());
 
         if (store.getName().length() > 0) {
             storeRepositoryByUserName.setName(store.getName());
@@ -124,12 +152,10 @@ public class StoreService {
         return false;
     }
 
-    public String endCodePassword(String password) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < password.length(); i++) {
-            stringBuilder.append((char) (password.charAt(i) + 2));
-        }
-        return stringBuilder.toString();
+    private String endCodePassword(String password) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        password = passwordEncoder.encode(password);
+        return password;
     }
 
     public long validUserPassword(Store store) {
@@ -171,6 +197,37 @@ public class StoreService {
     }
 
     public Store getStoreByUserName(Store store) {
-        return storeRepository.findByUserName(store.getUserName());
+        return storeRepository.findByUserNameQuery(store.getUserName());
+    }
+
+    public Store getStoreByUserName(String userName) {
+        Store store = storeRepository.findByUserName(userName);
+        if (store == null) {
+            return null;
+        }
+        return store;
+    }
+
+    public Store getStoreByToken(String token) {
+        String tokenToUse = token.substring(7);
+        logger.info(tokenToUse);
+        String userName = jwtTokenUtil.getUsernameFromToken(tokenToUse);
+        Store store = storeRepository.findByUserName(userName);
+        if (store == null) {
+            return null;
+        }
+        return store;
+    }
+
+    public void authenticate(String username, String password) throws Exception {
+        Objects.requireNonNull(username);
+        Objects.requireNonNull(password);
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (DisabledException e) {
+            throw new Exception("USER_DISABLED", e);
+        } catch (BadCredentialsException e) {
+            throw new Exception("INVALID_CREDENTIALS", e);
+        }
     }
 }

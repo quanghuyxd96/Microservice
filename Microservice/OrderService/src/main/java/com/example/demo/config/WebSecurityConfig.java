@@ -43,8 +43,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
-                .authorizeRequests().antMatchers("/order/orders","/order/save-order","/order/get").permitAll()
-//                .antMatchers("/order/get").hasRole("USER")
+                .authorizeRequests().antMatchers("/order/save-order","/order/orders","/order/get").permitAll()
+                .antMatchers("/order/demo").hasRole("USER")
                 .anyRequest().authenticated().and().
                 exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

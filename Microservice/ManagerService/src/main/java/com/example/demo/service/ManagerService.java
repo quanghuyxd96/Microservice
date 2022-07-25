@@ -1,25 +1,39 @@
 package com.example.demo.service;
 
 import com.example.demo.client.DeliveryNoteFeignClient;
+import com.example.demo.client.ItemFeignClient;
 import com.example.demo.client.OrderFeignClient;
 import com.example.demo.client.StoreFeignClient;
 import com.example.demo.dto.DeliveryNoteDTO;
+import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Manager;
 import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.ManagerRepository;
-import org.apache.commons.math3.geometry.partitioning.BSPTreeVisitor;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import com.example.demo.utils.jwt.JwtTokenUtil;
+import com.example.demo.utils.report.ExcelGenerator;
+import com.example.demo.utils.report.PDFGenerator;
+import com.lowagie.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -36,14 +50,20 @@ public class ManagerService {
 
     @Autowired
     private OrderFeignClient orderFeignClient;
+
+    @Autowired
+    private ItemFeignClient itemFeignClient;
     @Autowired
     private EmailService emailService;
 
     @Autowired
     private DeliveryNoteFeignClient deliveryNoteFeignClient;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     public List<Manager> getAllManagers() {
         return managerRepository.findAll();
@@ -61,13 +81,11 @@ public class ManagerService {
         return managerRepository.save(manager);
     }
 
-    private String endCodePassword(String password){
+    private String endCodePassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         password = passwordEncoder.encode(password);
         return password;
     }
-
-
 
     public Manager getManagerById(Long id) {
         Optional<Manager> manager = managerRepository.findById(id);
@@ -90,7 +108,6 @@ public class ManagerService {
         managerRepository.deleteById(id);
     }
 
-
     public Manager updateManagerPasswordById(Manager manager, long id) {
         Optional<Manager> managerRepositoryById = managerRepository.findById(id);
         if (managerRepositoryById.isPresent()) {
@@ -102,19 +119,81 @@ public class ManagerService {
 
     @Scheduled(cron = "0 0 7 * * *")
     public List<DeliveryNoteDTO> saveDeliveryNote() {
-        List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-7));
-        return deliveryNoteFeignClient.saveDeliveryNote(ordersByOrderDate);
+        String token = generateToken();
+        List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-7), token);
+        return deliveryNoteFeignClient.saveDeliveryNote(ordersByOrderDate,token);
     }
 
-    public Manager checkManager(Manager manager){
+    public Manager checkManager(Manager manager) {
         List<Manager> managers = managerRepository.findAll();
-        for(Manager manager1: managers){
-            if(manager.getUserName().equalsIgnoreCase(manager1.getUserName())&&manager
-                    .getPassword().equalsIgnoreCase(manager1.getPassword())){
+        for (Manager manager1 : managers) {
+            if (manager.getUserName().equalsIgnoreCase(manager1.getUserName()) && manager
+                    .getPassword().equalsIgnoreCase(manager1.getPassword())) {
                 return manager1;
             }
         }
         return null;
+    }
+
+    public Manager checkManager(String userName, String password) {
+        Manager manager = managerRepository.findByUserName(userName);
+        System.out.println(manager.getPassword());
+        System.out.println(endCodePassword(password));
+        if (manager == null) {
+            return null;
+        }
+        if (manager.getPassword().equals(endCodePassword(password))) {
+            return manager;
+        }
+        return null;
+    }
+
+    public void authenticate(String username, String password) throws Exception {
+        Objects.requireNonNull(username);
+        Objects.requireNonNull(password);
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (DisabledException e) {
+            throw new Exception("USER_DISABLED", e);
+        } catch (BadCredentialsException e) {
+            throw new Exception("INVALID_CREDENTIALS", e);
+        }
+    }
+
+    public String generateToken() {
+        String token = "Bearer " + jwtTokenUtil.generateToken("admin");
+        System.out.println(token);
+        return token;
+    }
+
+    public void exportIntoPdf(HttpServletResponse response) throws DocumentException, IOException {
+        response.setContentType("application/pdf");
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD:HH:MM:SS");
+        String currentDateTime = dateFormat.format(new Date());
+        String headerkey = "Content-Disposition";
+        String headervalue = "attachment; filename=pdf_" + currentDateTime + ".pdf";
+        response.setHeader(headerkey, headervalue);
+        List<ItemDTO> items = itemFeignClient.getAllItems();
+        PDFGenerator generator = new PDFGenerator();
+        generator.setItems(items);
+        generator.generate(response);
+    }
+
+    public void exportIntoExcel(HttpServletResponse response) throws IOException {
+        response.setContentType("application/octet-stream");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=Item_" + currentDateTime + ".xlsx";
+        response.setHeader(headerKey, headerValue);
+        List<ItemDTO> items = itemFeignClient.getAllItems();
+        ExcelGenerator generator = new ExcelGenerator(items);
+        generator.generate(response);
+    }
+
+    @StreamListener(target = OrderSource.ORDER_CHANEL)
+    public void processHelloChannelGreeting(List<OrderDetailDTO> orderDetails) {
+        emailService.sendEmailToNotifyOrdered(orderDetails);
     }
 
 //    public ItemSwagger convertAllItemToAllItemSwagger(ItemDTO itemDTO) {
@@ -147,22 +226,5 @@ public class ManagerService {
 //        emailService.sendEmailToNotifyOrdered(orderDetails);
 //    }
 
-    public Manager checkManager(String userName, String password) {
-        Manager manager = managerRepository.findByUserName(userName);
-        System.out.println(manager.getPassword());
-        System.out.println(endCodePassword(password));
-        if (manager == null) {
-            return null;
-        }
-        if(manager.getPassword().equals(endCodePassword(password))){
-            return manager;
-        }
-        return null;
-    }
-
-    @StreamListener(target = OrderSource.ORDER_CHANEL)
-    public void processHelloChannelGreeting(List<OrderDetailDTO> orderDetails) {
-        emailService.sendEmailToNotifyOrdered(orderDetails);
-    }
 
 }

@@ -23,7 +23,7 @@ public class GatewayConfig {
                         .uri("http://localhost:8082/"))
                 .route("order", r -> r.path("/order/**").filters(f -> f.filter(filter))
                         .uri("http://localhost:8083/"))
-                .route("item", r -> r.path("/order/**").filters(f -> f.filter(filter))
+                .route("item", r -> r.path("/item/**").filters(f -> f.filter(filter))
                         .uri("http://localhost:8084/"))
                 .route("delivery-note", r -> r.path("/delivery-note/**").filters(f -> f.filter(filter))
                         .uri("http://localhost:8085/")).build();

@@ -8,6 +8,7 @@ import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.DeliveryItemDetail;
 import com.example.demo.entity.DeliveryNote;
 import com.example.demo.repository.DeliveryNoteRepository;
+import com.example.demo.utils.JwtTokenUtil;
 import lombok.Getter;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.example.demo.utils.Constants.ADMIN;
 
 @Service
 @Getter
@@ -33,11 +36,15 @@ public class DeliveryNoteService {
     @Autowired
     private ItemFeignClient itemFeignClient;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
     public DeliveryNote saveDelivery(List<OrderDetailDTO> orderDetailDTOList) {
+        String token = generateToken();
         DeliveryNote deliveryNote = new DeliveryNote();
         List<DeliveryItemDetail> deliveryItemDetails = new ArrayList<>();
         List<ItemDTO> items = new ArrayList<>();
-        OrderDTO orderDTO = orderFeignClient.getOrderById(orderDetailDTOList.get(0).getOrderId()).getBody();
+        OrderDTO orderDTO = orderFeignClient.getOrderById(orderDetailDTOList.get(0).getOrderId(), token).getBody();
         deliveryNote.setDeliveryDate(orderDTO.getOrderDate().plusDays(7));
         deliveryNote.setOrderId(orderDTO.getId());
         for (OrderDetailDTO orderDetailDTO : orderDetailDTOList) {
@@ -54,7 +61,7 @@ public class DeliveryNoteService {
                 items.add(item);
             } else {
                 deliveryItemDetail.setDeliveriedQuantity(itemQuantityInStorage);
-                deliveryItemDetail.setUndeliveriedQuantity(deliveryItemDetail.getTotalDeliveriedQuantity()-deliveryItemDetail.getDeliveriedQuantity());
+                deliveryItemDetail.setUndeliveriedQuantity(deliveryItemDetail.getTotalDeliveriedQuantity() - deliveryItemDetail.getDeliveriedQuantity());
                 item.setQuantity(0);
                 items.add(item);
             }
@@ -64,7 +71,7 @@ public class DeliveryNoteService {
         }
         deliveryNote.setDeliveryItemDetails(deliveryItemDetails);
         DeliveryNote deliveryNoteSave = deliveryNoteRepository.save(deliveryNote);
-        itemFeignClient.updateItemQuantity(items);
+        itemFeignClient.updateItemQuantity(items,token);
         return deliveryNoteSave;
     }
 
@@ -124,7 +131,7 @@ public class DeliveryNoteService {
             deliveryItemDetailService.saveDeliveryItemDetail(deliveryItemDetails);
         } else {
             DeliveryNote deliveryNote1 = new DeliveryNote();
-            for(DeliveryItemDetail deliveryItemDetail : deliveryItemDetails){
+            for (DeliveryItemDetail deliveryItemDetail : deliveryItemDetails) {
                 deliveryItemDetail.setId(0);
                 deliveryItemDetail.setDeliveryNote(deliveryNote1);
             }
@@ -144,6 +151,9 @@ public class DeliveryNoteService {
         return true;
     }
 
+    public String generateToken(){
+        return "Bearer "+ jwtTokenUtil.generateToken(ADMIN);
+    }
     @RabbitListener(queues = "order-delivery.queue")
     public void receivedMessageOrder(List<OrderDetailDTO> orderDetailDTOS) {
         saveDelivery(orderDetailDTOS);

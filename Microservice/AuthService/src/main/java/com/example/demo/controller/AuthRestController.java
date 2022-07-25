@@ -1,11 +1,14 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ResponseObjectEntity;
+import com.example.demo.dto.StoreDTO;
 import com.example.demo.response.Token;
 import com.example.demo.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +25,8 @@ public class AuthRestController {
         }
         return new ResponseEntity<Token>(new Token(tokenByUserName), HttpStatus.OK);
     }
-
-
+    @PostMapping("/auth/register")
+    public ResponseEntity<ResponseObjectEntity> register(@RequestBody StoreDTO storeDTO){
+        return authService.saveStore(storeDTO);
+    }
 }

@@ -8,8 +8,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
     @Autowired
@@ -17,13 +15,10 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        List<Manager> managers = managerService.getAllManagers();
-        for (Manager manager : managers) {
-            if (manager.getUserName().equalsIgnoreCase(username)) {
-                return new UserSecurity(new Manager(manager.getUserName(), manager.getPassword()));
-            }
+        Manager manager = managerService.getManagerByUserName(username);
+        if (manager == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
         }
-        throw new UsernameNotFoundException("User not found with username: " + username);
+        return new UserSecurity(new Manager(manager.getUserName(), manager.getPassword()));
     }
-
 }
