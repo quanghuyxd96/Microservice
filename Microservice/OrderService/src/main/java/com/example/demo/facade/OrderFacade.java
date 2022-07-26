@@ -47,6 +47,14 @@ public class OrderFacade {
         return convertModel(order, OrderModel.class);
     }
 
+    public OrderModel updateOrder(List<OrderDetailModel> orderDetailModels,long orderId) {
+        if (orderDetailModels == null) {
+            return null;
+        }
+        Order order = orderService.updateOrder(convertListModel(orderDetailModels, OrderDetail.class),orderId);
+        return convertModel(order, OrderModel.class);
+    }
+
     public List<OrderModel> getAllOrders() {
         List<Order> orders = orderService.getAllOrder();
         if (orders == null) {
@@ -85,7 +93,7 @@ public class OrderFacade {
         ResponseObject responseObject = new ResponseObject();
         if (!check) {
             responseObject.setStatus("False");
-            responseObject.setMessage("No supplier to delete!!!");
+            responseObject.setMessage("No order to delete!!!");
             return new ResponseEntity<>(responseObject, HttpStatus.OK);
         }
         responseObject.setStatus("OK");

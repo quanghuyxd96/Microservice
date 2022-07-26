@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-import static com.example.demo.utils.Constant.AUTHOR;
+import static com.example.demo.utils.Constants.AUTHOR;
 
 @FeignClient(name = "storeFeignClient", url = "${client.post.baseUrl1}")
 public interface StoreFeignClient {

@@ -1,6 +1,5 @@
 package com.example.demo.aspect;
 
-import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.dto.OrderDetailDTOToken;
 import com.example.demo.entity.OrderDetail;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static com.example.demo.utils.Constant.AUTHOR;
+import static com.example.demo.utils.Constants.AUTHOR;
 
 
 @Aspect
@@ -50,8 +49,16 @@ public class OrderServiceAspect {
     }
 
 
-//    @Before(value = "execution(* com.example.demo.service.DeliveryNoteService.saveDelivery(..))")
-//    public void beforeAdvice(JoinPoint joinPoint) {
-//        logger.info("Before method:" + joinPoint.getSignature());
+    //đang tinh sử dụng chung 1 queue, khi gọi thì sẽ phân ra update hay save
+//    @After(value = "execution(* com.example.demo.service.OrderService.updateOrder(..)) and args(orderDetails)")
+//    public void afterUpdateOrder(JoinPoint joinPoint, List<OrderDetail> orderDetails) {
+//        logger.info("After method: " + joinPoint.getSignature());
+//        List<OrderDetailDTOToken> orderDetailDTOList = convert.convertListModel(orderDetails, OrderDetailDTOToken.class);
+//        orderDetailDTOList.get(0).setToken(request.getHeader(AUTHOR));
+//        orderSource.order().send(MessageBuilder.withPayload(orderDetailDTOList).build());
+//        orderSource.orderDelivery().send(MessageBuilder.withPayload(
+//                convert.convertListModel(orderDetails, OrderDetailDTO.class)).build());
+//        logger.info("Finished send list order details to send email");
 //    }
+
 }

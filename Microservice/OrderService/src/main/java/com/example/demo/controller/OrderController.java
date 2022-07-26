@@ -11,16 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.example.demo.utils.Constant.AUTHOR;
+import static com.example.demo.utils.Constants.AUTHOR;
 
 @RestController
 public class OrderController implements OrderApi {
@@ -40,7 +37,6 @@ public class OrderController implements OrderApi {
 //    private HttpServletRequest request;
     @Override
     public ResponseEntity<OrderModel> orderSaveOrderPost(List<OrderDetailModel> orderDetailModels) {
-        System.out.println(request.getUserPrincipal());
         OrderModel orderModel = orderFacade.saveOrder(orderDetailModels);
         if (orderModel == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -100,7 +96,16 @@ public class OrderController implements OrderApi {
     }
 
 
-    //sửa lại service
+    @PostMapping("/order/update")
+    public ResponseEntity<OrderModel> updateOrder(@RequestBody List<OrderDetailModel> orderDetailModels,@RequestParam("id") long orderId) {
+        OrderModel orderModel = orderFacade.updateOrder(orderDetailModels,orderId);
+        if (orderModel == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(orderModel, HttpStatus.OK);
+    }
+
+
     @Override
     public ResponseEntity<ResponseObject> orderDeleteDelete(Long id) {
         return orderFacade.deleteOrderById(id);

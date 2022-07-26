@@ -163,6 +163,14 @@ public class DeliveryNoteService {
         if (deliveryNote == null) {
             return false;
         }
+        List<DeliveryItemDetail> itemDetails = deliveryNote.getDeliveryItemDetails();
+        List<ItemDTO> items = new ArrayList<>();
+        for(DeliveryItemDetail itemDetail : itemDetails ){
+            ItemDTO itemDTO = new ItemDTO(itemDetail.getItemId(),itemDetail.getDeliveriedQuantity());
+            items.add(itemDTO);
+        }
+        deliverySource.updateOrderItemQuantity()
+                .send(MessageBuilder.withPayload(items).build());
         deliveryNoteRepository.deleteById(deliveryNote.getId());
         return true;
     }
@@ -172,10 +180,9 @@ public class DeliveryNoteService {
     }
 
     @StreamListener(target = OrderSource.ORDER_DELIVERY_CHANEL)
-    public void processHelloChannelGreeting(List<OrderDetailDTO> orderDetails) {
+    public void listenToSaveDeliveryNote(List<OrderDetailDTO> orderDetails) {
         saveDelivery(orderDetails);
     }
-
 
     @StreamListener(target = OrderSource.DELIVERY_CHANNEL)
     public void listenToDeleteDeliveryByOrderId(Long orderId) {

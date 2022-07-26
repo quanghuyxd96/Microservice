@@ -3,7 +3,6 @@ package com.example.demo.service;
 import com.example.demo.client.ItemFeignClient;
 import com.example.demo.client.StoreFeignClient;
 import com.example.demo.dto.ItemDTO;
-import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.dto.StoreDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.demo.utils.Constant.AUTHOR;
+import static com.example.demo.utils.Constants.AUTHOR;
 
 @Service
 public class OrderService {
@@ -71,6 +70,33 @@ public class OrderService {
         order.setTotalPrice(totalPrice);
         order.setOrderDetails(orderDetails);
         return orderRepository.save(order);
+    }
+
+    public Order updateOrder(List<OrderDetail> orderDetails, long orderId) {
+        Optional<Order> order = orderRepository.findById(orderId);
+        if(order.isPresent()
+                && (order.get().getOrderDate().plusDays(1).isBefore(LocalDate.now())
+                || order.get().getOrderDate().plusDays(1).isEqual(LocalDate.now()))){
+            double totalPrice = 0;
+            for (int i = 0; i < orderDetails.size(); i++) {
+                OrderDetail orderDetail = orderDetails.get(i);
+                orderDetail.setId(0);
+                ItemDTO item = itemFeignClient.getItemById(orderDetail.getItemId()).getBody();
+                if (item == null) {
+                    orderDetails.remove(i--);
+                    continue;
+                }
+                totalPrice += item.getPrice() * orderDetail.getItemQuantity();
+                orderDetail.setOrder(order.get());
+            }
+            if (totalPrice >= 10000) {
+                totalPrice = totalPrice * 0.95;
+            }
+            order.get().setTotalPrice(totalPrice);
+            order.get().setOrderDetails(orderDetails);
+            return orderRepository.save(order.get());
+        }
+        return null;
     }
 
     public List<Order> getAllOrder() {
@@ -136,13 +162,16 @@ public class OrderService {
 
     public boolean processDeleteOrderById(long id, List<OrderDetail> orderDetails) {
         Optional<Order> order = orderRepository.findById(id);
-        if (order.isPresent()) {
+        if (order.isPresent()
+                && (order.get().getOrderDate().plusDays(1).isBefore(LocalDate.now())
+                || order.get().getOrderDate().plusDays(1).isEqual(LocalDate.now()))) {
             if (isAdmin(request.getHeader(AUTHOR).substring(7))) {
                 orderDetails.addAll(order.get().getOrderDetails());
                 orderRepository.deleteById(id);
                 return true;
             }
             StoreDTO store = getStoreByToken(request.getHeader(AUTHOR));
+            System.out.println(store.toString());
             if (store == null) {
                 return false;
             }

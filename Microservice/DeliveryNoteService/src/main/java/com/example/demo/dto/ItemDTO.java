@@ -15,4 +15,9 @@ public class ItemDTO {
     private double price;
     private long quantity;
     private long supplierId;
+
+    public ItemDTO(long id, long quantity) {
+        this.id = id;
+        this.quantity = quantity;
+    }
 }

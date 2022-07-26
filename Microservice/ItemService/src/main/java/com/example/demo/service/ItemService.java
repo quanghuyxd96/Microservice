@@ -132,8 +132,7 @@ public class ItemService {
     //chút sửa
     @StreamListener(target = OrderSource.ITEM)
     public void getItemFromOrderToUpdate(List<Item> items) {
-        System.out.println(1);
-//        updateItemQuantityByDeleteOrder(items);
+        updateItemQuantityByDeleteOrder(items);
     }
 
 //    public void getAllItemDemoRabbit() {

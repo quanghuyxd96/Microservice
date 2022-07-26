@@ -45,7 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/order/orders","/order/get-by-date","/order/order-details").hasRole("ADMIN")
-                .antMatchers("/order/save-order").hasRole("USER")
+                .antMatchers("/order/save-order","/order/update").hasRole("USER")
                 .anyRequest().authenticated().and().
                 exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

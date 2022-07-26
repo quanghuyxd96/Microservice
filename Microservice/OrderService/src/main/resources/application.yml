@@ -40,6 +40,9 @@ spring:
         deliveryChannel:
           destination: deleteDelivery
           group: order
+#        orderDeliveryUpdateChannel:
+#          destination: orderDeliveryUpdate
+#          group: order
   output:
     ansi:
       enabled: ALWAYS
