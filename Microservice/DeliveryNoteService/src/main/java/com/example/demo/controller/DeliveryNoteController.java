@@ -21,12 +21,6 @@ public class DeliveryNoteController {
     @Autowired
     private DeliveryNoteFacade deliveryNoteFacade;
 
-
-//    @RequestMapping(value = "/save", method = RequestMethod.POST)
-//    public ResponseEntity<DeliveryNote> saveDeliveryNote(@RequestBody OrderDTO orderDTO) {
-//        return new ResponseEntity<>(deliveryNoteService.saveDelivery(orderDTO),HttpStatus.OK);
-//    }
-
     @GetMapping("/delivery-notes")
     public ResponseEntity<List<DeliveryNote>> getAllDeliveryNotes() {
         return new ResponseEntity<>(deliveryNoteService.getAllDeliveryNote(),HttpStatus.OK);
@@ -45,11 +39,5 @@ public class DeliveryNoteController {
     @DeleteMapping("/delete")
     public void deleteDeliveryNote(@RequestParam("id") long id) {
         deliveryNoteService.deleteDeliveryNoteById(id);
-    }
-
-    @GetMapping("/order/orders")
-    public ResponseEntity<List<OrderDTO>> getAllOrder(){
-        System.out.println(deliveryNoteFacade.getDeliveryNoteService().getOrderFeignClient().getALlOrders());
-        return new ResponseEntity<>(deliveryNoteFacade.getDeliveryNoteService().getOrderFeignClient().getALlOrders(),HttpStatus.OK);
     }
 }

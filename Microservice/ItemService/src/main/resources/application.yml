@@ -21,15 +21,30 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  rabbitmq:
-    host: localhost
-    password: guest
-    port: 15672
-    username: guest
-#    exchange: user.exchange
-#    queue: item.queue
-#    routingkey: item.routingkey
+#  rabbitmq:
+#    host: localhost
+#    password: guest
+#    port: 15672
+#    username: guest
+  cloud:
+    stream:
+      bindings:
+        deliveryItemChannel:
+          destination: updateItemQuantity
+          group: delivery_item
+        orderItemChannel:
+          destination: updateOrderItemQuantity
+          group: order
+  output:
+    ansi:
+      enabled: ALWAYS
+
 app:
   message: message succesfuly sent
+logging:
+  level:
+    org:
+      zalando:
+        logbook: TRACE
 server:
   port: 8084

@@ -3,13 +3,16 @@ package com.example.demo.service;
 import com.example.demo.client.ItemFeignClient;
 import com.example.demo.client.StoreFeignClient;
 import com.example.demo.dto.ItemDTO;
+import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.dto.StoreDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
+import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.OrderRepository;
+import com.example.demo.utils.JwtTokenUtil;
 import org.modelmapper.ModelMapper;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.integration.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +37,14 @@ public class OrderService {
     private StoreFeignClient storeFeignClient;
 
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
     private HttpServletRequest request;
+
+    @Autowired
+    private OrderSource orderSource;
+
 
     public Order saveOrder(List<OrderDetail> orderDetails) {
         Order order = new Order();
@@ -75,7 +82,20 @@ public class OrderService {
     }
 
     public List<Order> getAllOrderByStoreId(long id) {
-        return orderRepository.myStoreQueryByStoreId(id);
+        String username = jwtTokenUtil.getUsernameFromToken(request.getHeader(AUTHOR));
+        List<Order> orders = orderRepository.myStoreQueryByStoreId(id);
+        if (orders == null) {
+            return null;
+        }
+        if (username.startsWith("admin")) {
+            return orders;
+        } else {
+            StoreDTO store = storeFeignClient.getStoreByToken(request.getHeader(AUTHOR));
+            if (store == null) {
+                return null;
+            }
+            return orderRepository.findByStoreId(store.getId());
+        }
     }
 
     public Order getOrderById(long id) {
@@ -114,13 +134,67 @@ public class OrderService {
         return orders;
     }
 
-    public boolean deleteOrderById(long id) {
+    public boolean processDeleteOrderById(long id, List<OrderDetail> orderDetails) {
         Optional<Order> order = orderRepository.findById(id);
         if (order.isPresent()) {
-            orderRepository.deleteById(id);
+            if (isAdmin(request.getHeader(AUTHOR).substring(7))) {
+                orderDetails.addAll(order.get().getOrderDetails());
+                orderRepository.deleteById(id);
+                return true;
+            }
+            StoreDTO store = getStoreByToken(request.getHeader(AUTHOR));
+            if (store == null) {
+                return false;
+            }
+            if (store.getId() == order.get().getStoreId()) {
+                orderDetails.addAll(order.get().getOrderDetails());
+                orderRepository.deleteById(id);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean deleteOrderById(long id) {
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        if (processDeleteOrderById(id, orderDetails)) {
+            orderSource.deleteDelivery().send(MessageBuilder
+                    .withPayload(id).build());
             return true;
         }
         return false;
+    }
+
+    public StoreDTO getStoreByToken(String token) {
+        StoreDTO store = storeFeignClient.getStoreByToken(token);
+        if (store == null) {
+            return null;
+        }
+        return store;
+    }
+
+    public boolean isAdmin(String token) {
+        String username = jwtTokenUtil.getUsernameFromToken(token);
+        if (username.startsWith("admin")) {
+            return true;
+        }
+        return false;
+    }
+
+    private <T, D> T convertModel(D obj, Class<T> classT) {
+        ModelMapper modelMapper = new ModelMapper();
+        T obj1 = modelMapper.map(obj, classT);
+        return obj1;
+    }
+
+    private <T, D> List<T> convertListModel(List<D> objList, Class<T> classT) {
+        List<T> objResults = new ArrayList<T>();
+        for (D obj : objList) {
+            ModelMapper modelMapper = new ModelMapper();
+            T objResult = modelMapper.map(obj, classT);
+            objResults.add(objResult);
+        }
+        return objResults;
     }
 
 //    public void getOrderByIdDemoRabbit(Long id) {
@@ -140,20 +214,4 @@ public class OrderService {
 //        order.setOrderDetails(order.getOrderDetails());
 //        return orderRepository.save(order);
 //    }
-
-    private <T, D> T convertModel(D obj, Class<T> classT) {
-        ModelMapper modelMapper = new ModelMapper();
-        T obj1 = modelMapper.map(obj, classT);
-        return obj1;
-    }
-
-    private <T, D> List<T> convertListModel(List<D> objList, Class<T> classT) {
-        List<T> objResults = new ArrayList<T>();
-        for (D obj : objList) {
-            ModelMapper modelMapper = new ModelMapper();
-            T objResult = modelMapper.map(obj, classT);
-            objResults.add(objResult);
-        }
-        return objResults;
-    }
 }

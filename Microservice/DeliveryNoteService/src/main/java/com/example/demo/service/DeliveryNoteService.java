@@ -7,11 +7,14 @@ import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.DeliveryItemDetail;
 import com.example.demo.entity.DeliveryNote;
+import com.example.demo.mq.DeliverySource;
+import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.DeliveryNoteRepository;
 import com.example.demo.utils.JwtTokenUtil;
 import lombok.Getter;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.integration.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,6 +40,9 @@ public class DeliveryNoteService {
     private ItemFeignClient itemFeignClient;
 
     @Autowired
+    private DeliverySource deliverySource;
+
+    @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     public DeliveryNote saveDelivery(List<OrderDetailDTO> orderDetailDTOList) {
@@ -44,6 +50,7 @@ public class DeliveryNoteService {
         DeliveryNote deliveryNote = new DeliveryNote();
         List<DeliveryItemDetail> deliveryItemDetails = new ArrayList<>();
         List<ItemDTO> items = new ArrayList<>();
+        System.out.println(orderDetailDTOList.get(0).toString());
         OrderDTO orderDTO = orderFeignClient.getOrderById(orderDetailDTOList.get(0).getOrderId(), token).getBody();
         deliveryNote.setDeliveryDate(orderDTO.getOrderDate().plusDays(7));
         deliveryNote.setOrderId(orderDTO.getId());
@@ -71,7 +78,7 @@ public class DeliveryNoteService {
         }
         deliveryNote.setDeliveryItemDetails(deliveryItemDetails);
         DeliveryNote deliveryNoteSave = deliveryNoteRepository.save(deliveryNote);
-        itemFeignClient.updateItemQuantity(items,token);
+        deliverySource.updateItemQuantity().send(MessageBuilder.withPayload(items).build());
         return deliveryNoteSave;
     }
 
@@ -151,12 +158,27 @@ public class DeliveryNoteService {
         return true;
     }
 
-    public String generateToken(){
-        return "Bearer "+ jwtTokenUtil.generateToken(ADMIN);
-    }
-    @RabbitListener(queues = "order-delivery.queue")
-    public void receivedMessageOrder(List<OrderDetailDTO> orderDetailDTOS) {
-        saveDelivery(orderDetailDTOS);
+    public boolean deleteDeliveryNoteByOrderId(long id) {
+        DeliveryNote deliveryNote = deliveryNoteRepository.findDeliveryNoteByOrderId(id);
+        if (deliveryNote == null) {
+            return false;
+        }
+        deliveryNoteRepository.deleteById(deliveryNote.getId());
+        return true;
     }
 
+    public String generateToken() {
+        return "Bearer " + jwtTokenUtil.generateToken(ADMIN);
+    }
+
+    @StreamListener(target = OrderSource.ORDER_DELIVERY_CHANEL)
+    public void processHelloChannelGreeting(List<OrderDetailDTO> orderDetails) {
+        saveDelivery(orderDetails);
+    }
+
+
+    @StreamListener(target = OrderSource.DELIVERY_CHANNEL)
+    public void listenToDeleteDeliveryByOrderId(Long orderId) {
+        deleteDeliveryNoteByOrderId(orderId);
+    }
 }

@@ -21,17 +21,37 @@ spring:
       matching-strategy: ant_path_matcher
   main:
     allow-circular-references: 'true'
-  rabbitmq:
-    host: localhost
-    password: guest
-    port: 15672
-    username: guest
-    exchange: order-delivery.exchange
-    queue: delivery.queue
+#  rabbitmq:
+#    host: localhost
+#    password: guest
+#    port: 5672
+#    username: guest
+#    exchange: order-delivery.exchange
+#    queue: delivery.queue
+  output:
+    ansi:
+      enabled: ALWAYS
+  cloud:
+    stream:
+      bindings:
+        orderDeliveryChannel:
+          destination: order_delivery
+          group: delivery
+        deliveryChannel:
+          destination: deleteDelivery
+          group: order
+        orderItemChannel:
+          destination: updateOrderItemQuantity
+          group: order
 #    routingkey: delivery.routingkey
 client:
   post:
     baseUrl1: 'http://localhost:8083'
     baseUrl2: 'http://localhost:8084'
+logging:
+  level:
+    org:
+      zalando:
+        logbook: TRACE
 server:
   port: 8085

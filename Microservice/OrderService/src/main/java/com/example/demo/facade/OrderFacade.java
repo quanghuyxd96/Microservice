@@ -1,7 +1,6 @@
 package com.example.demo.facade;
 
 import com.example.demo.client.ItemFeignClient;
-import com.example.demo.dto.OrderDTO;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.OrderDetail;
 import com.example.demo.service.OrderDetailService;
@@ -11,7 +10,6 @@ import io.tej.SwaggerCodgen.model.OrderModel;
 import io.tej.SwaggerCodgen.model.ResponseObject;
 import lombok.Getter;
 import org.modelmapper.ModelMapper;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,8 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.example.demo.utils.Constant.AUTHOR;
 
 @Component
 @Getter

@@ -44,7 +44,6 @@ public class AuthAspect {
 //            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //        }
         LOGGER.info("Execution time of " + className + "." + methodName + " : " + stopWatch.getTotalTimeMillis() + " ms");
-        log.trace("End AuthAspect");
         return token;
     }
 

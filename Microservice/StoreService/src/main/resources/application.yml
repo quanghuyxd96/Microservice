@@ -27,5 +27,13 @@ spring:
     exchange: user.exchange
   main:
     allow-circular-references: 'true'
+  output:
+    ansi:
+      enabled: ALWAYS
+logging:
+  level:
+    org:
+      zalando:
+        logbook: TRACE
 server:
   port: 8082

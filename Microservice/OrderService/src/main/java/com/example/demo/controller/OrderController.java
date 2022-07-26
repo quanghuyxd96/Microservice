@@ -78,6 +78,7 @@ public class OrderController implements OrderApi {
         return new ResponseEntity<>(orderModel, HttpStatus.OK);
     }
 
+    //sửa lại service  cái này
     @Override
     public ResponseEntity<List<OrderModel>> orderStoreGet(Long id) {
         List<OrderModel> orders = orderFacade.getAllOrdersByStoreId(id);
@@ -87,14 +88,7 @@ public class OrderController implements OrderApi {
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
-    //    @Override
-//    public ResponseEntity<List<OrderModel>> orderGetByDateGet(LocalDate date) {
-//        List<OrderModel> orders = orderFacade.getOrdersByDate(date);
-//        if (orders == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(orders, HttpStatus.OK);
-//    }
+
     @GetMapping("/order/get-by-date")
     public ResponseEntity<List<OrderModel>> getOrderByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate,
                                                            @RequestHeader(AUTHOR) String token) {
@@ -105,24 +99,13 @@ public class OrderController implements OrderApi {
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
+
+    //sửa lại service
     @Override
     public ResponseEntity<ResponseObject> orderDeleteDelete(Long id) {
         return orderFacade.deleteOrderById(id);
     }
-
-//    @PostMapping("/save-order")
-//    public ResponseEntity<Order> saveOrder(@RequestBody List<OrderDetail> orderDetails, @RequestParam("id") Long storeId) {
-//        if (orderDetails == null || storeId == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        Order order = orderFacade.getOrderService().saveOrder(orderDetails, storeId);
-//        List<OrderDetailDTO> orderDetailDTOS = orderFacade.convertListModel(orderDetails, OrderDetailDTO.class);
-//        rabbitTemplate.convertAndSend("user.exchange", "order.routingkey", orderDetailDTOS);
-//        return new ResponseEntity<>(order, HttpStatus.OK);
-//    }
-//
     //Order-detail
-
     @Override
     public ResponseEntity<List<OrderDetailModel>> orderOrderDetailsGet() {
         List<OrderDetailModel> orderDetailModels = orderFacade.getAllOrderDetails();
@@ -132,6 +115,8 @@ public class OrderController implements OrderApi {
         return new ResponseEntity<>(orderDetailModels, HttpStatus.OK);
     }
 
+
+    //sửa lại service
     @Override
     public ResponseEntity<List<OrderDetailModel>> orderOrderDetailsByOrderGet(Long id) {
         List<OrderDetailModel> orderDetailModels = orderFacade.getOrderDetailsByOrderId(id);
@@ -141,6 +126,8 @@ public class OrderController implements OrderApi {
         return new ResponseEntity<>(orderDetailModels, HttpStatus.OK);
     }
 
+
+    //sửa lại service
     @Override
     public ResponseEntity<OrderDetailModel> orderOrderDetailGetGet(Long id) {
         OrderDetailModel orderDetailModel = orderFacade.getOrderDetaisById(id);
@@ -150,15 +137,35 @@ public class OrderController implements OrderApi {
         return new ResponseEntity<>(orderDetailModel, HttpStatus.OK);
     }
 
-    @GetMapping("/order/demo")
-    public int demo(@RequestHeader("Authorization") String a) {
-        System.out.println(request.getUserPrincipal());
-        return 1;
-    }
+
+//    @GetMapping("/order/demo")
+//    public int demo(@RequestHeader("Authorization") String a) {
+//        System.out.println(request.getUserPrincipal());
+//        return 1;
+//    }
 
 //    @GetMapping("/demo")
 //    public void getOrderByIdDemoRabbit(@RequestParam("id") Long id) {
 //        orderFacade.getOrderService().getOrderByIdDemoRabbit(id);
 //    }
+
+    //    @Override
+//    public ResponseEntity<List<OrderModel>> orderGetByDateGet(LocalDate date) {
+//        List<OrderModel> orders = orderFacade.getOrdersByDate(date);
+//        if (orders == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//        return new ResponseEntity<>(orders, HttpStatus.OK);
+//    }
 //
+    //    @PostMapping("/save-order")
+//    public ResponseEntity<Order> saveOrder(@RequestBody List<OrderDetail> orderDetails, @RequestParam("id") Long storeId) {
+//        if (orderDetails == null || storeId == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//        Order order = orderFacade.getOrderService().saveOrder(orderDetails, storeId);
+//        List<OrderDetailDTO> orderDetailDTOS = orderFacade.convertListModel(orderDetails, OrderDetailDTO.class);
+//        rabbitTemplate.convertAndSend("user.exchange", "order.routingkey", orderDetailDTOS);
+//        return new ResponseEntity<>(order, HttpStatus.OK);
+//    }
 }

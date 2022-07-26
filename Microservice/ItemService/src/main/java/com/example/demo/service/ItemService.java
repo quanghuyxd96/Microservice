@@ -1,10 +1,14 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.ItemDTO;
 import com.example.demo.entity.Item;
+import com.example.demo.mq.DeliverySource;
+import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.ItemRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -96,6 +100,18 @@ public class ItemService {
         return itemRepository.saveAll(itemList);
     }
 
+    public List<Item> updateItemQuantityByDeleteOrder(List<Item> items) {
+        List<Item> itemList = new ArrayList<>();
+        for (Item item : items) {
+            Optional<Item> itemById = itemRepository.findById(item.getId());
+            if (itemById.isPresent()) {
+                itemById.get().setQuantity(itemById.get().getQuantity()+item.getQuantity());
+                itemList.add(itemById.get());
+            }
+        }
+        return itemRepository.saveAll(itemList);
+    }
+
 
     public boolean deleteItemById(long id) {
         Optional<Item> itemRepositoryById = itemRepository.findById(id);
@@ -104,6 +120,20 @@ public class ItemService {
             return true;
         }
         return false;
+    }
+
+    @StreamListener(target = DeliverySource.DELIVERY_ITEM_CHANNEL)
+    public void getItemToUpdate(List<Item> items) {
+        System.out.println(items.get(0).getId());
+        updateItemQuantity(items);
+    }
+
+
+    //chút sửa
+    @StreamListener(target = OrderSource.ITEM)
+    public void getItemFromOrderToUpdate(List<Item> items) {
+        System.out.println(1);
+//        updateItemQuantityByDeleteOrder(items);
     }
 
 //    public void getAllItemDemoRabbit() {

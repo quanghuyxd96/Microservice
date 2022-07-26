@@ -21,11 +21,11 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  rabbitmq:
-    host: localhost
-    password: guest
-    port: 15672
-    username: guest
+#  rabbitmq:
+#    host: localhost
+#    password: guest
+#    port: 15672
+#    username: guest
   cloud:
     stream:
       default:
@@ -34,11 +34,28 @@ spring:
         ordersChannel:
           destination: order
           group: manager
+        orderDeliveryChannel:
+          destination: order_delivery
+          group: delivery
+        deliveryChannel:
+          destination: deleteDelivery
+          group: order
+  output:
+    ansi:
+      enabled: ALWAYS
 client:
   post:
     baseUrl: 'http://localhost:8084'
     baseUrl1: 'http://localhost:8082'
     baseUrl2: 'http://localhost:8081'
+logging:
+  level:
+    org:
+      zalando:
+        logbook: TRACE
+      hibernate: INFO
+      springframework: INFO
+
 server:
   port: 8083
 

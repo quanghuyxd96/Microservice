@@ -73,11 +73,13 @@ public class ItemSwaggerController implements ItemApi {
 //        return new ResponseEntity<>(itemFacade.updateItemsQuantity(itemModel), HttpStatus.OK);
 //    }
 
-    @PostMapping("/item/update-quantity")
-    public ResponseEntity<List<ItemModel>> updateItemQuantity(@RequestBody List<ItemModel> itemModels,
-                                                              @RequestHeader(AUTHOR) String token){
-        return new ResponseEntity<>(itemFacade.updateItemsQuantity(itemModels),HttpStatus.OK);
-    }
+
+//    //su dung MQ nen khong dung den
+//    @PostMapping("/item/update-quantity")
+//    public ResponseEntity<List<ItemModel>> updateItemQuantity(@RequestBody List<ItemModel> itemModels,
+//                                                              @RequestHeader(AUTHOR) String token){
+//        return new ResponseEntity<>(itemFacade.updateItemsQuantity(itemModels),HttpStatus.OK);
+//    }
 
     @Override
     public ResponseEntity<ResponseObject> itemDeleteDelete(Long id) {

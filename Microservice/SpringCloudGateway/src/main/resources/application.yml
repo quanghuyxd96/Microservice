@@ -46,3 +46,11 @@ eureka:
 spring:
   main:
     allow-bean-definition-overriding: true
+  output:
+    ansi:
+      enabled: ALWAYS
+logging:
+  level:
+    org:
+      zalando:
+        logbook: TRACE
