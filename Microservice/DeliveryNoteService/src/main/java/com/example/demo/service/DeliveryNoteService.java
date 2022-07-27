@@ -84,12 +84,6 @@ public class DeliveryNoteService {
     }
 
 
-    public long calculate(double weight) {
-        long quantity = (long) (MAX_WEIGHT / weight) + 1;
-        return quantity;
-    }
-
-
     public List<DeliveryNote> getAllDeliveryNote() {
         List<DeliveryNote> deliveryNotes = deliveryNoteRepository.findAll();
         if (deliveryNotes == null) {
@@ -145,12 +139,11 @@ public class DeliveryNoteService {
             itemDTO.setId(deliveryItemDetail.getItemId());
             items.add(itemDTO);
         }
-//đang có vấn đề chỗ này
-        for(DeliveryItemDetail deliveryItemDetail : deliveryItemDetailsOld){
+        List<ItemDTO> itemDTOList = itemFeignClient.updateItemQuantity(items, generateToken()).getBody();
+        for (DeliveryItemDetail deliveryItemDetail : deliveryItemDetailsOld) {
             System.out.println(deliveryItemDetail.getId());
             deliveryItemDetailService.deleteDeliveryItemDetailById(deliveryItemDetail.getId());
         }
-        List<ItemDTO> itemDTOList = itemFeignClient.updateItemQuantity(items, generateToken()).getBody();
         for (OrderDetailDTO orderDetailDTO : orderDetailDTOList) {
             DeliveryItemDetail deliveryItemDetail = new DeliveryItemDetail();
             deliveryItemDetail.setItemId(orderDetailDTO.getItemId());

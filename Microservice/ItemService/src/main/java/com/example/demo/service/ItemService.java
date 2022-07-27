@@ -99,6 +99,7 @@ public class ItemService {
             Optional<Item> itemById = itemRepository.findById(item.getId());
             if (itemById.isPresent()) {
                 itemById.get().setQuantity(itemById.get().getQuantity() + item.getQuantity());
+                System.out.println("Tổng số sau khi cộng: " +itemById.get().getQuantity());
                 itemList.add(itemById.get());
             }
         }
