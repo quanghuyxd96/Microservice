@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static com.example.demo.utils.Constants.AUTHOR;
@@ -22,6 +23,9 @@ import static com.example.demo.utils.Constants.AUTHOR;
 public class ItemSwaggerController implements ItemApi {
     @Autowired
     private ItemFacade itemFacade;
+
+    @Autowired
+    private HttpServletRequest request;
 
     @Override
     public ResponseEntity<ItemModel> itemSavePost(ItemModel itemModel) {
@@ -74,13 +78,10 @@ public class ItemSwaggerController implements ItemApi {
 //    }
 
 
-//    //su dung MQ nen khong dung den
-//    @PostMapping("/item/update-quantity")
-//    public ResponseEntity<List<ItemModel>> updateItemQuantity(@RequestBody List<ItemModel> itemModels,
-//                                                              @RequestHeader(AUTHOR) String token){
-//        return new ResponseEntity<>(itemFacade.updateItemsQuantity(itemModels),HttpStatus.OK);
-//    }
-
+    @PutMapping("/item/update/update-quantity")
+    public ResponseEntity<List<ItemModel>> updateItemQuantity(@RequestBody List<ItemModel> itemModels,@RequestHeader(AUTHOR) String token){
+        return new ResponseEntity<>(itemFacade.updateItemsQuantity(itemModels),HttpStatus.OK);
+    }
     @Override
     public ResponseEntity<ResponseObject> itemDeleteDelete(Long id) {
         return itemFacade.deleteItemById(id);

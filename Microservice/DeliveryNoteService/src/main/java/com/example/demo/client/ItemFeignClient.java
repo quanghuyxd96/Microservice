@@ -2,6 +2,7 @@ package com.example.demo.client;
 
 import com.example.demo.dto.ItemDTO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,8 @@ public interface ItemFeignClient {
     @GetMapping("/item/get")
     ItemDTO getItemById(@RequestParam("id") Long id);
 
-    @PostMapping("/item/update-quantity")
-    List<ItemDTO> updateItemQuantity(@RequestBody List<ItemDTO> items, @RequestHeader(AUTHOR) String token);
+    @PutMapping("/item/update/update-quantity")
+    ResponseEntity<List<ItemDTO>> updateItemQuantity(@RequestBody List<ItemDTO> items, @RequestHeader(AUTHOR) String token);
+
+
 }

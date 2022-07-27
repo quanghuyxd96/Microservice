@@ -52,12 +52,12 @@ public class OrderService {
         StoreDTO store = storeFeignClient.getStoreByToken(request.getHeader(AUTHOR));
         order.setStoreId(store.getId());
         double totalPrice = 0;
+        double totalWeight = 0;
         for (int i = 0; i < orderDetails.size(); i++) {
             OrderDetail orderDetail = orderDetails.get(i);
             orderDetail.setId(0);
             ItemDTO item = itemFeignClient.getItemById(orderDetail.getItemId()).getBody();
-            System.out.println(item.getPrice());
-            if (item == null) {
+            if (item == null || item.getQuantity() <= 0) {
                 orderDetails.remove(i--);
                 continue;
             }
@@ -72,11 +72,43 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+//    public Order saveOrderTrial(List<OrderDetail> orderDetails) {
+//        Order order = new Order();
+//        orderRepository.save(order);
+//        order.setOrderDate(LocalDate.now());
+//        StoreDTO store = storeFeignClient.getStoreByToken(request.getHeader(AUTHOR));
+//        order.setStoreId(store.getId());
+//        double totalPrice = 0;
+//        double totalWeight = 0;
+//        for (int i = 0; i < orderDetails.size(); i++) {
+//            OrderDetail orderDetail = orderDetails.get(i);
+//            orderDetail.setId(0);
+//            ItemDTO item = itemFeignClient.getItemById(orderDetail.getItemId()).getBody();
+//            if (item == null || item.getQuantity() <= 0) {
+//                orderDetails.remove(i--);
+//                continue;
+//            }
+//            if (item.getQuantity() < orderDetail.getItemQuantity()) {
+//                orderDetail.setItemQuantity(item.getQuantity());
+//            }
+//            totalPrice += item.getPrice() * orderDetail.getItemQuantity();
+//            totalWeight += item.getWeight() * orderDetail.getItemQuantity();
+//            orderDetail.setOrder(order);
+//        }
+//        if (totalPrice >= 10000) {
+//            totalPrice = totalPrice * 0.95;
+//        }
+//        order.setTotalPrice(totalPrice);
+//        order.setOrderDetails(orderDetails);
+//        return orderRepository.save(order);
+//    }
+
+
     public Order updateOrder(List<OrderDetail> orderDetails, long orderId) {
         Optional<Order> order = orderRepository.findById(orderId);
-        if(order.isPresent()
-                && (order.get().getOrderDate().plusDays(1).isBefore(LocalDate.now())
-                || order.get().getOrderDate().plusDays(1).isEqual(LocalDate.now()))){
+        if (order.isPresent()
+                && (order.get().getOrderDate().plusDays(1).isAfter(LocalDate.now())
+                || order.get().getOrderDate().plusDays(1).isEqual(LocalDate.now()))) {
             double totalPrice = 0;
             for (int i = 0; i < orderDetails.size(); i++) {
                 OrderDetail orderDetail = orderDetails.get(i);
@@ -98,6 +130,7 @@ public class OrderService {
         }
         return null;
     }
+
 
     public List<Order> getAllOrder() {
         List<Order> orders = orderRepository.findAll();
@@ -163,7 +196,7 @@ public class OrderService {
     public boolean processDeleteOrderById(long id, List<OrderDetail> orderDetails) {
         Optional<Order> order = orderRepository.findById(id);
         if (order.isPresent()
-                && (order.get().getOrderDate().plusDays(1).isBefore(LocalDate.now())
+                && (order.get().getOrderDate().plusDays(1).isAfter(LocalDate.now())
                 || order.get().getOrderDate().plusDays(1).isEqual(LocalDate.now()))) {
             if (isAdmin(request.getHeader(AUTHOR).substring(7))) {
                 orderDetails.addAll(order.get().getOrderDetails());
@@ -184,6 +217,11 @@ public class OrderService {
         return false;
     }
 
+    /**
+     * Function to send Mess from Order to Delivery Note to delete Delivery
+     * @param id
+     * @return
+     */
     public boolean deleteOrderById(long id) {
         List<OrderDetail> orderDetails = new ArrayList<>();
         if (processDeleteOrderById(id, orderDetails)) {

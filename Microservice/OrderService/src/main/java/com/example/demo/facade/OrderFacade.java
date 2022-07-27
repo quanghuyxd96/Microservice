@@ -52,6 +52,9 @@ public class OrderFacade {
             return null;
         }
         Order order = orderService.updateOrder(convertListModel(orderDetailModels, OrderDetail.class),orderId);
+        if(order==null){
+            return null;
+        }
         return convertModel(order, OrderModel.class);
     }
 

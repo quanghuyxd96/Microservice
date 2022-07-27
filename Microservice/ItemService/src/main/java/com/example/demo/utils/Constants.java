@@ -8,4 +8,7 @@ public class Constants {
 
     public static final String ORDER_ITEM_CHANEL = "orderItemChannel";
     public static final String ITEM_CHANNEL = "orderItemChannel";
+
+    public static final String DELIVERY_CHANNEL = "deliveryChannel";
+
 }

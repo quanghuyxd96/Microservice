@@ -1,13 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.ItemDTO;
 import com.example.demo.entity.Item;
 import com.example.demo.mq.DeliverySource;
 import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.ItemRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +21,11 @@ public class ItemService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-//    @Value("${spring.rabbitmq.exchange}")
-//    private String exchange;
-//
-//    @Value("${spring.rabbitmq.routingkey}")
-//    private String routingkey;
 
 
     public List<Item> getAllItem() {
         List<Item> items = itemRepository.findAll();
-        if(items==null){
+        if (items == null) {
             return null;
         }
         return items;
@@ -74,15 +67,15 @@ public class ItemService {
         return null;
     }
 
-    public Item updateItemPriceOrItemQuantity(Item item,Long supplierId) {
-        try{
+    public Item updateItemPriceOrItemQuantity(Item item, Long supplierId) {
+        try {
             Optional<Item> itemRepo = itemRepository.findByNameAndSupplierId(item.getName(), supplierId);
             if (itemRepo.isPresent()) {
                 itemRepo.get().setQuantity(item.getQuantity());
                 itemRepo.get().setPrice(item.getPrice());
                 return itemRepository.save(itemRepo.get());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -100,12 +93,24 @@ public class ItemService {
         return itemRepository.saveAll(itemList);
     }
 
+    public List<Item> updateItemQuantityAfterUpdateOrder(List<Item> items) {
+        List<Item> itemList = new ArrayList<>();
+        for (Item item : items) {
+            Optional<Item> itemById = itemRepository.findById(item.getId());
+            if (itemById.isPresent()) {
+                itemById.get().setQuantity(itemById.get().getQuantity() + item.getQuantity());
+                itemList.add(itemById.get());
+            }
+        }
+        return itemRepository.saveAll(itemList);
+    }
+
     public List<Item> updateItemQuantityByDeleteOrder(List<Item> items) {
         List<Item> itemList = new ArrayList<>();
         for (Item item : items) {
             Optional<Item> itemById = itemRepository.findById(item.getId());
             if (itemById.isPresent()) {
-                itemById.get().setQuantity(itemById.get().getQuantity()+item.getQuantity());
+                itemById.get().setQuantity(itemById.get().getQuantity() + item.getQuantity());
                 itemList.add(itemById.get());
             }
         }
@@ -129,11 +134,16 @@ public class ItemService {
     }
 
 
-    //chút sửa
-    @StreamListener(target = OrderSource.ITEM)
+    /**
+     * Function to listen from Delivery to Update Item (Deleted Order)
+     * @param items
+     */
+    @StreamListener(target = DeliverySource.ITEM)
     public void getItemFromOrderToUpdate(List<Item> items) {
         updateItemQuantityByDeleteOrder(items);
     }
+
+
 
 //    public void getAllItemDemoRabbit() {
 //        rabbitTemplate.convertAndSend(exchange, routingkey, itemRepository.findAll());

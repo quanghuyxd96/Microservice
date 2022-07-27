@@ -43,10 +43,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
-                .authorizeRequests().antMatchers("/item/get", "/item/items", "/item/supplier/get", "/item/suppliers")
+                .authorizeRequests().antMatchers("/item/get", "/item/items", "/item/supplier/get", "/item/suppliers","/item/update-quantity")
                 .permitAll()
                 .antMatchers("/item/save", "/item/delete", "/item/supplier/delete", "/item/supplier/save",
-                        "/item/supplier/update", "/item/update-price-or-quantity","/item/update","/item/update-quantity")
+                        "/item/supplier/update", "/item/update-price-or-quantity","/item/update")
                 .hasRole("ADMIN")
                 .anyRequest().authenticated().and().
                 exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()

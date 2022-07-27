@@ -129,6 +129,10 @@ public class DeliveryItemDetailService {
         deliveryItemDetailRepository.deleteById(id);
     }
 
+    public void deleteDeliveryItemDetailByDeliveryNoteId(long id){
+        deliveryItemDetailRepository.deleteByDeliveryNoteId(id);
+    }
+
 //    DeliveryItemDetail updateDeliveryItemDetailById(DeliveryItemDetail deliveryItemDetail, long id);
     //    @Scheduled(cron = "0 */1 * * * *")
 //    public void checkDeliveryItemUndelivery() {

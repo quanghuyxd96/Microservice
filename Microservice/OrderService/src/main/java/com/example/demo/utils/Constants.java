@@ -9,4 +9,6 @@ public class Constants {
 
     public static final String DELIVERY_CHANNEL = "deliveryChannel";
     public static final String AUTHOR = "Authorization";
+
+    public static final double MAX_WEIGHT = 500;
 }

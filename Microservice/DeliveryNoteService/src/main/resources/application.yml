@@ -43,6 +43,9 @@ spring:
         orderItemChannel:
           destination: updateOrderItemQuantity
           group: order
+        deliveryItemChannel:
+          destination: updateItemQuantity
+          group: delivery_item
 #    routingkey: delivery.routingkey
 client:
   post:

@@ -38,7 +38,7 @@ public class OrderServiceAspect {
 
 
     @After(value = "execution(* com.example.demo.service.OrderService.saveOrder(..)) and args(orderDetails)")
-    public void afterCheckDeliveryItemUndelivery(JoinPoint joinPoint, List<OrderDetail> orderDetails) {
+    public void afterSaveOrder(JoinPoint joinPoint, List<OrderDetail> orderDetails) {
         logger.info("After method: " + joinPoint.getSignature());
         List<OrderDetailDTOToken> orderDetailDTOList = convert.convertListModel(orderDetails, OrderDetailDTOToken.class);
         orderDetailDTOList.get(0).setToken(request.getHeader(AUTHOR));
@@ -48,17 +48,16 @@ public class OrderServiceAspect {
         logger.info("Finished send list order details to send email");
     }
 
-
-    //đang tinh sử dụng chung 1 queue, khi gọi thì sẽ phân ra update hay save
-//    @After(value = "execution(* com.example.demo.service.OrderService.updateOrder(..)) and args(orderDetails)")
-//    public void afterUpdateOrder(JoinPoint joinPoint, List<OrderDetail> orderDetails) {
-//        logger.info("After method: " + joinPoint.getSignature());
-//        List<OrderDetailDTOToken> orderDetailDTOList = convert.convertListModel(orderDetails, OrderDetailDTOToken.class);
-//        orderDetailDTOList.get(0).setToken(request.getHeader(AUTHOR));
-//        orderSource.order().send(MessageBuilder.withPayload(orderDetailDTOList).build());
-//        orderSource.orderDelivery().send(MessageBuilder.withPayload(
-//                convert.convertListModel(orderDetails, OrderDetailDTO.class)).build());
-//        logger.info("Finished send list order details to send email");
-//    }
+    @After(value = "execution(* com.example.demo.service.OrderService.updateOrder(..)) and args(orderDetails,orderId)")
+    public void afterUpdateOrder(JoinPoint joinPoint, List<OrderDetail> orderDetails,long orderId) {
+        logger.info("After method: " + joinPoint.getSignature());
+        List<OrderDetailDTOToken> orderDetailDTOList = convert.convertListModel(orderDetails, OrderDetailDTOToken.class);
+        System.out.println(1);
+        orderDetailDTOList.get(0).setToken(request.getHeader(AUTHOR));
+        orderSource.order().send(MessageBuilder.withPayload(orderDetailDTOList).build());
+        orderSource.orderDelivery().send(MessageBuilder.withPayload(
+                convert.convertListModel(orderDetails, OrderDetailDTO.class)).build());
+        logger.info("Finished send list order details to send email");
+    }
 
 }

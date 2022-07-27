@@ -17,5 +17,4 @@ public class OrderDTO {
     private LocalDate orderDate;
     private long storeId;
 
-
 }

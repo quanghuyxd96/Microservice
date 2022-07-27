@@ -109,7 +109,7 @@ public class ItemFacade {
 
     public List<ItemModel> updateItemsQuantity(List<ItemModel> itemModels) {
         List<Item> items = convertListModel(itemModels, Item.class);
-        List<Item> itemsAfterUpdate = itemService.updateItemQuantity(items);
+        List<Item> itemsAfterUpdate = itemService.updateItemQuantityAfterUpdateOrder(items);
         return convertListModel(itemsAfterUpdate, ItemModel.class);
     }
 
