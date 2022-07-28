@@ -3,14 +3,13 @@ package com.example.demo.client;
 import com.example.demo.dto.DeliveryNoteDTO;
 import com.example.demo.dto.OrderDTO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
-import static com.example.demo.utils.Constant.AUTHOR;
+import static com.example.demo.utils.Constants.AUTHOR;
 
 @FeignClient(name = "deliveryNoteFeignClient", url = "${client.post.baseUrl4}")
 public interface DeliveryNoteFeignClient {

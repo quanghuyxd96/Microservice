@@ -19,6 +19,7 @@ function signup(e) {
     };
     var json = JSON.stringify(user);
     localStorage.setItem(username, json);
+
     alert("dang ky thanh cong");
   }
 

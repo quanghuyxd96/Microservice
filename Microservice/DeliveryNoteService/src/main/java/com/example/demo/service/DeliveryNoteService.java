@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.example.demo.utils.Constants.ADMIN;
-import static com.example.demo.utils.Constants.MAX_WEIGHT;
+
 
 @Service
 @Getter
@@ -87,6 +87,14 @@ public class DeliveryNoteService {
     public List<DeliveryNote> getAllDeliveryNote() {
         List<DeliveryNote> deliveryNotes = deliveryNoteRepository.findAll();
         if (deliveryNotes == null) {
+            return null;
+        }
+        return deliveryNotes;
+    }
+
+    public List<DeliveryNote> getAllDeliveryNoteByoOrderId(long orderId){
+        List<DeliveryNote> deliveryNotes = deliveryNoteRepository.findAllDeliveryNoteByOrderId(orderId);
+        if(deliveryNotes == null){
             return null;
         }
         return deliveryNotes;

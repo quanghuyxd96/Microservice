@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.example.demo.utils.Constant.AUTHOR;
+import static com.example.demo.utils.Constants.AUTHOR;
 
 @FeignClient(name = "orderFeignClient", url = "${client.post.baseUrl2}")
 public interface OrderFeignClient {

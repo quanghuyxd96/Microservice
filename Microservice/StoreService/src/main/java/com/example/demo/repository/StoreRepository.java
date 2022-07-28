@@ -11,4 +11,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     Store findByUserNameQuery(@Param("user_name") String user_name);
 
     Store findByUserName(String userName);
+
+    Store findByEmailAndUserName(String email,String userName);
 }

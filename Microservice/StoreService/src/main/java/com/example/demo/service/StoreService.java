@@ -42,9 +42,37 @@ public class StoreService {
 
     private static final Logger logger = LogManager.getLogger(StoreService.class);
 
+    public String forgotPassword(String email, String username) {
+        Store store = storeRepository.findByEmailAndUserName(email, username);
+        if (store == null) {
+            return "Invalid email and username!!!";
+        }
+        String token = jwtTokenUtil.generateToken(username);
+        String linkReset = "http://localhost:8080/store/reset-password?token=" + token;
+        return linkReset;
+    }
+
+    public String resetPassword(String token, String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
+            logger.info("Password and confirm password are not equal.");
+            return "Password and confirm password are not equal.";
+        }
+        if (!jwtTokenUtil.validateToken(token)) {
+            logger.info("Invalid token");
+            return "Invalid token";
+        }
+        Store store = getStoreByToken(token, true);
+        if (store == null) {
+            logger.info("No username to reset password!!!");
+            return "No username to reset password!!!";
+        }
+        store.setPassword(endCodePassword(password));
+        return "Your password successfully updated.";
+    }
+
     public List<Store> getAllStore() {
         List<Store> stores = storeRepository.findAll();
-        if(stores == null){
+        if (stores == null) {
             return null;
         }
         return stores;
@@ -216,6 +244,15 @@ public class StoreService {
         String tokenToUse = token.substring(7);
         logger.info(tokenToUse);
         String userName = jwtTokenUtil.getUsernameFromToken(tokenToUse);
+        Store store = storeRepository.findByUserName(userName);
+        if (store == null) {
+            return null;
+        }
+        return store;
+    }
+
+    public Store getStoreByToken(String token, boolean check) {
+        String userName = jwtTokenUtil.getUsernameFromToken(token);
         Store store = storeRepository.findByUserName(userName);
         if (store == null) {
             return null;

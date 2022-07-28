@@ -50,7 +50,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable()
-				.authorizeRequests().antMatchers("/store/save","/store/authenticate","/store/demo-trial")
+				.authorizeRequests().antMatchers("/store/save","/store/authenticate","/store/demo-trial"
+						,"/store/forgot-password","/store/reset-password")
 				.permitAll()
 				.antMatchers("/store/get","/store/get-store-by-id").hasRole("USER")
 				.antMatchers("/store/all-store").hasRole("ADMIN")

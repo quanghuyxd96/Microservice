@@ -57,7 +57,7 @@ public class OrderService {
             OrderDetail orderDetail = orderDetails.get(i);
             orderDetail.setId(0);
             ItemDTO item = itemFeignClient.getItemById(orderDetail.getItemId()).getBody();
-            if (item == null || item.getQuantity() <= 0) {
+            if (item == null) {
                 orderDetails.remove(i--);
                 continue;
             }
@@ -219,6 +219,7 @@ public class OrderService {
 
     /**
      * Function to send Mess from Order to Delivery Note to delete Delivery
+     *
      * @param id
      * @return
      */

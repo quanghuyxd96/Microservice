@@ -26,6 +26,15 @@ public class DeliveryNoteController {
         return new ResponseEntity<>(deliveryNoteService.getAllDeliveryNote(),HttpStatus.OK);
     }
 
+    @GetMapping("/delivery-notes/order")
+    public ResponseEntity<List<DeliveryNote>> getAllDeliveryNotesByOrderId(@RequestParam("id") long orderId){
+        List<DeliveryNote> deliveryNotes = deliveryNoteFacade.getAllDeliveryNotesByOrderId(orderId);
+        if(deliveryNotes == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(deliveryNotes,HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/get", method = RequestMethod.GET)
     public ResponseEntity<DeliveryNote> getDeliveryNote(@RequestParam("id") Long id) {
         return new ResponseEntity<>(deliveryNoteService.getDeliveryNoteById(id), HttpStatus.OK);

@@ -11,63 +11,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.example.demo.util.Constants.JWT_TOKEN_VALIDITY;
+import static com.example.demo.util.Constants.SCERET;
+
 @Component
 public class JwtUtil {
-//
-//	@Value("${jwt.secret}")
-//	private String jwtSecret;
-//
-//	@Value("${jwt.token.validity}")
-//	private long tokenValidity;
-//
-//	public Claims getClaims(final String token) {
-//		try {
-//			Claims body = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
-//			return body;
-//		} catch (Exception e) {
-//			System.out.println(e.getMessage() + " => " + e);
-//		}
-//		return null;
-//	}
-//
-//	public String generateToken(String id) {
-//		Claims claims = Jwts.claims().setSubject(id);
-//		long nowMillis = System.currentTimeMillis();
-//		long expMillis = nowMillis + tokenValidity;
-//		Date exp = new Date(expMillis);
-//		return Jwts.builder().setClaims(claims).setIssuedAt(new Date(nowMillis)).setExpiration(exp)
-//				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
-//	}
-//
-//	public void validateToken(final String token) throws JwtTokenMalformedException, JwtTokenMissingException {
-//		try {
-//			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-//		} catch (SignatureException ex) {
-//			throw new JwtTokenMalformedException("Invalid JWT signature");
-//		} catch (MalformedJwtException ex) {
-//			throw new JwtTokenMalformedException("Invalid JWT token");
-//		} catch (ExpiredJwtException ex) {
-//			throw new JwtTokenMalformedException("Expired JWT token");
-//		} catch (UnsupportedJwtException ex) {
-//			throw new JwtTokenMalformedException("Unsupported JWT token");
-//		} catch (IllegalArgumentException ex) {
-//			throw new JwtTokenMissingException("JWT claims string is empty.");
-//		}
-//	}
 
 	private static final long serialVersionUID = -2550185165626007488L;
 
-	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
-
-	@Value("jsghdsajdsahdskaljkdjskldjsakdsaudjksanbmksadnjasdiiudsdsydtjlioidsjabdsnqjumssdjhdsjadjahdjhdsdjsadhjdshjd" +
-			"dshdajdhjsadhjhdjhsadjhdksadusadhadjdjadhjadhjdhjsakdhjkasdysaudausdhdasndadsndnijiodasjidsajdsakldjskasjdj" +
-			"djksahsdjahdjsahduasdydjndmnmnjdshjdhuydsnasbdnsbndsabdhiuhdusaidpqopsakjdsakmdsaddskakjdksadjasdjkldjdasldj" +
-			"dsdsjadsaioqiopidslakldsdjiadjdskldskmsdkalduiuqnmnmsasda")
-	private String secret;
-
 	private Claims getClaims(String token) {
 		Claims claims = Jwts.parser()
-				.setSigningKey(secret)
+				.setSigningKey(SCERET)
 				.parseClaimsJws(token)
 				.getBody();
 		return claims;
@@ -89,10 +43,8 @@ public class JwtUtil {
 	}
 
 	public Date getExpirationDateFromToken(String token) {
-//		return getClaimFromToken(token, Claims::getExpiration);
 		Claims claims = getClaims(token);
 		Date expiration = claims.getExpiration();
-		System.out.println("3: " + expiration);
 		return expiration;
 	}
 
@@ -102,7 +54,7 @@ public class JwtUtil {
 	}
 
 	private Claims getAllClaimsFromToken(String token) {
-		return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+		return Jwts.parser().setSigningKey(SCERET).parseClaimsJws(token).getBody();
 	}
 
 	private Boolean isTokenExpired(String token) {
@@ -123,7 +75,7 @@ public class JwtUtil {
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
 
 		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000)).signWith(SignatureAlgorithm.HS512, secret).compact();
+				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000)).signWith(SignatureAlgorithm.HS512, SCERET).compact();
 	}
 
 	public Boolean canTokenBeRefreshed(String token) {

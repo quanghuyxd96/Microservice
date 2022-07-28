@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.client.OrderFeignClient;
 import com.example.demo.entity.Store;
-import com.example.demo.facade.StoreFacade;
 import com.example.demo.facade.StoreModelFacade;
 import com.example.demo.repository.StoreRepository;
 import io.tej.SwaggerCodgen.api.StoreApi;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static com.example.demo.utils.Constant.AUTHOR;
+import static com.example.demo.utils.Constants.AUTHOR;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -133,6 +132,19 @@ public class StoreModelController implements StoreApi {
             throws Exception {
         storeModelFacade.getStoreService().authenticate(userName, password);
         return new ResponseEntity<>(userName, HttpStatus.OK);
+    }
+
+    @PostMapping("/store/forgot-password")
+    public String forgotPassword(@RequestParam("email") String email, @RequestParam("username") String username){
+        return storeModelFacade.forgotPassword(email,username);
+    }
+
+
+    //reset chưa được
+    @PutMapping("/store/reset-password")
+    public String resetPassword(@RequestParam("token") String token, @RequestParam("password") String password,
+                                @RequestParam("confirmPassword") String confirmPassword){
+        return storeModelFacade.resetPassword(token,password,confirmPassword);
     }
 
     //Dung de demo

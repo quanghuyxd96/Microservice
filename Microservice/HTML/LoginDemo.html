@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+    <title>Login</title>
+</head>
+
+<body>
+    <div class="wapper">
+        <div class="wapper-heading">
+            <h1>Login</h1>
+        </div>
+        <form id="form">
+            <div class="input__field">
+                <input id="userName" type="text" placeholder="User Name" name="userName" />
+            </div>
+
+            <div class="input__field">
+                <input id="password" type="password" placeholder="Password" name="password" />
+            </div>
+            <a href="/Demo/SignupDemo.html" class="signup-link">Sign Up</a>
+            <button id="btn" class="btn" onclick="getValue()">Login</button>
+        </form>
+    </div>
+    <script>
+        function getValue() {
+            var userName = document.getElementById('userName').value;
+            var password = document.getElementById('password').value;
+            const options = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userName: userName, password: password })
+            };
+
+            fetch('http://localhost:8080/auth/login?userName=' + userName + '&password=' + password,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                }
+
+            )
+                .then((res) => res.json())
+                .then(data => console.log(data))
+                .catch(err=>alert(err));
+        }
+
+    </script>
+</body>
+
+</html>

@@ -21,5 +21,12 @@ public class DeliveryNoteFacade {
 //        }
 //        return convertListModel(orders, OrderModel.class);
 //    }
+    public List<DeliveryNote> getAllDeliveryNotesByOrderId (long id){
+        List<DeliveryNote> deliveryNotes = deliveryNoteService.getAllDeliveryNoteByoOrderId(id);
+        if(deliveryNotes == null){
+            return null;
+        }
+        return deliveryNotes;
 
+    }
 }

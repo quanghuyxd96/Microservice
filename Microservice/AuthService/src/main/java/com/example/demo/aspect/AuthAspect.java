@@ -30,7 +30,7 @@ public class AuthAspect {
         MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
         List<String> strings = Arrays.stream(methodSignature.getParameterNames()).collect(Collectors.toList());
         //demo chặn đầu
-//        if(userName.equals("admin")){
+//        if(userName.startwith("admin")){
 //            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //        }
         String className = methodSignature.getDeclaringType().getSimpleName();

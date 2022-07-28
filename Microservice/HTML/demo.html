@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <!--- Import Axios via CDN before request --->
+
+    <p>Make a GET request with Axios (response printed in console):</p>
+    <button id="btn" onclick="showResult()">GET!</button>
+
+    <p>Make a POST request with Axios (response printed in console):</p>
+    <button id="btn" onclick="showResult1()">POST!</button>
+    <script>
+        //get Ok
+        function showResult() {
+            axios.get('http://localhost:8080/item/items')
+                .then(res => console.log(res))
+                .catch(err => console.log(err))
+        }
+        // function showResult1() {
+        //     axios.
+        //     axios.post('https://reqres.in/api/users', {
+        //         name: "Anon",
+        //         job: "Web Developer",
+        //     })
+        //         .then(res => console.log(res))
+        //         .catch(err => console.log(err))
+        // }
+    </script>
+
+
+    <!--- Import Axios via CDN before request --->
+
+    <script>
+
+    </script>
+</body>
+
+</html>

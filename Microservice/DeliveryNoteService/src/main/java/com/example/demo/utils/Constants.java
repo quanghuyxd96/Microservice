@@ -10,4 +10,10 @@ public class Constants {
     public static final String ITEM_CHANNEL = "orderItemChannel";
 
     public static final double MAX_WEIGHT = 500;
+    public static final long JWT_TOKEN_VALIDITY = 15 * 60;
+
+    protected static final String SCERET = "jsghdsajdsahdskaljkdjskldjsakdsaudjksanbmksadnjasdiiudsdsydtjlioidsjabdsnqjumssdjhdsjadjahdjhdsdjsadhjdshjd" +
+            "dshdajdhjsadhjhdjhsadjhdksadusadhadjdjadhjadhjdhjsakdhjkasdysaudausdhdasndadsndnijiodasjidsajdsakldjskasjdj" +
+            "djksahsdjahdjsahduasdydjndmnmnjdshjdhuydsnasbdnsbndsabdhiuhdusaidpqopsakjdsakmdsaddskakjdksadjasdjkldjdasldj" +
+            "dsdsjadsaioqiopidslakldsdjiadjdskldskmsdkalduiuqnmnmsasda";
 }

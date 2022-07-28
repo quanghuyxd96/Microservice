@@ -28,9 +28,4 @@ public class DeliveryNoteServiceAspect {
         logger.info("After method: " +joinPoint.getSignature());
     }
 
-
-//    @Before(value = "execution(* com.example.demo.service.DeliveryNoteService.saveDelivery(..))")
-//    public void beforeAdvice(JoinPoint joinPoint) {
-//        logger.info("Before method:" + joinPoint.getSignature());
-//    }
 }

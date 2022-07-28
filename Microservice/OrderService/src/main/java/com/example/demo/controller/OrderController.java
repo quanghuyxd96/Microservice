@@ -33,8 +33,6 @@ public class OrderController implements OrderApi {
     @Autowired
     private HttpServletRequest request;
 
-    //    @Autowired
-//    private HttpServletRequest request;
     @Override
     public ResponseEntity<OrderModel> orderSaveOrderPost(List<OrderDetailModel> orderDetailModels) {
         OrderModel orderModel = orderFacade.saveOrder(orderDetailModels);

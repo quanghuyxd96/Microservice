@@ -10,5 +10,11 @@ public class Constants {
     public static final String ITEM_CHANNEL = "orderItemChannel";
 
     public static final String DELIVERY_CHANNEL = "deliveryChannel";
+    public static final long JWT_TOKEN_VALIDITY = 15 * 60;
+
+    protected static final String SCERET = "jsghdsajdsahdskaljkdjskldjsakdsaudjksanbmksadnjasdiiudsdsydtjlioidsjabdsnqjumssdjhdsjadjahdjhdsdjsadhjdshjd" +
+            "dshdajdhjsadhjhdjhsadjhdksadusadhadjdjadhjadhjdhjsakdhjkasdysaudausdhdasndadsndnijiodasjidsajdsakldjskasjdj" +
+            "djksahsdjahdjsahduasdydjndmnmnjdshjdhuydsnasbdnsbndsabdhiuhdusaidpqopsakjdsakmdsaddskakjdksadjasdjkldjdasldj" +
+            "dsdsjadsaioqiopidslakldsdjiadjdskldskmsdkalduiuqnmnmsasda";
 
 }

@@ -89,6 +89,14 @@ public class StoreModelFacade {
     }
 
 
+    public String forgotPassword(String email, String username){
+        return storeService.forgotPassword(email,username);
+    }
+
+    public String resetPassword(String token, String password, String confirmPassword){
+        return storeService.resetPassword(token,password,confirmPassword);
+    }
+
     private <T, D> T convertModel(D obj, Class<T> classT) {
         ModelMapper modelMapper = new ModelMapper();
         T obj1 = modelMapper.map(obj, classT);

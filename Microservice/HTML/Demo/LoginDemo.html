@@ -27,37 +27,51 @@
                 <input id="password" type="password" placeholder="Password" name="password" />
             </div>
             <a href="/Demo/SignupDemo.html" class="signup-link">Sign Up</a>
-            <button id="btn" class="btn" onclick="check()">Login</button>
+            <button id="btn" class="btn">Login</button>
         </form>
     </div>
     <script>
-        function check() {
-            const form = document.getElementById('form');
-            form.addEventListener('submit', function (e) {
-                // Prevent default behavior:
-                e.preventDefault();
-                // Create new FormData object:
-                const formData = new FormData(form);
-                // Convert formData object to URL-encoded string:
-                const payload = new URLSearchParams(formData);
-                // Post the payload using Fetch:
-                fetch('http://localhost:8080/auth/login', {
-                    method: 'POST',
-                    body: payload,
-                }).then(res => res.json()).then(data =>{
-                    
-                    if(`${data.token}`==null){
-                        console.log(`${data.token}`);
-                        alert('Wrong user or password');
-                        
-                    }else{
-                        window.location="/Demo/Demo.html";
-                    }
-                })
 
-            })
+// onclick="showResult1()"
+        // function check() {
+        //     const form = document.getElementById('form');
+        //     form.addEventListener('submit', function (e) {
+        //         // Prevent default behavior:
+        //         e.preventDefault();
+        //         // Create new FormData object:
+        //         const formData = new FormData(form);
+        //         // Convert formData object to URL-encoded string:
+        //         const payload = new URLSearchParams(formData);
+        //         console.log(formData);
+        //         // Post the payload using Fetch:
+        //         fetch('http://localhost:8080/auth/login', {
+        //             method: 'POST',
+        //             body: payload,
+        //         }).then(res => res.json()).then(data =>{
+                    
+        //             if(`${data.token}`==null){
+        //                 console.log(`${data.token}`);
+        //                 alert('Wrong user or password');
+                        
+        //             }else{
+        //                 window.location="/Demo/Demo.html";
+        //             }
+        //         })
+
+        //     })
             
+        // }\
+        var button = document.getElementById("btn");
+        
+        button.onclick = function showResult1() {
+            axios.post('http://localhost:8080/auth/login', {
+                userName: document.getElementById('userName'),
+                password: document.getElementById('password'),
+            })
+                .then(res => {console.log(res),alert("abc")})
+                .catch(err => console.log(err))
         }
+        // button.onclick=showResult1();
 
     </script>
 </body>
