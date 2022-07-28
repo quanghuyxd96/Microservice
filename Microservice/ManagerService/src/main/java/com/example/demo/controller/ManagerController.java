@@ -58,16 +58,27 @@ public class ManagerController implements ManagerApi {
     public ResponseEntity<?> createAuthenticationToken(@RequestParam("userName") String userName,
                                                        @RequestParam("password") String password)
             throws Exception {
-        if(!managerFacade.getManagerService().authenticate(userName, password)){
+        if (!managerFacade.getManagerService().authenticate(userName, password)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(userName, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @RequestMapping(value = "/manager/register", method = RequestMethod.POST)
     public ResponseEntity<?> createManager(@RequestBody Manager manager)
             throws Exception {
         return new ResponseEntity<>(managerService.saveManager(manager), HttpStatus.OK);
+    }
+
+    @PostMapping("/manager/forgot-password")
+    public String forgotPassword(@RequestParam("email") String email, @RequestParam("username") String username) {
+        return managerFacade.forgotPassword(email, username);
+    }
+
+    @PostMapping("/manager/reset-password")
+    public String resetPassword(@RequestParam("token") String token, @RequestParam("password") String password,
+                                @RequestParam("confirmPassword") String confirmPassword) {
+        return managerFacade.resetPassword(token, password, confirmPassword);
     }
 
     //cái thử demo gửi mail, chưa xài tới

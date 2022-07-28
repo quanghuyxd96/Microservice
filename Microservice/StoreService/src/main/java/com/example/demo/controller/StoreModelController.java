@@ -140,7 +140,6 @@ public class StoreModelController implements StoreApi {
     }
 
 
-    //reset chưa được
     @PutMapping("/store/reset-password")
     public String resetPassword(@RequestParam("token") String token, @RequestParam("password") String password,
                                 @RequestParam("confirmPassword") String confirmPassword){

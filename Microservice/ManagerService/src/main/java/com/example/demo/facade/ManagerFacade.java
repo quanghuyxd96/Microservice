@@ -46,6 +46,14 @@ public class ManagerFacade {
     @Autowired
     public JavaMailSender emailSender;
 
+    public String forgotPassword(String email, String username){
+        return managerService.forgotPassword(email, username);
+    }
+
+    public String resetPassword(String token, String password,String confirmPassword ){
+        return managerService.resetPassword(token, password,confirmPassword);
+    }
+
     public <T,D> T convertModel(D obj, Class<T> classT){
         ModelMapper modelMapper = new ModelMapper();
         T obj1 = modelMapper.map(obj, classT);

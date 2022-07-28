@@ -12,7 +12,8 @@ import com.example.demo.utils.jwt.JwtTokenUtil;
 import com.example.demo.utils.report.ExcelGenerator;
 import com.example.demo.utils.report.PDFGenerator;
 import com.lowagie.text.DocumentException;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -62,6 +63,7 @@ public class ManagerService {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+    private static final Logger logger = LogManager.getLogger(ManagerService.class);
 
     public List<Manager> getAllManagers() {
         return managerRepository.findAll();
@@ -119,7 +121,7 @@ public class ManagerService {
     public List<DeliveryNoteDTO> saveDeliveryNote() {
         String token = generateToken();
         List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-7), token);
-        return deliveryNoteFeignClient.saveDeliveryNote(ordersByOrderDate,token);
+        return deliveryNoteFeignClient.saveDeliveryNote(ordersByOrderDate, token);
     }
 
     public Manager checkManager(Manager manager) {
@@ -160,10 +162,48 @@ public class ManagerService {
         return true;
     }
 
+    public String forgotPassword(String email, String username) {
+        Manager manager = managerRepository.findByEmailAndUserName(email, username);
+        if (manager == null) {
+            return "Invalid email and username!!!";
+        }
+        String token = jwtTokenUtil.generateToken(username);
+        String linkReset = "http://localhost:8080/manager/reset-password?token=" + token;
+        return linkReset;
+    }
+
+    public String resetPassword(String token, String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
+            logger.info("Password and confirm password are not equal.");
+            return "Password and confirm password are not equal.";
+        }
+        if (!jwtTokenUtil.validateToken(token)) {
+            logger.info("Invalid token");
+            return "Invalid token";
+        }
+        Manager manager = getManagerByToken(token, true);
+        if (manager == null) {
+            logger.info("No username to reset password!!!");
+            return "No username to reset password!!!";
+        }
+        manager.setPassword(endCodePassword(password));
+        return "Your password successfully updated.";
+    }
+
+
     public String generateToken() {
         String token = "Bearer " + jwtTokenUtil.generateToken("admin");
         System.out.println(token);
         return token;
+    }
+
+    public Manager getManagerByToken(String token, boolean check) {
+        String userName = jwtTokenUtil.getUsernameFromToken(token);
+        Manager manager = managerRepository.findByUserName(userName);
+        if (manager == null) {
+            return null;
+        }
+        return manager;
     }
 
     public void exportIntoPdf(HttpServletResponse response) throws DocumentException, IOException {
