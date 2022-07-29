@@ -8,11 +8,13 @@ import com.example.demo.entity.Payment;
 import com.example.demo.repository.PaymentRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class PaymentService {
@@ -42,7 +44,7 @@ public class PaymentService {
             if (paymentRepo == null) {
                 payment.setTotalMoney(orderDTO.getTotalPrice());
                 payment.setAccumulatedMoney(payment.getMoneyPaid());
-                payment.setMoneyUnpaid(orderDTO.getTotalPrice() - payment.getAccumulatedMoney());
+                payment.setMoneyUnpaid(orderDTO.getTotalPrice() - payment.getMoneyPaid());
                 payment.setStoreUser(storeDTO.getUserName());
                 if (payment.getMoneyUnpaid() == 0) {
                     payment.setIsComplete("Completed");
@@ -57,7 +59,7 @@ public class PaymentService {
                 payment1.setTotalMoney(paymentRepo.getTotalMoney());
                 payment1.setAccumulatedMoney(paymentRepo.getAccumulatedMoney() + payment.getMoneyPaid());
                 payment1.setMoneyPaid(payment.getMoneyPaid());
-                payment1.setMoneyUnpaid(paymentRepo.getTotalMoney() - payment.getAccumulatedMoney());
+                payment1.setMoneyUnpaid(paymentRepo.getMoneyUnpaid() - payment.getMoneyPaid());
                 if (payment1.getMoneyUnpaid() == 0) {
                     payment1.setIsComplete("Completed");
                 } else {
@@ -71,6 +73,14 @@ public class PaymentService {
                 return null;
             }
         }
+    }
+
+    @Scheduled(cron = "*/20 * * * * *")
+    public void getPaymentToReport(){
+        LocalDateTime localDateTime = LocalDateTime.parse("2022-07-29T18:49:30");
+        LocalDateTime localDateTime1 =LocalDateTime.parse("2022-07-29T20:00:00");
+        List<Payment> payments = paymentRepository.getAllPaymentByDateTime(localDateTime, localDateTime1);
+        System.out.println(payments.get(0).getId());
     }
 
 

@@ -11,4 +11,6 @@ public class Constants {
             "dshdajdhjsadhjhdjhsadjhdksadusadhadjdjadhjadhjdhjsakdhjkasdysaudausdhdasndadsndnijiodasjidsajdsakldjskasjdj" +
             "djksahsdjahdjsahduasdydjndmnmnjdshjdhuydsnasbdnsbndsabdhiuhdusaidpqopsakjdsakmdsaddskakjdksadjasdjkldjdasldj" +
             "dsdsjadsaioqiopidslakldsdjiadjdskldskmsdkalduiuqnmnmsasda";
+
+    public static final String FIRST_QUARTER = " payment_date >= '2022-01-01 00:00:00' AND payment_date < '2022-04-01 00:00:00' ";
 }
