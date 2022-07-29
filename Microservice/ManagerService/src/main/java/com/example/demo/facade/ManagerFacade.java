@@ -54,6 +54,13 @@ public class ManagerFacade {
         return managerService.resetPassword(token, password,confirmPassword);
     }
 
+    public Manager updateManager(Manager manager){
+        Manager manager1 = managerService.updateManager(manager);
+        if(manager1 == null){
+            return null;
+        }
+        return manager1;
+    }
     public <T,D> T convertModel(D obj, Class<T> classT){
         ModelMapper modelMapper = new ModelMapper();
         T obj1 = modelMapper.map(obj, classT);

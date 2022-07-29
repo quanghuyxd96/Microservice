@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.http.HttpClient;
 
 @RestController
 @CrossOrigin("*")
@@ -32,7 +31,7 @@ public class ManagerController implements ManagerApi {
     @Autowired
     private HttpServletRequest request;
 
-
+    //payment
     @PostMapping("/manager/payment")
     public Payment savePaymentDemo(@RequestBody Payment payment) {
         return managerFacade.getPaymentService().saveAndUpdatePaymentOfStore(payment);
@@ -44,16 +43,20 @@ public class ManagerController implements ManagerApi {
     }
 
 
-    @GetMapping("/pdf/items")
+
+    //report
+    @GetMapping("/manager/pdf/items")
     public void generatePdf(HttpServletResponse response) throws DocumentException, IOException {
         managerFacade.getManagerService().exportIntoPdf(response);
     }
 
-    @GetMapping("/excel/items")
+    @GetMapping("/manager/excel/items")
     public void exportIntoExcel(HttpServletResponse response) throws IOException {
         managerFacade.getManagerService().exportIntoExcel(response);
     }
 
+
+    //manager
     @RequestMapping(value = "/manager/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestParam("userName") String userName,
                                                        @RequestParam("password") String password)
@@ -75,10 +78,19 @@ public class ManagerController implements ManagerApi {
         return managerFacade.forgotPassword(email, username);
     }
 
-    @PostMapping("/manager/reset-password")
+    @PutMapping("/manager/reset-password")
     public String resetPassword(@RequestParam("token") String token, @RequestParam("password") String password,
                                 @RequestParam("confirmPassword") String confirmPassword) {
         return managerFacade.resetPassword(token, password, confirmPassword);
+    }
+
+    @PutMapping("/manager/update")
+    public ResponseEntity<Manager> updateManager(@RequestBody Manager manager){
+        Manager manager1 = managerFacade.updateManager(manager);
+        if(manager1 == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(manager1,HttpStatus.OK);
     }
 
     //cái thử demo gửi mail, chưa xài tới

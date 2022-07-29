@@ -4,12 +4,14 @@ import com.example.demo.client.OrderFeignClient;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.OrderDetailDTO;
 import com.example.demo.entity.Store;
+import com.example.demo.mq.StoreSourceSend;
 import com.example.demo.repository.StoreRepository;
 import com.example.demo.utils.JwtTokenUtil;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.integration.support.MessageBuilder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -18,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,6 +43,9 @@ public class StoreService {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private StoreSourceSend storeSourceSend;
+
     private static final Logger logger = LogManager.getLogger(StoreService.class);
 
     public String forgotPassword(String email, String username) {
@@ -48,8 +54,12 @@ public class StoreService {
             return "Invalid email and username!!!";
         }
         String token = jwtTokenUtil.generateToken(username);
-        String linkReset = "http://localhost:8080/store/reset-password?token=" + token;
-        return linkReset;
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("email",store.getEmail());
+        hashMap.put("token",token);
+        System.out.println(hashMap.get("token"));
+        storeSourceSend.sendToGetNewPassword().send(MessageBuilder.withPayload(hashMap).build());
+        return "We sent email to you!!!";
     }
 
     public String resetPassword(String token, String password, String confirmPassword) {
@@ -67,6 +77,7 @@ public class StoreService {
             return "No username to reset password!!!";
         }
         store.setPassword(endCodePassword(password));
+        storeRepository.save(store);
         return "Your password successfully updated.";
     }
 

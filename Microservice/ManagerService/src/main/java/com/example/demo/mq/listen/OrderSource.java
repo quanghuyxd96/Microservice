@@ -1,4 +1,4 @@
-package com.example.demo.mq;
+package com.example.demo.mq.listen;
 
 import com.example.demo.utils.Constants;
 import org.springframework.cloud.stream.annotation.Input;

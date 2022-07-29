@@ -30,6 +30,14 @@ spring:
   output:
     ansi:
       enabled: ALWAYS
+  cloud:
+    stream:
+      default:
+        contentType: application/json
+      bindings:
+        storeForgotPasswordChannel:
+          destination: sendToGetNewPassword
+          group: manager
 logging:
   level:
     org:

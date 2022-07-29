@@ -1,6 +1,7 @@
 package com.example.demo.utils.report;
 
 import com.example.demo.dto.ItemDTO;
+import com.example.demo.entity.Payment;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.CMYKColor;
 import com.lowagie.text.pdf.PdfPCell;
@@ -19,6 +20,7 @@ public class PDFGenerator {
 
     // List to hold all item
     private List<ItemDTO> items;
+    private List<Payment> payments;
 
     public void generate(HttpServletResponse response) throws DocumentException, IOException {
 
@@ -94,4 +96,50 @@ public class PDFGenerator {
         // Closing the document
         document.close();
     }
+
+    public void generateWeeklyReport(HttpServletResponse response) throws DocumentException, IOException {
+        Document document = new Document(PageSize.A4);
+        PdfWriter.getInstance(document, response.getOutputStream());
+        document.open();
+        Font fontTiltle = FontFactory.getFont(FontFactory.TIMES_ROMAN);
+        fontTiltle.setSize(20);
+        Paragraph paragraph = new Paragraph("List Of items", fontTiltle);
+        paragraph.setAlignment(Paragraph.ALIGN_CENTER);
+        document.add(paragraph);
+        PdfPTable table = new PdfPTable(7);
+        table.setWidthPercentage(100f);
+        table.setWidths(new int[]{3, 3, 3, 3, 3, 3, 3});
+        table.setSpacingBefore(5);
+        PdfPCell cell = new PdfPCell();
+        cell.setBackgroundColor(CMYKColor.MAGENTA);
+        cell.setPadding(5);
+        Font font = FontFactory.getFont(FontFactory.TIMES_ROMAN);
+        font.setColor(CMYKColor.WHITE);
+        cell.setPhrase(new Phrase("ID", font));
+        table.addCell(cell);
+        cell.setPhrase(new Phrase("Store User", font));
+        table.addCell(cell);
+        cell.setPhrase(new Phrase("Order ID", font));
+        table.addCell(cell);
+        cell.setPhrase(new Phrase("Money Paid", font));
+        table.addCell(cell);
+        cell.setPhrase(new Phrase("Money Unpaid", font));
+        table.addCell(cell);
+        cell.setPhrase(new Phrase("Payment Date", font));
+        table.addCell(cell);
+        cell.setPhrase(new Phrase("Complete", font));
+        table.addCell(cell);
+        for (Payment payment : getPayments()) {
+            table.addCell(String.valueOf(payment.getId()));
+            table.addCell(payment.getStoreUser());
+            table.addCell(String.valueOf(payment.getAccumulatedMoney()));
+            table.addCell(String.valueOf(payment.getMoneyUnpaid()));
+            table.addCell(String.valueOf(payment.getPaymentDate()));
+
+        }
+        document.add(table);
+        document.close();
+    }
+
+
 }

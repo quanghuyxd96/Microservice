@@ -10,7 +10,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpClient;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Service
 public class PaymentService {
@@ -30,21 +32,46 @@ public class PaymentService {
 
     public Payment saveAndUpdatePaymentOfStore(Payment payment) {
         String token = managerService.generateToken();
-        OrderDTO orderDTO = orderFeignClient.getOrderById(payment.getOrderId(),token).getBody();
+        OrderDTO orderDTO = orderFeignClient.getOrderById(payment.getOrderId(), token).getBody();
         if (orderDTO == null) {
             return null;
         } else {
-            StoreDTO storeDTO = storeFeignClient.getStoreById(orderDTO.getStoreId(),token).getBody();
-            Payment paymentRepo = paymentRepository.findByOrderId(orderDTO.getId());
+            StoreDTO storeDTO = storeFeignClient.getStoreById(orderDTO.getStoreId(), token).getBody();
+//            Payment paymentRepo = paymentRepository.findByOrderId(orderDTO.getId());
+            Payment paymentRepo = paymentRepository.getPaymentByOrderId(orderDTO.getId());
             if (paymentRepo == null) {
-                payment.setMoneyUnpaid(orderDTO.getTotalPrice() - payment.getMoneyPaid());
+                payment.setTotalMoney(orderDTO.getTotalPrice());
+                payment.setAccumulatedMoney(payment.getMoneyPaid());
+                payment.setMoneyUnpaid(orderDTO.getTotalPrice() - payment.getAccumulatedMoney());
                 payment.setStoreUser(storeDTO.getUserName());
+                if (payment.getMoneyUnpaid() == 0) {
+                    payment.setIsComplete("Completed");
+                } else {
+                    payment.setIsComplete("Incomplete");
+                }
+                payment.setPaymentDate(LocalDateTime.now());
                 return paymentRepository.save(payment);
             }
-            paymentRepo.setMoneyPaid(paymentRepo.getMoneyPaid() + payment.getMoneyPaid());
-            paymentRepo.setMoneyUnpaid(orderDTO.getTotalPrice() - paymentRepo.getMoneyPaid());
-            return paymentRepository.save(paymentRepo);
+            if (paymentRepo.getMoneyUnpaid() > 0) {
+                Payment payment1 = new Payment();
+                payment1.setTotalMoney(paymentRepo.getTotalMoney());
+                payment1.setAccumulatedMoney(paymentRepo.getAccumulatedMoney() + payment.getMoneyPaid());
+                payment1.setMoneyPaid(payment.getMoneyPaid());
+                payment1.setMoneyUnpaid(paymentRepo.getTotalMoney() - payment.getAccumulatedMoney());
+                if (payment1.getMoneyUnpaid() == 0) {
+                    payment1.setIsComplete("Completed");
+                } else {
+                    payment1.setIsComplete("Incomplete");
+                }
+                payment1.setStoreUser(storeDTO.getUserName());
+                payment1.setOrderId(orderDTO.getId());
+                payment1.setPaymentDate(LocalDateTime.now());
+                return paymentRepository.save(payment1);
+            } else {
+                return null;
+            }
         }
     }
+
 
 }

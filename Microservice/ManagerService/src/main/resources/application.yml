@@ -53,6 +53,9 @@ spring:
         ordersChannel:
           destination: order
           group: manager
+        storeForgotPasswordChannel:
+          destination: sendToGetNewPassword
+          group: manager
 client:
   post:
     baseUrl1: 'http://localhost:8082'

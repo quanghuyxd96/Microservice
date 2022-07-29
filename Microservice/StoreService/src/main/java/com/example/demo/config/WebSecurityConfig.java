@@ -53,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests().antMatchers("/store/save","/store/authenticate","/store/demo-trial"
 						,"/store/forgot-password","/store/reset-password")
 				.permitAll()
-				.antMatchers("/store/get","/store/get-store-by-id").hasRole("USER")
+				.antMatchers("/store/get").hasRole("USER")
 				.antMatchers("/store/all-store").hasRole("ADMIN")
 				.anyRequest().authenticated(). and().
 				exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()

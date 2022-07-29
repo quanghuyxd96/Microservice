@@ -4,9 +4,12 @@ import com.example.demo.client.DeliveryNoteFeignClient;
 import com.example.demo.client.ItemFeignClient;
 import com.example.demo.client.OrderFeignClient;
 import com.example.demo.client.StoreFeignClient;
-import com.example.demo.dto.*;
+import com.example.demo.dto.DeliveryNoteDTO;
+import com.example.demo.dto.ItemDTO;
+import com.example.demo.dto.OrderDTO;
+import com.example.demo.dto.OrderDetailToken;
 import com.example.demo.entity.Manager;
-import com.example.demo.mq.OrderSource;
+import com.example.demo.mq.listen.OrderSource;
 import com.example.demo.repository.ManagerRepository;
 import com.example.demo.utils.jwt.JwtTokenUtil;
 import com.example.demo.utils.report.ExcelGenerator;
@@ -19,7 +22,6 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -79,6 +81,16 @@ public class ManagerService {
         }
         manager.setPassword(endCodePassword(manager.getPassword()));
         return managerRepository.save(manager);
+    }
+
+    public Manager updateManager(Manager manager) {
+        Manager managerRepo = managerRepository.findByUserName(manager.getUserName());
+        if (managerRepo == null) {
+            return null;
+        }
+        managerRepo.setPassword(manager.getPassword());
+        managerRepo.setEmail(manager.getEmail());
+        return managerRepository.save(managerRepo);
     }
 
     private String endCodePassword(String password) {
@@ -169,7 +181,8 @@ public class ManagerService {
         }
         String token = jwtTokenUtil.generateToken(username);
         String linkReset = "http://localhost:8080/manager/reset-password?token=" + token;
-        return linkReset;
+        emailService.sendEmailToResetAdminPassword(linkReset, email);
+        return "We sent email to you!!!";
     }
 
     public String resetPassword(String token, String password, String confirmPassword) {
@@ -187,9 +200,9 @@ public class ManagerService {
             return "No username to reset password!!!";
         }
         manager.setPassword(endCodePassword(password));
+        managerRepository.save(manager);
         return "Your password successfully updated.";
     }
-
 
     public String generateToken() {
         String token = "Bearer " + jwtTokenUtil.generateToken("admin");
@@ -232,7 +245,7 @@ public class ManagerService {
     }
 
     @StreamListener(target = OrderSource.ORDER_CHANEL)
-    public void processHelloChannelGreeting(List<OrderDetailToken> orderDetails) {
+    public void processSendEmailToNotifyOrdered(List<OrderDetailToken> orderDetails) {
         emailService.sendEmailToNotifyOrdered(orderDetails);
     }
 
