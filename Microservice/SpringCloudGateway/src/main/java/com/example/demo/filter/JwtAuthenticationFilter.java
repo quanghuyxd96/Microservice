@@ -51,8 +51,7 @@ public class JwtAuthenticationFilter implements GatewayFilter {
                     // e.printStackTrace();
 
                     ServerHttpResponse response = exchange.getResponse();
-                    response.setStatusCode(HttpStatus.BAD_REQUEST);
-
+                    response.setStatusCode(HttpStatus.REQUEST_TIMEOUT);
                     return response.setComplete();
                 }
 

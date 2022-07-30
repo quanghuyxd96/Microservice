@@ -129,13 +129,6 @@ public class ManagerService {
         return null;
     }
 
-    @Scheduled(cron = "0 0 7 * * *")
-    public List<DeliveryNoteDTO> saveDeliveryNote() {
-        String token = generateToken();
-        List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-7), token);
-        return deliveryNoteFeignClient.saveDeliveryNote(ordersByOrderDate, token);
-    }
-
     public Manager checkManager(Manager manager) {
         List<Manager> managers = managerRepository.findAll();
         for (Manager manager1 : managers) {
@@ -278,6 +271,11 @@ public class ManagerService {
 //        }
 //        emailService.sendEmailToNotifyOrdered(orderDetails);
 //    }
-
+//@Scheduled(cron = "0 0 7 * * *")
+//public List<DeliveryNoteDTO> saveDeliveryNote() {
+//    String token = generateToken();
+//    List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-7), token);
+//    return deliveryNoteFeignClient.saveDeliveryNote(ordersByOrderDate, token);
+//}
 
 }

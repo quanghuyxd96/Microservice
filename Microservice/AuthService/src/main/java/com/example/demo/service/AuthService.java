@@ -43,8 +43,6 @@ public class AuthService {
         if(storeDTO.getUserName().startsWith("admin")){
             return new ResponseEntity<>(new ResponseObjectEntity("False","The account is not valid"),HttpStatus.BAD_REQUEST);
         }
-
-        System.out.println(storeDTO.getConfirmPassword());
         return storeFeignClient.saveStore(storeDTO);
     }
 }

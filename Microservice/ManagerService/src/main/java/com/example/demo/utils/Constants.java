@@ -12,5 +12,7 @@ public class Constants {
             "djksahsdjahdjsahduasdydjndmnmnjdshjdhuydsnasbdnsbndsabdhiuhdusaidpqopsakjdsakmdsaddskakjdksadjasdjkldjdasldj" +
             "dsdsjadsaioqiopidslakldsdjiadjdskldskmsdkalduiuqnmnmsasda";
 
-    public static final String FIRST_QUARTER = " payment_date >= '2022-01-01 00:00:00' AND payment_date < '2022-04-01 00:00:00' ";
+    public static final int SECOND = 0;
+    public static final int MINUTE = 0;
+    public static final int HOUR = 0;
 }

@@ -1,11 +1,9 @@
 package com.example.demo.service;
 
+import com.example.demo.client.ItemFeignClient;
 import com.example.demo.client.OrderFeignClient;
 import com.example.demo.client.StoreFeignClient;
-import com.example.demo.dto.OrderDTO;
-import com.example.demo.dto.OrderDetailDTO;
-import com.example.demo.dto.OrderDetailToken;
-import com.example.demo.dto.StoreDTO;
+import com.example.demo.dto.*;
 import com.example.demo.entity.Email;
 import com.example.demo.entity.Manager;
 import com.example.demo.mq.listen.StoreSource;
@@ -36,6 +34,9 @@ public class EmailService {
     private EmailRepository emailRepository;
 
     @Autowired
+    private ItemFeignClient itemFeignClient;
+
+    @Autowired
     private StoreFeignClient storeFeignClient;
 
     @Autowired
@@ -64,7 +65,7 @@ public class EmailService {
             ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId(), token);
             message.setTo(store.getBody().getEmail());
             message.setText("Your order with code " + orderDTO.getId() + " will be shipped on tomorrow");
-            message.setSubject("Order " + orderDTO.getId() + " status");
+            message.setSubject("ORDER " + orderDTO.getId() + " STATUS");
             javaMailSender.send(message);
             Email email = new Email();
             email = convertToEmail(message, orderDTO);
@@ -84,14 +85,17 @@ public class EmailService {
         email.setTextContent("The order has been placed with detail: ");
         String textContent = "";
         for (OrderDetailDTO orderDetailDTO : orderDetailDTOS) {
-            textContent += orderDetailDTO.getItemId() + "\t" + orderDetailDTO.getItemQuantity() + "\n";
+            ItemDTO item = itemFeignClient.getItemById(orderDetailDTO.getItemId()).getBody();
+            textContent += item.getName() + "\t" + orderDetailDTO.getItemQuantity() + "\n";
         }
+        textContent +="\nOrder price: " +orderDTO.getTotalPrice();
         email.setTextContent(email.getTextContent() + "\n" + textContent);
-        SendEmail message = new SendEmail();
         try {
-            message.doSendEmail(email);
-            email.setManager(manager);
-            emailRepository.save(email);
+            boolean check = sendEmail.doSendEmail(email);
+            if (check) {
+                email.setManager(manager);
+                emailRepository.save(email);
+            }
         } catch (Exception e) {
             logger.throwing(e);
         }

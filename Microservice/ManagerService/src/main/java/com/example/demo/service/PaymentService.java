@@ -2,19 +2,29 @@ package com.example.demo.service;
 
 import com.example.demo.client.OrderFeignClient;
 import com.example.demo.client.StoreFeignClient;
+import com.example.demo.dto.ItemDTO;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.StoreDTO;
 import com.example.demo.entity.Payment;
 import com.example.demo.repository.PaymentRepository;
+import com.example.demo.utils.report.PDFGenerator;
+import com.example.demo.utils.report.PdfUtil;
+import com.lowagie.text.DocumentException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
+
+import static com.example.demo.utils.Constants.*;
 
 @Service
 public class PaymentService {
@@ -32,6 +42,7 @@ public class PaymentService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+
     public Payment saveAndUpdatePaymentOfStore(Payment payment) {
         String token = managerService.generateToken();
         OrderDTO orderDTO = orderFeignClient.getOrderById(payment.getOrderId(), token).getBody();
@@ -47,9 +58,9 @@ public class PaymentService {
                 payment.setMoneyUnpaid(orderDTO.getTotalPrice() - payment.getMoneyPaid());
                 payment.setStoreUser(storeDTO.getUserName());
                 if (payment.getMoneyUnpaid() == 0) {
-                    payment.setIsComplete("Completed");
+                    payment.setStatus("Completed");
                 } else {
-                    payment.setIsComplete("Incomplete");
+                    payment.setStatus("Incomplete");
                 }
                 payment.setPaymentDate(LocalDateTime.now());
                 return paymentRepository.save(payment);
@@ -61,9 +72,9 @@ public class PaymentService {
                 payment1.setMoneyPaid(payment.getMoneyPaid());
                 payment1.setMoneyUnpaid(paymentRepo.getMoneyUnpaid() - payment.getMoneyPaid());
                 if (payment1.getMoneyUnpaid() == 0) {
-                    payment1.setIsComplete("Completed");
+                    payment1.setStatus("Completed");
                 } else {
-                    payment1.setIsComplete("Incomplete");
+                    payment1.setStatus("Incomplete");
                 }
                 payment1.setStoreUser(storeDTO.getUserName());
                 payment1.setOrderId(orderDTO.getId());
@@ -75,13 +86,29 @@ public class PaymentService {
         }
     }
 
-    @Scheduled(cron = "*/20 * * * * *")
-    public void getPaymentToReport(){
-        LocalDateTime localDateTime = LocalDateTime.parse("2022-07-29T18:49:30");
-        LocalDateTime localDateTime1 =LocalDateTime.parse("2022-07-29T20:00:00");
-        List<Payment> payments = paymentRepository.getAllPaymentByDateTime(localDateTime, localDateTime1);
-        System.out.println(payments.get(0).getId());
+//    @Scheduled(cron = "*/20 * * * * *")
+//    public void getPaymentToReport(LocalDateTime startDate, LocalDateTime endDate){
+////        LocalDateTime localDateTime = LocalDateTime.parse("2022-07-29T18:49:30");
+////        LocalDateTime localDateTime1 =LocalDateTime.parse("2022-07-29T20:00:00").plusDays(1);
+//        LocalDate  localDate = LocalDate.now();
+//        LocalTime localTime = LocalTime.now();
+//        LocalDateTime localDateTime2 = localDate.atTime(localTime);
+//        LocalDateTime localDateTime = localDateTime2.plusDays(1);
+////        List<Payment> payments = paymentRepository.getAllPaymentByDateTime(localDateTime, localDateTime1);
+////        System.out.println(payments.get(0).getId());
+//        System.out.println(localDateTime2);
+//        System.out.println(localDateTime);
+//
+//    }
+    public void getPaymentToReport(HttpServletResponse response, LocalDate startDate, LocalDate endDate) throws IOException {
+        LocalTime localTime = LocalTime.of(HOUR,MINUTE,SECOND);
+        LocalDateTime startDateTime = startDate.atTime(localTime);
+        LocalDateTime endDateTime = endDate.atTime(localTime).plusDays(1);
+        List<Payment> payments = paymentRepository.getAllPaymentByDateTime(startDateTime, endDateTime);
+        PdfUtil pdfUtil = new PdfUtil();
+        pdfUtil.generatePdfToReport(response,payments,startDate,endDate);
     }
+
 
 
 }

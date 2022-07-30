@@ -8,6 +8,7 @@ import com.example.demo.service.ManagerService;
 import com.lowagie.text.DocumentException;
 import io.tej.SwaggerCodgen.api.ManagerApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 
 @RestController
 @CrossOrigin("*")
@@ -43,11 +45,18 @@ public class ManagerController implements ManagerApi {
     }
 
 
-
     //report
     @GetMapping("/manager/pdf/items")
     public void generatePdf(HttpServletResponse response) throws DocumentException, IOException {
         managerFacade.getManagerService().exportIntoPdf(response);
+    }
+
+    @GetMapping("/manager/report/pdf")
+    public void generatePdfToReport(HttpServletResponse response,
+                                    @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                    @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate)
+            throws DocumentException, IOException {
+        managerFacade.getPaymentService().getPaymentToReport(response, startDate, endDate);
     }
 
     @GetMapping("/manager/excel/items")
@@ -85,12 +94,12 @@ public class ManagerController implements ManagerApi {
     }
 
     @PutMapping("/manager/update")
-    public ResponseEntity<Manager> updateManager(@RequestBody Manager manager){
+    public ResponseEntity<Manager> updateManager(@RequestBody Manager manager) {
         Manager manager1 = managerFacade.updateManager(manager);
-        if(manager1 == null){
+        if (manager1 == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(manager1,HttpStatus.OK);
+        return new ResponseEntity<>(manager1, HttpStatus.OK);
     }
 
     //cái thử demo gửi mail, chưa xài tới

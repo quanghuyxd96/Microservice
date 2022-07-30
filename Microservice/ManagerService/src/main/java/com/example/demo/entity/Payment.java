@@ -37,6 +37,6 @@ public class Payment {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime paymentDate;
-    private String isComplete;
+    private String status;
 
 }
