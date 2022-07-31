@@ -83,6 +83,12 @@ public class ManagerService {
         return managerRepository.save(manager);
     }
 
+    /**
+     * Function to update manager
+     *
+     * @param manager
+     * @return manager after updated
+     */
     public Manager updateManager(Manager manager) {
         Manager managerRepo = managerRepository.findByUserName(manager.getUserName());
         if (managerRepo == null) {
@@ -93,11 +99,6 @@ public class ManagerService {
         return managerRepository.save(managerRepo);
     }
 
-    private String endCodePassword(String password) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        password = passwordEncoder.encode(password);
-        return password;
-    }
 
     public Manager getManagerById(Long id) {
         Optional<Manager> manager = managerRepository.findById(id);
@@ -153,6 +154,14 @@ public class ManagerService {
         return null;
     }
 
+    /**
+     * Function to authenticate manager
+     *
+     * @param username
+     * @param password
+     * @return true or false
+     * @throws Exception
+     */
     public boolean authenticate(String username, String password) throws Exception {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
@@ -167,6 +176,13 @@ public class ManagerService {
         return true;
     }
 
+    /**
+     * Function forgot password
+     *
+     * @param email
+     * @param username
+     * @return notify status
+     */
     public String forgotPassword(String email, String username) {
         Manager manager = managerRepository.findByEmailAndUserName(email, username);
         if (manager == null) {
@@ -178,6 +194,14 @@ public class ManagerService {
         return "We sent email to you!!!";
     }
 
+    /**
+     * Function to reset password
+     *
+     * @param token
+     * @param password
+     * @param confirmPassword
+     * @return new password
+     */
     public String resetPassword(String token, String password, String confirmPassword) {
         if (!password.equals(confirmPassword)) {
             logger.info("Password and confirm password are not equal.");
@@ -197,12 +221,26 @@ public class ManagerService {
         return "Your password successfully updated.";
     }
 
+
+    /**
+     * Function to generate token by username = "admin"
+     *
+     * @return token
+     */
     public String generateToken() {
         String token = "Bearer " + jwtTokenUtil.generateToken("admin");
         System.out.println(token);
         return token;
     }
 
+
+    /**
+     * Function to get manager by token
+     *
+     * @param token
+     * @param check
+     * @return manager
+     */
     public Manager getManagerByToken(String token, boolean check) {
         String userName = jwtTokenUtil.getUsernameFromToken(token);
         Manager manager = managerRepository.findByUserName(userName);
@@ -210,6 +248,28 @@ public class ManagerService {
             return null;
         }
         return manager;
+    }
+
+
+    /**
+     * Funtion to endcode password
+     *
+     * @param password
+     * @return endcode password
+     */
+    private String endCodePassword(String password) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        password = passwordEncoder.encode(password);
+        return password;
+    }
+
+    /**
+     * Function listen to order service to notify ordered by email.
+     * @param orderDetails
+     */
+    @StreamListener(target = OrderSource.ORDER_CHANEL)
+    public void processSendEmailToNotifyOrdered(List<OrderDetailToken> orderDetails) {
+        emailService.sendEmailToNotifyOrdered(orderDetails);
     }
 
     public void exportIntoPdf(HttpServletResponse response) throws DocumentException, IOException {
@@ -235,11 +295,6 @@ public class ManagerService {
         List<ItemDTO> items = itemFeignClient.getAllItems();
         ExcelGenerator generator = new ExcelGenerator(items);
         generator.generate(response);
-    }
-
-    @StreamListener(target = OrderSource.ORDER_CHANEL)
-    public void processSendEmailToNotifyOrdered(List<OrderDetailToken> orderDetails) {
-        emailService.sendEmailToNotifyOrdered(orderDetails);
     }
 
 //    public ItemSwagger convertAllItemToAllItemSwagger(ItemDTO itemDTO) {

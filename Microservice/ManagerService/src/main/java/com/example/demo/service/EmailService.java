@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -40,9 +41,6 @@ public class EmailService {
     private StoreFeignClient storeFeignClient;
 
     @Autowired
-    private JavaMailSender javaMailSender;
-
-    @Autowired
     private ManagerService managerService;
 
     @Autowired
@@ -55,6 +53,9 @@ public class EmailService {
 
     private static Manager manager = new Manager();
 
+    /**
+     * Function to send email notify delivery on tomorrow
+     */
     @Scheduled(cron = "0 0 7 * * *")  //check và kiểm tra vào lúc 7h sáng hằng ngày
     public void sendEmailToNotifyDelivery() {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -62,20 +63,27 @@ public class EmailService {
         List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-6),
                 token);
         for (OrderDTO orderDTO : ordersByOrderDate) {
-            ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId(), token);
-            message.setTo(store.getBody().getEmail());
-            message.setText("Your order with code " + orderDTO.getId() + " will be shipped on tomorrow");
-            message.setSubject("ORDER " + orderDTO.getId() + " STATUS");
-            javaMailSender.send(message);
             Email email = new Email();
-            email = convertToEmail(message, orderDTO);
+            ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId(), token);
             email.setSentTo(store.getBody().getEmail());
-            email.setManager(manager);
-            emailRepository.save(email);
+            email.setTextContent("Your order with code " + orderDTO.getId() + " will be shipped on tomorrow");
+            email.setSubject("ORDER " + orderDTO.getId() + " STATUS");
+            try {
+                boolean check = sendEmail.doSendEmail(email);
+                if (check) {
+                    email.setManager(manager);
+                    emailRepository.save(email);
+                }
+            } catch (Exception e) {
+                logger.throwing(e);
+            }
         }
     }
 
-
+    /**
+     * Function to send email notify ordered.
+     * @param orderDetailDTOS
+     */
     public void sendEmailToNotifyOrdered(List<OrderDetailToken> orderDetailDTOS) {
         Email email = new Email();
         OrderDTO orderDTO = orderFeignClient.getOrderById(orderDetailDTOS.get(0).getOrderId(), orderDetailDTOS.get(0).getToken()).getBody();
@@ -88,12 +96,15 @@ public class EmailService {
             ItemDTO item = itemFeignClient.getItemById(orderDetailDTO.getItemId()).getBody();
             textContent += item.getName() + "\t" + orderDetailDTO.getItemQuantity() + "\n";
         }
-        textContent +="\nOrder price: " +orderDTO.getTotalPrice();
+        textContent += "\nOrder price: " + orderDTO.getTotalPrice();
         email.setTextContent(email.getTextContent() + "\n" + textContent);
         try {
             boolean check = sendEmail.doSendEmail(email);
             if (check) {
                 email.setManager(manager);
+                email.setOrderId(orderDTO.getId());
+                email.setStoreId(store.getBody().getId());
+                email.setSentDateTime(LocalDateTime.now());
                 emailRepository.save(email);
             }
         } catch (Exception e) {
@@ -101,31 +112,10 @@ public class EmailService {
         }
     }
 
-    private Email convertToEmail(SimpleMailMessage simpleMailMessage, OrderDTO orderDTO) {
-        Email email = new Email();
-        email.setSubject(simpleMailMessage.getSubject());
-        email.setTextContent(simpleMailMessage.getText());
-        email.setStoreId(orderDTO.getStoreId());
-        email.setSentDateTime(LocalTime.now());
-        email.setOrderId(orderDTO.getId());
-        return email;
-    }
-
-    private Email convertOrderDetailDtoToEmail(SimpleMailMessage simpleMailMessage, OrderDTO orderDTO) {
-        Email email = new Email();
-        email.setSubject(simpleMailMessage.getSubject());
-        email.setTextContent(simpleMailMessage.getText());
-        email.setStoreId(orderDTO.getStoreId());
-        email.setSentDateTime(LocalTime.now());
-        email.setOrderId(orderDTO.getId());
-        return email;
-    }
-
-    @StreamListener(target = StoreSource.STORE_FORGOT_PASSWORD)
-    public void processSendEmailToResetPassword(HashMap<String, String> hashMap) {
-        sendEmailToResetStorePassword(hashMap);
-    }
-
+    /**
+     * Function send email to reset user password
+     * @param hashMap
+     */
     public void sendEmailToResetStorePassword(HashMap<String, String> hashMap) {
         Email email = new Email();
         String username = jwtTokenUtil.getUsernameFromToken(hashMap.get("token"));
@@ -137,6 +127,7 @@ public class EmailService {
             boolean check = sendEmail.doSendEmail(email);
             if (check) {
                 email.setManager(manager);
+                email.setSentDateTime(LocalDateTime.now());
                 emailRepository.save(email);
             }
         } catch (Exception e) {
@@ -144,6 +135,11 @@ public class EmailService {
         }
     }
 
+    /**
+     * Function send email to reset admin password
+     * @param linkReset
+     * @param emailToSend
+     */
     public void sendEmailToResetAdminPassword(String linkReset, String emailToSend) {
         Email email = new Email();
         email.setSentTo(emailToSend);
@@ -153,10 +149,41 @@ public class EmailService {
             boolean check = sendEmail.doSendEmail(email);
             if (check) {
                 email.setManager(manager);
+                email.setSentDateTime(LocalDateTime.now());
                 emailRepository.save(email);
             }
         } catch (Exception e) {
             logger.throwing(e);
         }
     }
+
+    /**
+     * Function listen to Store for process forgot password
+     * @param hashMap
+     */
+    @StreamListener(target = StoreSource.STORE_FORGOT_PASSWORD)
+    public void processSendEmailToResetPassword(HashMap<String, String> hashMap) {
+        sendEmailToResetStorePassword(hashMap);
+    }
+
+
+//    private Email convertToEmail(SimpleMailMessage simpleMailMessage, OrderDTO orderDTO) {
+//        Email email = new Email();
+//        email.setSubject(simpleMailMessage.getSubject());
+//        email.setTextContent(simpleMailMessage.getText());
+//        email.setStoreId(orderDTO.getStoreId());
+//        email.setSentDateTime(LocalDateTime.now());
+//        email.setOrderId(orderDTO.getId());
+//        return email;
+//    }
+//
+//    private Email convertOrderDetailDtoToEmail(SimpleMailMessage simpleMailMessage, OrderDTO orderDTO) {
+//        Email email = new Email();
+//        email.setSubject(simpleMailMessage.getSubject());
+//        email.setTextContent(simpleMailMessage.getText());
+//        email.setStoreId(orderDTO.getStoreId());
+//        email.setSentDateTime(LocalDateTime.now());
+//        email.setOrderId(orderDTO.getId());
+//        return email;
+//    }
 }

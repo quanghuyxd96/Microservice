@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -22,7 +23,7 @@ public class Email {
     private String textContent;
     private String subject;
     private String sentTo;
-    private LocalTime sentDateTime;
+    private LocalDateTime sentDateTime;
     private long orderId;
     private long storeId;
     @JsonIgnore

@@ -30,9 +30,6 @@ public class ManagerController implements ManagerApi {
     @Autowired
     private ManagerService managerService;
 
-    @Autowired
-    private HttpServletRequest request;
-
     //payment
     @PostMapping("/manager/payment")
     public Payment savePaymentDemo(@RequestBody Payment payment) {
@@ -45,23 +42,20 @@ public class ManagerController implements ManagerApi {
     }
 
 
-    //report
-    @GetMapping("/manager/pdf/items")
-    public void generatePdf(HttpServletResponse response) throws DocumentException, IOException {
-        managerFacade.getManagerService().exportIntoPdf(response);
-    }
-
     @GetMapping("/manager/report/pdf")
     public void generatePdfToReport(HttpServletResponse response,
                                     @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                     @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate)
             throws DocumentException, IOException {
-        managerFacade.getPaymentService().getPaymentToReport(response, startDate, endDate);
+        managerFacade.getPaymentService().getPaymentToReportPDF(response, startDate, endDate);
     }
 
-    @GetMapping("/manager/excel/items")
-    public void exportIntoExcel(HttpServletResponse response) throws IOException {
-        managerFacade.getManagerService().exportIntoExcel(response);
+    @GetMapping("/manager/report/excel")
+    public void generateExcelToReport(HttpServletResponse response,
+                                      @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                      @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate)
+            throws DocumentException, IOException {
+        managerFacade.getPaymentService().getPaymentToReportExcel(response,startDate,endDate);
     }
 
 
@@ -246,5 +240,16 @@ public class ManagerController implements ManagerApi {
 //            return new ResponseEntity<>(responseObject, HttpStatus.OK);
 //        }
 //        return new ResponseEntity<>(responseObject, HttpStatus.NOT_FOUND);
+//    }
+
+    // demo report
+//    @GetMapping("/manager/pdf/items")
+//    public void generatePdf(HttpServletResponse response) throws DocumentException, IOException {
+//        managerFacade.getManagerService().exportIntoPdf(response);
+//    }
+//
+//    @GetMapping("/manager/excel/items")
+//    public void exportIntoExcel(HttpServletResponse response) throws IOException {
+//        managerFacade.getManagerService().exportIntoExcel(response);
 //    }
 }

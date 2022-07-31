@@ -17,6 +17,7 @@ import java.util.List;
 public class ExcelGenerator {
 
     private List<ItemDTO> items;
+
     private XSSFWorkbook workbook;
     private XSSFSheet sheet;
 
@@ -67,11 +68,9 @@ public class ExcelGenerator {
         XSSFFont font = workbook.createFont();
         font.setFontHeight(14);
         style.setFont(font);
-
         for (ItemDTO item : items) {
             Row row = sheet.createRow(rowCount++);
             int columnCount = 0;
-
             createCell(row, columnCount++, item.getId(), style);
             createCell(row, columnCount++, item.getName(), style);
             createCell(row, columnCount++, item.getPrice(), style);

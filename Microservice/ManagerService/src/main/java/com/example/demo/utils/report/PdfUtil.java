@@ -23,9 +23,9 @@ public class PdfUtil {
         String headervalue = "attachment; filename=pdf_" + currentDateTime + ".pdf";
         response.setHeader(headerkey, headervalue);
         PDFGenerator generator = new PDFGenerator();
-//        generator.setPayments(payments);
-        generator.generateReportByDateTime(response,startDate,endDate,payments);
+        generator.generateReportByDateTime(response, startDate, endDate, payments);
     }
+
     public void generatePdf(HttpServletResponse response, List<ItemDTO> items) throws DocumentException, IOException {
         response.setContentType("application/pdf");
         DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD:HH:MM:SS");

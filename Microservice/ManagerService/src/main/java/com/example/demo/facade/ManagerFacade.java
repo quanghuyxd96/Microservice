@@ -19,8 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +49,8 @@ public class ManagerFacade {
     @Autowired
     public JavaMailSender emailSender;
 
+
+    //Manager
     public String forgotPassword(String email, String username){
         return managerService.forgotPassword(email, username);
     }
@@ -61,6 +66,9 @@ public class ManagerFacade {
         }
         return manager1;
     }
+
+    //Payment
+
     public <T,D> T convertModel(D obj, Class<T> classT){
         ModelMapper modelMapper = new ModelMapper();
         T obj1 = modelMapper.map(obj, classT);
@@ -83,4 +91,6 @@ public class ManagerFacade {
         }
         return manager.getUserName();
     }
+
+
 }

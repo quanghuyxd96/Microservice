@@ -15,8 +15,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query(value = "SELECT * FROM payment WHERE payment_date = " +
             "(SELECT max(payment_date) FROM payment WHERE order_id = :order_id)", nativeQuery = true)
-    Payment getPaymentByOrderId(@Param("order_id") long order_id);
+    Payment getMaxPaymentByOrderId(@Param("order_id") long order_id);
 
+    List<Payment> findPaymentByOrderId(long orderId);
     @Query(value = "SELECT * FROM payment WHERE (payment_date >= ?1 AND payment_date < ?2) " +
             "ORDER BY payment_date ASC, order_id ASC", nativeQuery = true)
     List<Payment> getAllPaymentByDateTime(LocalDateTime startDate, LocalDateTime endDate);
