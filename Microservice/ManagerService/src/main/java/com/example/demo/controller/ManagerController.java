@@ -4,6 +4,7 @@ import com.example.demo.entity.Manager;
 import com.example.demo.entity.Payment;
 import com.example.demo.facade.ManagerFacade;
 import com.example.demo.repository.PaymentRepository;
+import com.example.demo.response.ResponseObjectEntity;
 import com.example.demo.service.ManagerService;
 import com.lowagie.text.DocumentException;
 import io.tej.SwaggerCodgen.api.ManagerApi;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -32,14 +34,34 @@ public class ManagerController implements ManagerApi {
 
     //payment
     @PostMapping("/manager/payment")
-    public Payment savePaymentDemo(@RequestBody Payment payment) {
-        return managerFacade.getPaymentService().saveAndUpdatePaymentOfStore(payment);
+    public ResponseEntity<Payment> savePaymentDemo(@RequestBody Payment payment) {
+        return managerFacade.savePayment(payment);
+    }
+
+    @GetMapping("/manager/payments")
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        return managerFacade.getAllPayment();
     }
 
     @GetMapping("/manager/payment/get")
-    public ResponseEntity<Payment> getPaymentDemo(@RequestParam("storeUser") String storeUser, @RequestParam("orderId") Long orderId) {
-        return new ResponseEntity<>(paymentRepository.findByStoreUserAndOrderId(storeUser, orderId), HttpStatus.OK);
+    public ResponseEntity<Payment> getPaymentById(@RequestParam("id") long id) {
+        return managerFacade.getPaymentById(id);
     }
+
+    @GetMapping("/manager/payment/get/orderId")
+    public ResponseEntity<List<Payment>> getAllPaymentByOrderId(@RequestParam("orderId") long orderId) {
+        return managerFacade.getAllPaymentByOrderId(orderId);
+    }
+
+    @DeleteMapping("/manager/payment/delete")
+    public ResponseEntity<ResponseObjectEntity> deletePaymentById(@RequestParam("id") long id) {
+        return managerFacade.deletePaymentById(id);
+    }
+
+//    @GetMapping("/manager/payment/get")
+//    public ResponseEntity<Payment> getPaymentDemo(@RequestParam("storeUser") String storeUser, @RequestParam("orderId") Long orderId) {
+//        return new ResponseEntity<>(paymentRepository.findByStoreUserAndOrderId(storeUser, orderId), HttpStatus.OK);
+//    }
 
 
     @GetMapping("/manager/report/pdf")
@@ -55,7 +77,7 @@ public class ManagerController implements ManagerApi {
                                       @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                       @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate)
             throws DocumentException, IOException {
-        managerFacade.getPaymentService().getPaymentToReportExcel(response,startDate,endDate);
+        managerFacade.getPaymentService().getPaymentToReportExcel(response, startDate, endDate);
     }
 
 
@@ -64,10 +86,7 @@ public class ManagerController implements ManagerApi {
     public ResponseEntity<?> createAuthenticationToken(@RequestParam("userName") String userName,
                                                        @RequestParam("password") String password)
             throws Exception {
-        if (!managerFacade.getManagerService().authenticate(userName, password)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        return new ResponseEntity<>(userName, HttpStatus.OK);
+        return managerFacade.createAuthenticationToken(userName, password);
     }
 
     @RequestMapping(value = "/manager/register", method = RequestMethod.POST)
@@ -89,11 +108,7 @@ public class ManagerController implements ManagerApi {
 
     @PutMapping("/manager/update")
     public ResponseEntity<Manager> updateManager(@RequestBody Manager manager) {
-        Manager manager1 = managerFacade.updateManager(manager);
-        if (manager1 == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(manager1, HttpStatus.OK);
+        return managerFacade.updateManager(manager);
     }
 
     //cái thử demo gửi mail, chưa xài tới

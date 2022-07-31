@@ -1,133 +1,127 @@
-//package com.example.demo.controller;
-//
-//import com.example.demo.dto.ItemDTO;
-//import com.example.demo.entity.Item;
-//import com.example.demo.entity.Supplier;
-//import com.example.demo.facade.ItemFacade;
-//import com.example.demo.response.ResponseObjectEntity;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.List;
-//
-////@RestController
-////@RequestMapping("/item")
-////@CrossOrigin("*")
-//public class ItemController {
-//    @Autowired
-//    private ItemFacade itemFacade;
-//
-//    @RequestMapping(value = "/save", method = RequestMethod.POST)
-//    public ResponseEntity<Item> saveItem(@RequestBody ItemDTO itemDTO) {
-//        return new ResponseEntity<>(itemFacade.getItemService().saveItem(itemFacade.convertItemDTOToItem(itemDTO)),HttpStatus.OK);
+package com.example.demo.controller;
+
+import com.example.demo.facade.ItemFacade;
+import io.tej.SwaggerCodgen.api.ItemApi;
+import io.tej.SwaggerCodgen.model.ItemModel;
+import io.tej.SwaggerCodgen.model.ResponseObject;
+import io.tej.SwaggerCodgen.model.SupplierModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+import static com.example.demo.utils.Constants.AUTHOR;
+
+@RestController
+@CrossOrigin("*")
+public class ItemController implements ItemApi {
+    @Autowired
+    private ItemFacade itemFacade;
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Override
+    public ResponseEntity<ItemModel> itemSavePost(ItemModel itemModel) {
+        ItemModel itemResp = itemFacade.saveItem(itemModel);
+        if (itemResp == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(itemResp, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<ItemModel>> itemItemsGet() {
+        List<ItemModel> itemModels = itemFacade.getAllItems();
+        if (itemModels == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(itemModels, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ItemModel> itemGetGet(Long id) {
+        ItemModel itemModel = itemFacade.getItemById(id);
+        if (itemModel == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(itemModel, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ItemModel> itemUpdatePriceOrQuantityPut(Long supplierId, ItemModel itemModel) {
+        ItemModel itemModelResp = itemFacade.updatePriceOrQuantity(itemModel, supplierId);
+        if (itemModelResp == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(itemModelResp, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ItemModel> itemUpdatePut(Long id, ItemModel itemModel) {
+        ItemModel itemModelResp = itemFacade.updateItem(itemModel, id);
+        if (itemModelResp == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(itemModelResp, HttpStatus.OK);
+    }
+
+//    @Override
+//    public ResponseEntity<List<ItemModel>> itemUpdateQuantityPost(List<ItemModel> itemModel) {
+//        return new ResponseEntity<>(itemFacade.updateItemsQuantity(itemModel), HttpStatus.OK);
 //    }
-//
-//    @RequestMapping(value = "/items", method = RequestMethod.GET)
-//    public List<ItemDTO> getAllItem() {
-//        List<Item> allItem = itemFacade.getItemService().getAllItem();
-//        return itemFacade.convertListItemToListItemDTO(allItem);
-//    }
-//
-//    @RequestMapping(value = "/get", method = RequestMethod.GET)
-//    public ResponseEntity<ItemDTO> getItemById(@RequestParam("id") Long id) {
-//        Item item = itemFacade.getItemService().getItemById(id);
-//        if (item == null) {
-//            return null;
-//        }
-//        return new ResponseEntity<>(itemFacade.convertItemToItemDTO(item), HttpStatus.OK);
-//    }
-//
-//    @RequestMapping(value = "/update", method = RequestMethod.PUT)
-//    public Item updateItemById(@RequestParam("id") Long id, @RequestBody Item item) {
-//        return itemFacade.getItemService().updateItemById(item,id);
-//    }
-//
-//    @RequestMapping(value = "/update-price-or-quantity", method = RequestMethod.PUT)
-//    public Item updateItemPriceOrItemQuantity(@RequestBody Item item,@RequestParam("supplierId") long supplierId) {
-//        return itemFacade.getItemService().updateItemPriceOrItemQuantity(item,supplierId);
-//    }
-//
-//    @PostMapping("/update-quantity")
-//    public List<Item> updateItemQuantity(@RequestBody List<Item> items){
-//        return itemFacade.updateItemsQuantity(items);
-//    }
-//
-//    @DeleteMapping(value = "/delete")
-//    public ResponseEntity<ResponseObjectEntity> deleteItemById(@RequestParam("id") Long id) {
-//        boolean check = itemFacade.getItemService().deleteItemById(id);
-//        ResponseObjectEntity responseObject = new ResponseObjectEntity();
-//        if (!check) {
-//            responseObject.setStatus("Faild");
-//            responseObject.setMessage("No item to delete!!!");
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseObject);
-//        }
-//        responseObject.setStatus("OK");
-//        responseObject.setMessage("Delete Success");
-//        return ResponseEntity.status(HttpStatus.OK).body(responseObject);
-//    }
-//
-//    //demo
-//    @PostMapping("/delete/demo")
-//    public ResponseEntity<ResponseObjectEntity> delete(@RequestParam("id") Long id) {
-//        System.out.println(id);
-//        ResponseObjectEntity responseObject = new ResponseObjectEntity();
-//        if (itemFacade.getItemService().deleteItemById(id)) {
-//            responseObject.setStatus("OK");
-//            responseObject.setMessage("Delete Success");
-//            return ResponseEntity.status(HttpStatus.OK).body(responseObject);
-//        }
-//        responseObject.setStatus("Faild");
-//        responseObject.setMessage("No item to delete!!!");
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseObject);
-//    }
-//
-//    @RequestMapping(value = "/supplier/save", method = RequestMethod.POST)
-//    public Supplier saveSupplier(@RequestBody Supplier supplier) {
-//        return itemFacade.getSupplierService().saveSupplier(supplier);
-//    }
-//
-//    @GetMapping("/suppliers")
-//    public List<Supplier> getAllSupplier() {
-//        return itemFacade.getSupplierService().getAllSuppliers();
-//    }
-//
-//    @RequestMapping(value = "/supplier/get", method = RequestMethod.GET)
-//    public ResponseEntity<Supplier> getSupplier(@RequestParam("id") Long id) {
-//        return new ResponseEntity<>(itemFacade.getSupplierService().getSupplierById(id), HttpStatus.OK);
-//    }
-//
-//    @PutMapping("/supplier/update")
-//    public Supplier updateSupplierById(@RequestParam("id") Long id, @RequestBody Supplier supplier) {
-//        return itemFacade.getSupplierService().updateSupplierById(supplier, id);
-//    }
-//
-//    @DeleteMapping("/supplier/delete")
-//    public ResponseEntity<ResponseObjectEntity> deleteSupplier(@RequestParam("id") Long id) {
-//        boolean check = itemFacade.getSupplierService().deleteSupplierById(id);
-//        ResponseObjectEntity responseObject = new ResponseObjectEntity();
-//        if (!check) {
-//            responseObject.setStatus("Faild");
-//            responseObject.setMessage("No supplier to delete!!!");
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseObject);
-//        }
-//        responseObject.setStatus("OK");
-//        responseObject.setMessage("Delete Success");
-//        return ResponseEntity.status(HttpStatus.OK).body(responseObject);
-//    }
-//
-////    @GetMapping("/demo")
-////    public Item getAllItemsDemoRabbit(@RequestParam("id" id)){
-////        itemFacade.getItemService().getAllItemDemoRabbit();
-////        System.out.println();
-////        return itemFacade.getItemService().getAl
-////    }
-//
-////    @GetMapping("/demo")
-////    @RabbitListener(queues = "item.queue")
-////    public Item getItemByIdDemoRabbit(@RequestParam("id") Long id) {
-////        itemFacade.getItemService().getItemByIdDemorabbit(id);
-////        return itemFacade.getItemService().getItemById(id);
-////    }
-//}
+
+
+    @PutMapping("/item/update/update-quantity")
+    public ResponseEntity<List<ItemModel>> updateItemQuantity(@RequestBody List<ItemModel> itemModels,@RequestHeader(AUTHOR) String token){
+        return new ResponseEntity<>(itemFacade.updateItemsQuantity(itemModels),HttpStatus.OK);
+    }
+    @Override
+    public ResponseEntity<ResponseObject> itemDeleteDelete(Long id) {
+        return itemFacade.deleteItemById(id);
+    }
+
+    //supplier
+    @Override
+    public ResponseEntity<SupplierModel> itemSupplierSavePost(SupplierModel supplierModel) {
+        SupplierModel supplierModelResp = itemFacade.saveSupplier(supplierModel);
+        if (supplierModelResp == null) {
+            return new ResponseEntity<>(supplierModelResp, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(supplierModelResp, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<SupplierModel>> itemSuppliersGet() {
+        List<SupplierModel> suppliers = itemFacade.getAllSuppliers();
+        if (suppliers == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(suppliers, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<SupplierModel> itemSupplierGetGet(Long id) {
+        SupplierModel supplierModel = itemFacade.getSupplierById(id);
+        if (supplierModel == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(supplierModel, HttpStatus.OK);
+    }
+
+    public ResponseEntity<SupplierModel> itemSupplierUpdatePut(Long id, SupplierModel supplierModel) {
+        SupplierModel supplier = itemFacade.updateSupplierById(id, supplierModel);
+        if (supplier == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(supplier, HttpStatus.OK);
+    }
+
+    public ResponseEntity<ResponseObject> itemSupplierDeleteDelete(Long id) {
+        return itemFacade.deleteSupplierById(id);
+    }
+
+}

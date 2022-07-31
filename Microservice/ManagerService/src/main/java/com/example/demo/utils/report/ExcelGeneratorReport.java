@@ -36,21 +36,30 @@ public class ExcelGeneratorReport {
         } else {
             sheet = workbook.createSheet("REPORT FROM " + startDate + " TO " + endDate);
         }
-        Row row = sheet.createRow(0);
         CellStyle style = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
         font.setBold(true);
         font.setFontHeight(16);
         style.setFont(font);
+        Row row = sheet.createRow(0);
+        createCell(row, 0, "REPORT", style);
+        if (startDate.equals(endDate)) {
+            createCell(row, 1, "IN " +startDate, style);
+        } else {
+            createCell(row, 1, "FROM "+startDate, style);
+            createCell(row, 2, " TO "+endDate, style);
 
-        createCell(row, 0, "Store User", style);
-        createCell(row, 1, "Order ID", style);
-        createCell(row, 2, "Money Paid", style);
-        createCell(row, 3, "Money Unpaid", style);
-        createCell(row, 4, "Accumulated Money", style);
-        createCell(row, 5, "Total Money", style);
-        createCell(row, 6, "Payment Date", style);
-        createCell(row, 7, "Status", style);
+        }
+        Row row1 = sheet.createRow(1);
+        createCell(row1, 0, "Store User", style);
+        createCell(row1, 1, "Order ID", style);
+        createCell(row1, 2, "Money Paid", style);
+        createCell(row1, 3, "Money Unpaid", style);
+        createCell(row1, 4, "Accumulated Money", style);
+        createCell(row1, 5, "Total Money", style);
+        createCell(row1, 6, "Date", style);
+        createCell(row1, 7, "Time", style);
+        createCell(row1, 8, "Status", style);
     }
 
     private void createCell(Row row, int columnCount, Object value, CellStyle style) {
@@ -71,7 +80,7 @@ public class ExcelGeneratorReport {
     }
 
     private void write() {
-        int rowCount = 1;
+        int rowCount = 2;
         CellStyle style = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
         font.setFontHeight(14);
@@ -86,13 +95,14 @@ public class ExcelGeneratorReport {
             createCell(row, columnCount++, payment.getMoneyUnpaid(), style);
             createCell(row, columnCount++, payment.getAccumulatedMoney(), style);
             createCell(row, columnCount++, payment.getTotalMoney(), style);
-            createCell(row, columnCount++, String.valueOf(payment.getPaymentDate()), style);
+            createCell(row, columnCount++, String.valueOf(payment.getPaymentDate().toLocalDate()), style);
+            createCell(row, columnCount++, String.valueOf(payment.getPaymentDate().toLocalTime()), style);
             createCell(row, columnCount++, payment.getStatus(), style);
             totalMoney += payment.getMoneyPaid();
         }
         Row row = sheet.createRow(rowCount++);
-        createCell(row, 6, "Total Price", style);
-        createCell(row, 7, totalMoney, style);
+        createCell(row, 7, "Total Price", style);
+        createCell(row, 8, totalMoney, style);
     }
 
     public void generate(HttpServletResponse response, LocalDate startDate, LocalDate endDate) throws IOException {

@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.ResponseObjectEntity;
 import com.example.demo.dto.StoreDTO;
+import com.example.demo.facade.AuthFacade;
 import com.example.demo.response.Token;
 import com.example.demo.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AuthRestController {
+
     @Autowired
-    private AuthService authService;
+    private AuthFacade authFacade;
 
     @PostMapping("/auth/login")
     public ResponseEntity<Token> login(@RequestParam("userName") String userName, @RequestParam("password") String password) {
-        String tokenByUserName = authService.generateTokenByUserName(userName, password);
-        if (tokenByUserName == null) {
-            return null;
-        }
-        return new ResponseEntity<Token>(new Token(tokenByUserName), HttpStatus.OK);
+        return authFacade.login(userName, password);
     }
+
     @PostMapping("/auth/register")
-    public ResponseEntity<ResponseObjectEntity> register(@RequestBody StoreDTO storeDTO){
-        return authService.saveStore(storeDTO);
+    public ResponseEntity<ResponseObjectEntity> register(@RequestBody StoreDTO storeDTO) {
+        return authFacade.getAuthService().saveStore(storeDTO);
     }
 }

@@ -105,7 +105,7 @@ public class PDFGenerator {
     }
 
     public void generateReportByDateTime(HttpServletResponse response,
-                                         LocalDate startDate, LocalDate endDate,List<Payment> payments)
+                                         LocalDate startDate, LocalDate endDate, List<Payment> payments)
             throws DocumentException, IOException {
         Document document = new Document(PageSize.A4);
         PdfWriter.getInstance(document, response.getOutputStream());
@@ -113,17 +113,17 @@ public class PDFGenerator {
         Font fontTiltle = FontFactory.getFont(FontFactory.TIMES_ROMAN);
         fontTiltle.setSize(20);
         if (startDate.equals(endDate)) {
-            Paragraph paragraph = new Paragraph("REPORT IN DATE " +startDate, fontTiltle);
+            Paragraph paragraph = new Paragraph("REPORT IN DATE " + startDate, fontTiltle);
             paragraph.setAlignment(Paragraph.ALIGN_CENTER);
             document.add(paragraph);
-        }else{
-            Paragraph paragraph = new Paragraph("REPORT FROM " +startDate +" TO "+endDate, fontTiltle);
+        } else {
+            Paragraph paragraph = new Paragraph("REPORT FROM " + startDate + " TO " + endDate, fontTiltle);
             paragraph.setAlignment(Paragraph.ALIGN_CENTER);
             document.add(paragraph);
         }
-        PdfPTable table = new PdfPTable(8);
+        PdfPTable table = new PdfPTable(9);
         table.setWidthPercentage(100f);
-        table.setWidths(new int[]{3, 3, 3, 3, 3, 3, 3, 3});
+        table.setWidths(new int[]{3, 3, 3, 3, 3, 3, 3, 3, 3});
         table.setSpacingBefore(5);
         PdfPCell cell = new PdfPCell();
         cell.setBackgroundColor(CMYKColor.GREEN);
@@ -144,6 +144,8 @@ public class PDFGenerator {
         table.addCell(cell);
         cell.setPhrase(new Phrase("Payment Date", font));
         table.addCell(cell);
+        cell.setPhrase(new Phrase("Payment Time", font));
+        table.addCell(cell);
         cell.setPhrase(new Phrase("Status", font));
         table.addCell(cell);
         double totalMoney = 0;
@@ -154,7 +156,8 @@ public class PDFGenerator {
             table.addCell(String.valueOf(payment.getMoneyUnpaid()));
             table.addCell(String.valueOf(payment.getAccumulatedMoney()));
             table.addCell(String.valueOf(payment.getTotalMoney()));
-            table.addCell(String.valueOf(payment.getPaymentDate()));
+            table.addCell(String.valueOf(payment.getPaymentDate().toLocalDate()));
+            table.addCell(String.valueOf(payment.getPaymentDate().toLocalTime()));
             table.addCell(payment.getStatus());
             totalMoney += payment.getMoneyPaid();
         }
