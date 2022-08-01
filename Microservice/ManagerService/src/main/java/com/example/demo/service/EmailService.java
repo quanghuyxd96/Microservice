@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.client.DeliveryNoteFeignClient;
 import com.example.demo.client.ItemFeignClient;
 import com.example.demo.client.OrderFeignClient;
 import com.example.demo.client.StoreFeignClient;
@@ -16,13 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -49,25 +48,65 @@ public class EmailService {
     @Autowired
     private SendEmail sendEmail;
 
+    @Autowired
+    private DeliveryNoteFeignClient deliveryNoteFeignClient;
+
     private static final Logger logger = LogManager.getLogger(EmailService.class);
 
     private static Manager manager = new Manager();
 
     /**
-     * Function to send email notify delivery on tomorrow
+     * Function to send email notify delivery on tomorrow base on order date (don't use)
+     */
+//    @Scheduled(cron = "0 0 7 * * *")  //check và kiểm tra vào lúc 7h sáng hằng ngày
+//    public void sendEmailToNotifyDelivery() {
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        String token = managerService.generateToken();
+//        List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-6),
+//                token);
+//        for (OrderDTO orderDTO : ordersByOrderDate) {
+//            Email email = new Email();
+//            ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId(), token);
+//            email.setSentTo(store.getBody().getEmail());
+//            email.setTextContent("Your order with code " + orderDTO.getId() + " will be shipped on tomorrow");
+//            email.setSubject("ORDER " + orderDTO.getId() + " STATUS");
+//            try {
+//                boolean check = sendEmail.doSendEmail(email);
+//                if (check) {
+//                    email.setManager(manager);
+//                    emailRepository.save(email);
+//                }
+//            } catch (Exception e) {
+//                logger.throwing(e);
+//            }
+//        }
+//    }
+
+    /**
+     * Function to send email notify delivery on tomorrow base on delivery date.
      */
     @Scheduled(cron = "0 0 7 * * *")  //check và kiểm tra vào lúc 7h sáng hằng ngày
     public void sendEmailToNotifyDelivery() {
         SimpleMailMessage message = new SimpleMailMessage();
         String token = managerService.generateToken();
-        List<OrderDTO> ordersByOrderDate = orderFeignClient.getOrdersByOrderDate(LocalDate.now().plusDays(-6),
-                token);
-        for (OrderDTO orderDTO : ordersByOrderDate) {
+        List<DeliveryNoteDTO> deliveryNotes = deliveryNoteFeignClient.getAllDeliveryNotesByDate(LocalDate.now().plusDays(1),
+                managerService.generateToken()).getBody();
+        if (deliveryNotes == null) {
+            return;
+        }
+        for (DeliveryNoteDTO deliveryNoteDTO : deliveryNotes) {
             Email email = new Email();
-            ResponseEntity<StoreDTO> store = storeFeignClient.getStoreById(orderDTO.getStoreId(), token);
-            email.setSentTo(store.getBody().getEmail());
-            email.setTextContent("Your order with code " + orderDTO.getId() + " will be shipped on tomorrow");
-            email.setSubject("ORDER " + orderDTO.getId() + " STATUS");
+            OrderDTO order = orderFeignClient.getOrderById(deliveryNoteDTO.getOrderId(), token).getBody();
+            StoreDTO store = storeFeignClient.getStoreById(order.getStoreId(), token).getBody();
+            List<DeliveryItemDetailDTO> deliveryItemDetails = deliveryNoteDTO.getDeliveryItemDetails();
+            String textContent = "Your order with code " + order.getId() + " will be shipped on tomorrow with details: " + "\n";
+            for (DeliveryItemDetailDTO deliveryItemDetailDTO : deliveryItemDetails) {
+                ItemDTO item = itemFeignClient.getItemById(deliveryItemDetailDTO.getItemId()).getBody();
+                textContent += "Item Name: " + item.getName() + "\t" + "Quantity: " + deliveryItemDetailDTO.getDeliveriedQuantity() + "\n";
+            }
+            email.setSentTo(store.getEmail());
+            email.setTextContent(textContent);
+            email.setSubject("ORDER " + order.getId() + " STATUS");
             try {
                 boolean check = sendEmail.doSendEmail(email);
                 if (check) {
@@ -82,6 +121,7 @@ public class EmailService {
 
     /**
      * Function to send email notify ordered.
+     *
      * @param orderDetailDTOS
      */
     public void sendEmailToNotifyOrdered(List<OrderDetailToken> orderDetailDTOS) {
@@ -114,6 +154,7 @@ public class EmailService {
 
     /**
      * Function send email to reset user password
+     *
      * @param hashMap
      */
     public void sendEmailToResetStorePassword(HashMap<String, String> hashMap) {
@@ -137,6 +178,7 @@ public class EmailService {
 
     /**
      * Function send email to reset admin password
+     *
      * @param linkReset
      * @param emailToSend
      */
@@ -159,6 +201,7 @@ public class EmailService {
 
     /**
      * Function listen to Store for process forgot password
+     *
      * @param hashMap
      */
     @StreamListener(target = StoreSource.STORE_FORGOT_PASSWORD)

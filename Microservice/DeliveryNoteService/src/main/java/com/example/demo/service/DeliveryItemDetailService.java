@@ -5,7 +5,6 @@ import com.example.demo.dto.ItemDTO;
 import com.example.demo.entity.DeliveryItemDetail;
 import com.example.demo.mq.DeliverySource;
 import com.example.demo.repository.DeliveryItemDetailRepository;
-import com.example.demo.utils.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +51,7 @@ public class DeliveryItemDetailService {
         return null;
     }
 
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(cron = "0 0 7 * * *")
     public void checkDeliveryItemUndelivery() {
         String token = deliveryNoteService.generateToken();
         List<DeliveryItemDetail> deliveryItemDetails = deliveryItemDetailRepository.getItemUndeliveried();
@@ -70,7 +69,7 @@ public class DeliveryItemDetailService {
                     - deliveryItemDetails.get(i).getUndeliveriedQuantity());
             itemDetails.add(deliveryItemDetails.get(i));
         }
-        List<ItemDTO> items = new ArrayList<>();
+
         List<DeliveryItemDetail> deliveryItemDetailsToUpdate = new ArrayList<>();
         for (DeliveryItemDetail deliveryItemDetail : itemDetails) {
             ItemDTO item = itemFeignClient.getItemById(deliveryItemDetail.getItemId());
@@ -85,7 +84,6 @@ public class DeliveryItemDetailService {
                     deliveryItemDetail.setUndeliveriedQuantity(0);
                     item.setQuantity(item.getQuantity() - deliveryItemDetail.getDeliveriedQuantity());
                     logger.info("Remain: " + deliveryItemDetail.getUndeliveriedQuantity());
-                    items.add(item);
                 } else {
                     logger.info("Case: Item Quantity < Item Undeliveried Quantity");
                     deliveryItemDetail.setDeliveriedQuantity(item.getQuantity());
@@ -94,9 +92,9 @@ public class DeliveryItemDetailService {
                     item.setQuantity(0);
                     logger.info("Deliveried: " + deliveryItemDetail.getDeliveriedQuantity());
                     logger.info("Remain: " + deliveryItemDetail.getUndeliveriedQuantity());
-                    items.add(item);
                 }
                 deliveryItemDetailsToUpdate.add(deliveryItemDetail);
+                deliverySource.updateItemQuantity().send(MessageBuilder.withPayload(item).build());
             }
         }
         for (int i = 0; i < deliveryItemDetailsToUpdate.size(); i++) {
@@ -111,10 +109,9 @@ public class DeliveryItemDetailService {
             }
             deliveryNoteService.updateOrSaveDeliveryNote(itemDetails1);
         }
-        deliverySource.updateItemQuantity().send(MessageBuilder.withPayload(items).build());
         logger.info("End Function");
     }
-    
+
     public void removeDeliveryItemDetail(long itemId, long orderId, List<DeliveryItemDetail> deliveryItemDetails) {
         for (int i = 0; i < deliveryItemDetails.size(); i++) {
             if (deliveryItemDetails.get(i).getItemId() == itemId &&
@@ -129,7 +126,7 @@ public class DeliveryItemDetailService {
         deliveryItemDetailRepository.deleteById(id);
     }
 
-    public void deleteDeliveryItemDetailByDeliveryNoteId(long id){
+    public void deleteDeliveryItemDetailByDeliveryNoteId(long id) {
         deliveryItemDetailRepository.deleteByDeliveryNoteId(id);
     }
 

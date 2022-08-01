@@ -66,21 +66,27 @@ public class DeliveryNoteService {
                 deliveryItemDetail.setDeliveriedQuantity(orderDetailDTO.getItemQuantity());
                 deliveryItemDetail.setUndeliveriedQuantity(0);
                 item.setQuantity(item.getQuantity() - orderDetailDTO.getItemQuantity());
-                items.add(item);
             } else {
                 deliveryItemDetail.setDeliveriedQuantity(itemQuantityInStorage);
                 deliveryItemDetail.setUndeliveriedQuantity(deliveryItemDetail.getTotalDeliveriedQuantity() - deliveryItemDetail.getDeliveriedQuantity());
                 item.setQuantity(0);
-                items.add(item);
             }
             deliveryItemDetail.setAccumulationQuantity(deliveryItemDetail.getDeliveriedQuantity());
             deliveryItemDetail.setDeliveryNote(deliveryNote);
             deliveryItemDetails.add(deliveryItemDetail);
+            deliverySource.updateItemQuantity().send(MessageBuilder.withPayload(item).build());
         }
         deliveryNote.setDeliveryItemDetails(deliveryItemDetails);
         DeliveryNote deliveryNoteSave = deliveryNoteRepository.save(deliveryNote);
-        deliverySource.updateItemQuantity().send(MessageBuilder.withPayload(items).build());
         return deliveryNoteSave;
+    }
+
+    public List<DeliveryNote> getAllDeliveryNoteByDate(LocalDate deliveryDate) {
+        List<DeliveryNote> deliveryNotes = deliveryNoteRepository.findDeliveryNoteByDeliveryDate(deliveryDate);
+        if (deliveryNotes == null) {
+            return null;
+        }
+        return deliveryNotes;
     }
 
 
@@ -92,9 +98,9 @@ public class DeliveryNoteService {
         return deliveryNotes;
     }
 
-    public List<DeliveryNote> getAllDeliveryNoteByoOrderId(long orderId){
+    public List<DeliveryNote> getAllDeliveryNoteByoOrderId(long orderId) {
         List<DeliveryNote> deliveryNotes = deliveryNoteRepository.findAllDeliveryNoteByOrderId(orderId);
-        if(deliveryNotes == null){
+        if (deliveryNotes == null) {
             return null;
         }
         return deliveryNotes;

@@ -167,6 +167,14 @@
             <version>2.14.0</version>
         </dependency>
 
+<!--        Hibernate Core Listener-->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.6.9.Final</version>
+        </dependency>
+
+
 
     </dependencies>
 

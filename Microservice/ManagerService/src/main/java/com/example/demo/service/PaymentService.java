@@ -41,6 +41,7 @@ public class PaymentService {
 
     /**
      * Function to save payment
+     *
      * @param payment
      * @return payment
      */
@@ -53,6 +54,9 @@ public class PaymentService {
             StoreDTO storeDTO = storeFeignClient.getStoreById(orderDTO.getStoreId(), token).getBody();
             Payment paymentRepo = paymentRepository.getMaxPaymentByOrderId(orderDTO.getId());
             if (paymentRepo == null) {
+                if (payment.getMoneyPaid() > orderDTO.getTotalPrice()) {
+                    return null;
+                }
                 payment.setTotalMoney(orderDTO.getTotalPrice());
                 payment.setAccumulatedMoney(payment.getMoneyPaid());
                 payment.setMoneyUnpaid(orderDTO.getTotalPrice() - payment.getMoneyPaid());
@@ -66,6 +70,9 @@ public class PaymentService {
                 return paymentRepository.save(payment);
             }
             if (paymentRepo.getMoneyUnpaid() > 0) {
+                if (payment.getMoneyPaid() > paymentRepo.getMoneyUnpaid()) {
+                    return null;
+                }
                 Payment payment1 = new Payment();
                 payment1.setTotalMoney(paymentRepo.getTotalMoney());
                 payment1.setAccumulatedMoney(paymentRepo.getAccumulatedMoney() + payment.getMoneyPaid());
@@ -88,11 +95,12 @@ public class PaymentService {
 
     /**
      * Function to get All Payment
+     *
      * @return list of payments
      */
-    public List<Payment> getAllPayment(){
+    public List<Payment> getAllPayment() {
         List<Payment> payments = paymentRepository.findAll();
-        if(payments == null){
+        if (payments == null) {
             return null;
         }
         return payments;
@@ -100,12 +108,13 @@ public class PaymentService {
 
     /**
      * Function to get payment by id
+     *
      * @param id
      * @return payment
      */
-    public Payment getPaymentById(long id){
+    public Payment getPaymentById(long id) {
         Optional<Payment> payment = paymentRepository.findById(id);
-        if(payment.isPresent()){
+        if (payment.isPresent()) {
             return payment.get();
         }
         return null;
@@ -113,12 +122,13 @@ public class PaymentService {
 
     /**
      * Function to get payments by order id
+     *
      * @param orderId
      * @return list of payments
      */
-    public List<Payment> getAllPaymentByOrderId(long orderId){
+    public List<Payment> getAllPaymentByOrderId(long orderId) {
         List<Payment> payments = paymentRepository.findPaymentByOrderId(orderId);
-        if(payments == null){
+        if (payments == null) {
             return null;
         }
         return payments;
@@ -126,12 +136,13 @@ public class PaymentService {
 
     /**
      * Function to delete payment
+     *
      * @param id
      * @return true or false
      */
-    public boolean deletePayment(long id){
+    public boolean deletePayment(long id) {
         Optional<Payment> payment = paymentRepository.findById(id);
-        if(payment.isPresent()){
+        if (payment.isPresent()) {
             paymentRepository.deleteById(id);
             return true;
         }
@@ -140,6 +151,7 @@ public class PaymentService {
 
     /**
      * Function to export PDF Report.
+     *
      * @param response
      * @param startDate
      * @param endDate
@@ -156,6 +168,7 @@ public class PaymentService {
 
     /**
      * Function to export Excel Report
+     *
      * @param response
      * @param startDate
      * @param endDate

@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Item;
 import com.example.demo.mq.DeliverySource;
-import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.ItemRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ public class ItemService {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
 
 
     public List<Item> getAllItem() {
@@ -81,17 +79,29 @@ public class ItemService {
         return null;
     }
 
-    public List<Item> updateItemQuantity(List<Item> items) {
-        List<Item> itemList = new ArrayList<>();
-        for (Item item : items) {
-            Optional<Item> itemById = itemRepository.findById(item.getId());
-            if (itemById.isPresent()) {
-                itemById.get().setQuantity(item.getQuantity());
-                itemList.add(itemById.get());
-            }
+
+    //cái logic này sai
+//    public List<Item> updateItemQuantity(List<Item> items) {
+//        List<Item> itemList = new ArrayList<>();
+//        for (Item item : items) {
+//            Optional<Item> itemById = itemRepository.findById(item.getId());
+//            if (itemById.isPresent()) {
+//                itemById.get().setQuantity(item.getQuantity());
+//                itemList.add(itemById.get());
+//            }
+//        }
+//        return itemRepository.saveAll(itemList);
+//    }
+
+    public Item updateItemQuantity(Item item) {
+        Optional<Item> itemById = itemRepository.findById(item.getId());
+        if (itemById.isPresent()) {
+            itemById.get().setQuantity(item.getQuantity());
+            return itemRepository.save(itemById.get());
         }
-        return itemRepository.saveAll(itemList);
+        return null;
     }
+
 
     public List<Item> updateItemQuantityAfterUpdateOrder(List<Item> items) {
         List<Item> itemList = new ArrayList<>();
@@ -99,7 +109,7 @@ public class ItemService {
             Optional<Item> itemById = itemRepository.findById(item.getId());
             if (itemById.isPresent()) {
                 itemById.get().setQuantity(itemById.get().getQuantity() + item.getQuantity());
-                System.out.println("Tổng số sau khi cộng: " +itemById.get().getQuantity());
+                System.out.println("Tổng số sau khi cộng: " + itemById.get().getQuantity());
                 itemList.add(itemById.get());
             }
         }
@@ -128,22 +138,28 @@ public class ItemService {
         return false;
     }
 
+//    @StreamListener(target = DeliverySource.DELIVERY_ITEM_CHANNEL)
+//    public void getItemToUpdate(List<Item> items) {
+//        System.out.println(items.get(0).getId());
+//        updateItemQuantity(items);
+//    }
+
     @StreamListener(target = DeliverySource.DELIVERY_ITEM_CHANNEL)
-    public void getItemToUpdate(List<Item> items) {
-        System.out.println(items.get(0).getId());
-        updateItemQuantity(items);
+    public void getItemToUpdate(Item item) {
+        System.out.println(item.toString());
+        updateItemQuantity(item);
     }
 
 
     /**
      * Function to listen from Delivery to Update Item (Deleted Order)
+     *
      * @param items
      */
     @StreamListener(target = DeliverySource.ITEM)
     public void getItemFromOrderToUpdate(List<Item> items) {
         updateItemQuantityByDeleteOrder(items);
     }
-
 
 
 //    public void getAllItemDemoRabbit() {

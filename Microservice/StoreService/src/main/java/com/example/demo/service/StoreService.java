@@ -55,8 +55,8 @@ public class StoreService {
         }
         String token = jwtTokenUtil.generateToken(username);
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("email",store.getEmail());
-        hashMap.put("token",token);
+        hashMap.put("email", store.getEmail());
+        hashMap.put("token", token);
         System.out.println(hashMap.get("token"));
         storeSourceSend.sendToGetNewPassword().send(MessageBuilder.withPayload(hashMap).build());
         return "We sent email to you!!!";

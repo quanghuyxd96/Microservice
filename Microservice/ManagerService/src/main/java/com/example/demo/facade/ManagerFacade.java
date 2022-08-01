@@ -68,13 +68,12 @@ public class ManagerFacade {
 
     public ResponseEntity<?> createAuthenticationToken(String userName, String password)
             throws Exception {
-        if (managerService.authenticate(userName, password)) {
+        if (!managerService.authenticate(userName, password)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(userName, HttpStatus.OK);
     }
 
-    @PutMapping("/manager/update")
     public ResponseEntity<Manager> updateManager(Manager manager) {
         Manager manager1 = managerService.updateManager(manager);
         if (manager1 == null) {
