@@ -15,4 +15,14 @@ public class OrderDetailDTO {
     private long itemQuantity;
     private long itemId;
     private long orderId;
+
+    @Override
+    public String toString() {
+        return "OrderDetailDTO{" +
+                "id=" + id +
+                ", itemQuantity=" + itemQuantity +
+                ", itemId=" + itemId +
+                ", orderId=" + orderId +
+                '}';
+    }
 }

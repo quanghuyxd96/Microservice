@@ -12,6 +12,8 @@ import com.example.demo.mq.OrderSource;
 import com.example.demo.repository.DeliveryNoteRepository;
 import com.example.demo.utils.JwtTokenUtil;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.integration.support.MessageBuilder;
@@ -45,13 +47,13 @@ public class DeliveryNoteService {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+    Logger logger = LoggerFactory.getLogger(DeliveryNoteService.class);
 
     public DeliveryNote saveDelivery(List<OrderDetailDTO> orderDetailDTOList) {
         String token = generateToken();
         DeliveryNote deliveryNote = new DeliveryNote();
         List<DeliveryItemDetail> deliveryItemDetails = new ArrayList<>();
         List<ItemDTO> items = new ArrayList<>();
-        System.out.println(orderDetailDTOList.get(0).toString());
         OrderDTO orderDTO = orderFeignClient.getOrderById(orderDetailDTOList.get(0).getOrderId(), token).getBody();
         deliveryNote.setDeliveryDate(orderDTO.getOrderDate().plusDays(7));
         deliveryNote.setOrderId(orderDTO.getId());
@@ -127,7 +129,6 @@ public class DeliveryNoteService {
 
     public void updateOrSaveDeliveryNote(List<DeliveryItemDetail> deliveryItemDetails) {
         Optional<DeliveryNote> deliveryNote = deliveryNoteRepository.findById(deliveryItemDetails.get(0).getDeliveryNote().getId());
-        System.out.println(deliveryItemDetails.get(0).getDeliveryNote().getId());
         if (deliveryNote.get().getDeliveryDate().isAfter(LocalDate.now())) {
             deliveryItemDetailService.saveDeliveryItemDetail(deliveryItemDetails);
         } else {
@@ -155,7 +156,6 @@ public class DeliveryNoteService {
         }
         List<ItemDTO> itemDTOList = itemFeignClient.updateItemQuantity(items, generateToken()).getBody();
         for (DeliveryItemDetail deliveryItemDetail : deliveryItemDetailsOld) {
-            System.out.println(deliveryItemDetail.getId());
             deliveryItemDetailService.deleteDeliveryItemDetailById(deliveryItemDetail.getId());
         }
         for (OrderDetailDTO orderDetailDTO : orderDetailDTOList) {
@@ -223,27 +223,17 @@ public class DeliveryNoteService {
         return "Bearer " + jwtTokenUtil.generateToken(ADMIN);
     }
 
-//    @StreamListener(target = OrderSource.ORDER_DELIVERY_CHANEL)
-//    public void listenToSaveOrUpdateDeliveryNote(List<OrderDetailDTO> orderDetails) {
-//        saveDelivery(orderDetails);
-//    }
-
-
-    /**
-     * Function to listen from Order to Update or Save Delivery
-     *
-     * @param orderDetails
-     */
-    @StreamListener(target = OrderSource.ORDER_DELIVERY_CHANEL)
+    @StreamListener(target = OrderSource.ORDER_CHANEL)
     public void listenToSaveOrUpdateDeliveryNote(List<OrderDetailDTO> orderDetails) {
         DeliveryNote deliveryNote = deliveryNoteRepository.findDeliveryNoteByOrderId(orderDetails.get(0).getOrderId());
         if (deliveryNote == null) {
+            logger.info("Start save delivery note");
             saveDelivery(orderDetails);
         } else {
+            logger.info("Start update delivery note");
             updateDeliveryNote(orderDetails, deliveryNote);
         }
     }
-
 
     /**
      * Function to listen from Order to delete Delivery
@@ -254,6 +244,23 @@ public class DeliveryNoteService {
     public void listenToDeleteDeliveryByOrderId(Long orderId) {
         deleteDeliveryNoteByOrderId(orderId);
     }
+
+
+    /**
+     * Function to listen from Order to Update or Save Delivery(use new way, dont't use this way)
+     *
+     * @param orderDetails
+     */
+//    @StreamListener(target = OrderSource.ORDER_DELIVERY_CHANEL)
+//    public void listenToSaveOrUpdateDeliveryNote(List<OrderDetailDTO> orderDetails) {
+//        DeliveryNote deliveryNote = deliveryNoteRepository.findDeliveryNoteByOrderId(orderDetails.get(0).getOrderId());
+//        if (deliveryNote == null) {
+//            saveDelivery(orderDetails);
+//        } else {
+//            updateDeliveryNote(orderDetails, deliveryNote);
+//        }
+//    }
+
 
     /**
 

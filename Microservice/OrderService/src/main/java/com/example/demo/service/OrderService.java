@@ -47,7 +47,6 @@ public class OrderService {
 
     public Order saveOrder(List<OrderDetail> orderDetails) {
         Order order = new Order();
-        orderRepository.save(order);
         order.setOrderDate(LocalDate.now());
         StoreDTO store = storeFeignClient.getStoreByToken(request.getHeader(AUTHOR));
         order.setStoreId(store.getId());

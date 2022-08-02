@@ -47,15 +47,16 @@ public class OrderFacade {
         return convertModel(order, OrderModel.class);
     }
 
-    public OrderModel updateOrder(List<OrderDetailModel> orderDetailModels,long orderId) {
+
+    public ResponseEntity<OrderModel> updateOrder(List<OrderDetailModel> orderDetailModels, long orderId) {
         if (orderDetailModels == null) {
-            return null;
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Order order = orderService.updateOrder(convertListModel(orderDetailModels, OrderDetail.class),orderId);
-        if(order==null){
-            return null;
+        Order order = orderService.updateOrder(convertListModel(orderDetailModels, OrderDetail.class), orderId);
+        if (order == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return convertModel(order, OrderModel.class);
+        return new ResponseEntity<>(convertModel(order, OrderModel.class), HttpStatus.OK);
     }
 
     public List<OrderModel> getAllOrders() {

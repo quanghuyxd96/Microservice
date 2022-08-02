@@ -46,7 +46,11 @@ spring:
         deliveryItemChannel:
           destination: updateItemQuantity
           group: delivery_item
-#    routingkey: delivery.routingkey
+#          cái này đang demo
+        ordersChannel:
+          destination: order
+          group: delivery
+#          --
 client:
   post:
     baseUrl1: 'http://localhost:8083'

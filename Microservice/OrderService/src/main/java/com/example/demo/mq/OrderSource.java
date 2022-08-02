@@ -8,11 +8,15 @@ import static com.example.demo.utils.Constants.*;
 public interface OrderSource {
     @Output(ORDER_CHANEL)
     MessageChannel order();
-    @Output(ORDER_DELIVERY_CHANEL)
-    MessageChannel orderDelivery();
 
-//    @Output(ORDER_DELIVERY_UPDATE_CHANEL)
-//    MessageChannel orderDeliveryUpdate();
+    /**
+     * Không xài cái này nữa do xài 1 publisher bắn ra 1 event
+     * @return
+     */
+//    @Output(ORDER_DELIVERY_CHANEL)
+//    MessageChannel orderDelivery();
+
+
 
     @Output(DELIVERY_CHANNEL)
     MessageChannel deleteDelivery();

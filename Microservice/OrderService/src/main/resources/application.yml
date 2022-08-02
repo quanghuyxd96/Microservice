@@ -33,7 +33,6 @@ spring:
       bindings:
         ordersChannel:
           destination: order
-          group: manager
         orderDeliveryChannel:
           destination: order_delivery
           group: delivery

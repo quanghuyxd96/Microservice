@@ -95,12 +95,8 @@ public class OrderController implements OrderApi {
 
 
     @PostMapping("/order/update")
-    public ResponseEntity<OrderModel> updateOrder(@RequestBody List<OrderDetailModel> orderDetailModels,@RequestParam("id") long orderId) {
-        OrderModel orderModel = orderFacade.updateOrder(orderDetailModels,orderId);
-        if (orderModel == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(orderModel, HttpStatus.OK);
+    public ResponseEntity<OrderModel> updateOrder(@RequestBody List<OrderDetailModel> orderDetailModels, @RequestParam("id") long orderId) {
+        return orderFacade.updateOrder(orderDetailModels, orderId);
     }
 
 
@@ -108,6 +104,7 @@ public class OrderController implements OrderApi {
     public ResponseEntity<ResponseObject> orderDeleteDelete(Long id) {
         return orderFacade.deleteOrderById(id);
     }
+
     //Order-detail
     @Override
     public ResponseEntity<List<OrderDetailModel>> orderOrderDetailsGet() {

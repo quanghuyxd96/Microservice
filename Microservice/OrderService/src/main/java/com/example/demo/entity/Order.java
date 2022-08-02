@@ -29,5 +29,6 @@ public class Order {
     private long storeId;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
+
 }
 

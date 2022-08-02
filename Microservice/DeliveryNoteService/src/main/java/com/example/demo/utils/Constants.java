@@ -8,6 +8,7 @@ public class Constants {
     public static final String DELIVERY_CHANNEL = "deliveryChannel";
 
     public static final String ITEM_CHANNEL = "orderItemChannel";
+    public static final String ORDER_CHANEL = "ordersChannel";  //demo nhé
 
     public static final double MAX_WEIGHT = 500;
     public static final long JWT_TOKEN_VALIDITY = 15 * 60;
